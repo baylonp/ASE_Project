@@ -19,7 +19,7 @@ def add():
         return make_response('Invalid input\n', 400) #HTTP 400 BAD REQUEST
     
 
-#Endpoint /sub for subtraction which takes a and b as query parameters.
+#Endpoint /sub for subtraction which takes a and b as query paramete.
 
 @app.route('/sub')
 def sub():
