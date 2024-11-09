@@ -1,3 +1,5 @@
+##AUTH
+
 from flask import Flask, request, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
 from bcrypt import hashpw, gensalt, checkpw
@@ -6,7 +8,7 @@ from bcrypt import hashpw, gensalt, checkpw
 app = Flask(__name__)
 
 # Configurazione del database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'  # Usa PostgreSQL se necessario
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////data/users.db' 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'your_secret_key'
 
@@ -107,6 +109,23 @@ def update_account():
     
     db.session.commit()
     return make_response(jsonify({'message': 'Account updated successfully'}), 200)
+
+
+@app.route('/userId', methods=['GET'])
+def get_user_id():
+
+    username = request.args.get('username')
+    
+    if not username:
+        return make_response(jsonify({'message': 'Username is required'}), 400)
+    
+    user = User.query.filter_by(username=username).first()
+    
+    if not user:
+        return make_response(jsonify({'message': 'User not found'}), 404)
+    
+    return jsonify({'userId': user.id}), 200
+
 
 
 
