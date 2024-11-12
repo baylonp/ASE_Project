@@ -1,0 +1,34 @@
+services:
+  authentication:
+    build:
+      context: ./authentication
+      dockerfile: Dockerfile
+    container_name: authentication_service
+    ports:
+      - "5001:5000"  # Porta esterna (host) 5001 mappata sulla porta interna del container 5000
+    volumes:
+      - sqldata1:/data  # Volume sqldata1 montato all'interno della cartella /data nel container
+    environment:
+      FLASK_ENV: development
+
+
+  gatcha_service:
+    build:
+      context: ./gacha_service
+      dockerfile: Dockerfile
+    container_name: gacha_service
+    ports:
+      - "5002:5000"  # Porta esterna (host) 5002 mappata sulla porta interna del container 5000
+    volumes:
+      - sqldata2_GM:/data  # Volume sqldata2_GM montato all'interno della cartella /data nel container
+    environment:
+      FLASK_ENV: development
+    depends_on:
+      - authentication  # Assicurati che il servizio di authentication sia avviato prima
+
+
+volumes:
+  sqldata1:
+    driver: local
+  sqldata2_GM:
+    driver: local
