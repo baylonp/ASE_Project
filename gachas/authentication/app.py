@@ -8,7 +8,7 @@ from bcrypt import hashpw, gensalt, checkpw
 app = Flask(__name__)
 
 # Configurazione del database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////data/users.db' 
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db' 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'your_secret_key'
 
@@ -22,6 +22,7 @@ class User(db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
+    wallet = db.Column(db.Integer, nullable=False, default = 0)
     
     def repr(self):
         return f'<User {self.username}>'
@@ -126,6 +127,61 @@ def get_user_id():
     
     return jsonify({'userId': user.id}), 200
 
+
+
+@app.route('/players/<playerId>/currency/add', methods=['POST'])
+def add_currency_to_player(playerId):
+    """
+    Aggiunge monete di gioco al wallet del giocatore specificato
+
+    """
+    try:
+        # Ottieni l'importo specificato dall'utente tramite la query string
+        amount = request.args.get('amount', type=float)
+
+        # Validare l'importo specificato
+        if amount is None or amount <= 0:
+            return make_response(jsonify({'message': 'Invalid input data: amount must be greater than zero'}), 400)
+
+        # Recuperare l'utente dal database in base al playerId
+        user = User.query.filter_by(id=playerId).first()
+
+        if not user:
+            return make_response(jsonify({'message': 'Player not found'}), 404)
+
+        # Aggiungi l'importo specificato al wallet dell'utente
+        user.wallet += int(amount)  # Aggiorna il saldo del wallet dell'utente
+        db.session.commit()
+
+        return make_response(jsonify({'message': 'Currency added successfully', 'new_wallet_balance': user.wallet}), 200)
+
+    except Exception as e:
+        return make_response(jsonify({'message': f'An error occurred: {str(e)}'}), 500)
+
+
+@app.route('/players/<playerId>', methods=['GET'])
+def get_user_info(playerId):
+  
+    try:
+        # Recuperare l'utente dal database in base al playerId
+        user = User.query.filter_by(id=playerId).first()
+
+        if not user:
+            return make_response(jsonify({'message': 'Player not found'}), 404)
+
+        # Restituire tutte le informazioni dell'utente
+        user_info = {
+            'id': user.id,
+            'username': user.username,
+            'email': user.email,
+            'password': user.password,  
+            'wallet': user.wallet
+        }
+
+        return make_response(jsonify(user_info), 200)
+
+    except Exception as e:
+        return make_response(jsonify({'message': f'An error occurred: {str(e)}'}), 500)
 
 
 

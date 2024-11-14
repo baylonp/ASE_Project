@@ -20,15 +20,34 @@ services:
     ports:
       - "5002:5000"  # Porta esterna (host) 5002 mappata sulla porta interna del container 5000
     volumes:
-      - sqldata2_GM:/data  # Volume sqldata2_GM montato all'interno della cartella /data nel container
+      - sqldata2_GachaManager:/data  # Volume sqldata2_GM montato all'interno della cartella /data nel container
     environment:
       FLASK_ENV: development
     depends_on:
-      - authentication  # Assicurati che il servizio di authentication sia avviato prima
+      - authentication  
+   
+
+
+  gacha_market_service:
+    build:
+      context: ./gacha_market_service
+      dockerfile: Dockerfile
+    container_name: gacha_market_service
+    ports:
+      - "5003:5000"  # Porta esterna (host) 5003 mappata sulla porta interna del container 5000
+    volumes:
+      - sqldata3_GachaMarket:/data  # Volume sqldata2_GM montato all'interno della cartella /data nel container
+    environment:
+      FLASK_ENV: development
+    depends_on:
+      - authentication  
+      - gatcha_service
 
 
 volumes:
   sqldata1:
     driver: local
-  sqldata2_GM:
+  sqldata2_GachaManager:
+    driver: local
+  sqldata3_GachaMarket:
     driver: local
