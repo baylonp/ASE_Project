@@ -1,14 +1,15 @@
 import requests
 from flask import Flask, request, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
-
 app = Flask(__name__)
+import random
 
 # Configurazione dell'URL del servizio di autenticazione
 AUTH_SERVICE_URL = 'http://authentication:5000' 
+GACHA_SERVICE_URL = 'http://gacha_service:5000'
 
 # Configurazione del database SQLite
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////data/gacha_market.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///gacha_market.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Inizializza SQLAlchemy
@@ -104,6 +105,82 @@ def buy_in_game_currency(playerId):
         return make_response(jsonify({'message': f'An error occurred while communicating with the auth service: {str(e)}'}), 500)
     except Exception as e:
         return make_response(jsonify({'message': f'An internal error occurred: {str(e)}'}), 500)
+    
+
+# Endpoint per acquistare una roll (gacha)
+@app.route('/players/<playerId>/gacha/roll', methods=['POST'])
+def buy_gacha_roll(playerId):
+    """
+    Consente all'utente di acquistare una roll (gacha) per ottenere un pilota casuale.
+    L'utente spende una quantità fissa di in-game currency per ottenere il pilota.
+    ---
+    """
+    try:
+        # Importo fisso della roll
+        ROLL_COST = 100
+
+        # Effettuare una richiesta al servizio di autenticazione per verificare il wallet dell'utente
+        response = requests.get(f"{AUTH_SERVICE_URL}/players/{playerId}")
+
+        if response.status_code == 404:
+            return make_response(jsonify({'message': 'Player not found'}), 404)
+
+        user_data = response.json()
+        user_wallet = user_data.get('wallet', 0)
+
+        # Verificare se l'utente ha abbastanza in-game currency
+        if user_wallet < ROLL_COST:
+            return make_response(jsonify({'message': 'Not enough in-game currency to purchase a roll'}), 400)
+
+        # Scegliere un pilota casuale dal database
+        pilots = Pilot.query.all()
+        if not pilots:
+            return make_response(jsonify({'message': 'No pilots available'}), 404)
+
+        selected_pilot = random.choice(pilots)
+        
+        # Aggiornare il wallet dell'utente
+        update_response = requests.patch(
+            f"{AUTH_SERVICE_URL}/players/{playerId}/currency/update",
+            json={'amount': -ROLL_COST}  # Sottrarre l'importo della roll dal wallet
+        )
+
+        if update_response.status_code != 200:
+            return make_response(jsonify({'message': 'Failed to update user wallet'}), 500)
+
+        # Aggiungi il pilota alla collezione dell'utente chiamando il microservizio gacha_service
+        gacha_data = {
+            "gacha_id": f"gacha_{selected_pilot.id}",
+            "pilot_name": selected_pilot.pilot_name,
+            "rarity": selected_pilot.rarity,
+            "experience": selected_pilot.experience,
+            "ability": selected_pilot.ability
+        }
+
+        add_gacha_response = requests.post(
+            f"{GACHA_SERVICE_URL}/players/{playerId}/gachas",
+            json=gacha_data
+        )
+
+        if add_gacha_response.status_code != 201:
+            return make_response(jsonify({'message': 'Failed to add gacha to user collection'}), 500)
+
+        # Restituire il pilota ottenuto
+        return make_response(jsonify({
+            'message': 'Roll purchased successfully',
+            'pilot': {
+                'id': selected_pilot.id,
+                'pilot_name': selected_pilot.pilot_name,
+                'rarity': selected_pilot.rarity,
+                'experience': selected_pilot.experience,
+                'ability': selected_pilot.ability
+            }
+        }), 200)
+
+    except requests.exceptions.RequestException as e:
+        return make_response(jsonify({'message': f'An error occurred while communicating with the auth or gacha service: {str(e)}'}), 500)
+    except Exception as e:
+        return make_response(jsonify({'message': f'An internal error occurred: {str(e)}'}), 500)
 
 if __name__ == 'main':
-    app.run(debug=True, port=5003)
+    app.run(debug=True)

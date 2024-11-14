@@ -177,8 +177,72 @@ def get_user_info(playerId):
             'password': user.password,  
             'wallet': user.wallet
         }
+    
 
         return make_response(jsonify(user_info), 200)
+    
+    except Exception as e:
+        return make_response(jsonify({'message': f'An error occurred: {str(e)}'}), 500)
+    
+
+@app.route('/players/<playerId>/currency/update', methods=['PATCH'])
+def update_user_currency(playerId):
+    """
+    Aggiorna la quantità di currency nel wallet di un utente specifico.
+    ---
+    parameters:
+      - name: playerId
+        in: path
+        required: true
+        description: ID del giocatore
+        schema:
+          type: string
+      - name: amount
+        in: body
+        required: true
+        description: Quantità di currency da aggiungere o sottrarre (può essere positiva o negativa)
+        schema:
+          type: object
+          properties:
+            amount:
+              type: integer
+    responses:
+      200:
+        description: Wallet aggiornato con successo
+      400:
+        description: Dati di input non validi o saldo insufficiente
+      404:
+        description: Giocatore non trovato
+    """
+    try:
+        # Ottieni l'importo dal corpo della richiesta
+        data = request.get_json()
+        if not data or 'amount' not in data:
+            return make_response(jsonify({'message': 'Invalid input data: "amount" field is required'}), 400)
+
+        amount = data['amount']
+
+        # Recuperare l'utente dal database in base al playerId
+        user = User.query.filter_by(id=playerId).first()
+
+        if not user:
+            return make_response(jsonify({'message': 'Player not found'}), 404)
+
+        # Verifica se l'utente ha abbastanza currency per sottrazioni
+        if user.wallet + amount < 0:
+            return make_response(jsonify({'message': 'Insufficient funds'}), 400)
+
+        # Aggiorna il wallet dell'utente
+        user.wallet += amount
+        db.session.commit()
+
+        return make_response(jsonify({'message': 'Wallet updated successfully', 'new_wallet_balance': user.wallet}), 200)
+
+    except Exception as e:
+        return make_response(jsonify({'message': f'An error occurred: {str(e)}'}), 500)    
+
+
+
 
     except Exception as e:
         return make_response(jsonify({'message': f'An error occurred: {str(e)}'}), 500)
