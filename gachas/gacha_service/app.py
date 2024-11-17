@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 
 # Configurazione del database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///issuedANDownedDB.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////data/issuedANDownedDB.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -14,7 +14,7 @@ class GachaCollection(db.Model):
     tablename = 'gacha_collection'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.String, nullable=False)
-    gacha_id = db.Column(db.String, nullable=False)
+    gacha_id = db.Column(db.Integer, nullable=False)
     pilot_name = db.Column(db.String, nullable=False)
     rarity = db.Column(db.String, nullable=False)
     experience = db.Column(db.String, nullable=False)
@@ -23,7 +23,7 @@ class GachaCollection(db.Model):
 # Definizione del modello GachaCatalog
 class GachaCatalog(db.Model):
     tablename = 'gacha_catalog'
-    gacha_id = db.Column(db.String, primary_key=True)
+    gacha_id = db.Column(db.Integer, primary_key=True)
     pilot_name = db.Column(db.String, nullable=False)
     rarity = db.Column(db.String, nullable=False)
     experience = db.Column(db.String, nullable=False)

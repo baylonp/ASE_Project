@@ -3,13 +3,15 @@ from flask import Flask, request, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 import random
+from datetime import datetime, timezone
 
 # Configurazione dell'URL del servizio di autenticazione
 AUTH_SERVICE_URL = 'http://authentication:5000' 
 GACHA_SERVICE_URL = 'http://gacha_service:5000'
 
 # Configurazione del database SQLite
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///gacha_market.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////data/gacha_market.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////data/transaction_history.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Inizializza SQLAlchemy
@@ -27,6 +29,19 @@ class Pilot(db.Model):
 
     def repr(self):
         return f'<Pilot {self.pilot_name}>'
+    
+
+# Definizione del modello Transaction
+class Transaction(db.Model):
+    tablename = 'transactions'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.String, nullable=False)
+    amount_spent = db.Column(db.Float, nullable=False)
+    timestamp = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+
+    def repr(self):
+        return f'<Transaction {self.id}, User {self.user_id}, Amount Spent {self.amount_spent}>'
+
 
 # Creazione del database (se necessario) e popolazione iniziale
 with app.app_context():
@@ -71,7 +86,38 @@ with app.app_context():
     
     db.session.commit()
 
+### ADMIN ###
 
+@app.route('/players/<userId>/transactions', methods=['GET'])
+def get_user_transactions(userId):
+    """
+    Restituisce lo storico delle transazioni per un utente specifico.
+    """
+    try:
+        # Recupera tutte le transazioni per l'utente specificato
+        transactions = Transaction.query.filter_by(user_id=userId).all()
+
+        # Controlla se ci sono transazioni per questo utente
+        if not transactions:
+            return make_response(jsonify({'message': 'No transactions found for this user'}), 404)
+
+        # Prepara i risultati da restituire
+        result = [
+            {
+                'id': transaction.id,
+                'user_id': transaction.user_id,
+                'amount_spent': transaction.amount_spent,
+                'timestamp': transaction.timestamp.isoformat()
+            } for transaction in transactions
+        ]
+
+        return make_response(jsonify(result), 200)
+
+    except Exception as e:
+        return make_response(jsonify({'message': f'An internal error occurred: {str(e)}'}), 500)
+
+
+### FINE ADMIN ###
 
 @app.route('/players/<playerId>/currency/buy', methods=['POST'])
 def buy_in_game_currency(playerId):
@@ -95,6 +141,17 @@ def buy_in_game_currency(playerId):
 
         # Gestire la risposta del servizio di autenticazione
         if response.status_code == 200:
+
+            # Creare una nuova transazione nel database delle transazioni
+            new_transaction = Transaction(
+                user_id=playerId,
+                amount_spent=amount,
+                timestamp=datetime.now(timezone.utc)
+            )
+            db.session.add(new_transaction)
+            db.session.commit()
+
+
             return make_response(jsonify({'message': 'In-game currency purchased successfully'}), 200)
         elif response.status_code == 404:
             return make_response(jsonify({'message': 'Player not found'}), 404)
@@ -150,7 +207,7 @@ def buy_gacha_roll(playerId):
 
         # Aggiungi il pilota alla collezione dell'utente chiamando il microservizio gacha_service
         gacha_data = {
-            "gacha_id": f"gacha_{selected_pilot.id}",
+            "gacha_id": selected_pilot.id,
             "pilot_name": selected_pilot.pilot_name,
             "rarity": selected_pilot.rarity,
             "experience": selected_pilot.experience,

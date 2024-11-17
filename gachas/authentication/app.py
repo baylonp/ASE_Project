@@ -8,7 +8,7 @@ from bcrypt import hashpw, gensalt, checkpw
 app = Flask(__name__)
 
 # Configurazione del database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db' 
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////data/users.db' 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'your_secret_key'
 
