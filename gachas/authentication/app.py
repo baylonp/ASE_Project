@@ -33,7 +33,7 @@ with app.app_context():
 
 # Definizione degli endpoint
 
-@app.route('/account', methods=['POST'])
+@app.route('/authentication/account', methods=['POST'])
 def create_account():
     data = request.json
     if not data or 'username' not in data or 'password' not in data or 'email' not in data:
@@ -66,7 +66,7 @@ def login():
     
     return make_response(jsonify({'message': 'Invalid credentials'}), 401)
 
-@app.route('/account', methods=['DELETE'])
+@app.route('/authentication/account', methods=['DELETE'])
 def delete_account():
     account_id = request.args.get('accountId')
     user = User.query.get(account_id)
@@ -80,7 +80,7 @@ def delete_account():
 
 
 
-@app.route('/account', methods=['PATCH'])
+@app.route('/authentication/account', methods=['PATCH'])
 def update_account():
     account_id = request.args.get('accountId')
     if not account_id:
@@ -129,34 +129,10 @@ def get_user_id():
 
 
 
-@app.route('/players/<playerId>/currency/subtract', methods=['PATCH'])
+@app.route('/authentication/players/<playerId>/currency/subtract', methods=['PATCH'])
 def subtract_currency_from_player(playerId):
     """
     Sottrae monete di gioco dal wallet del giocatore specificato
-    ---
-    parameters:
-      - name: playerId
-        in: path
-        required: true
-        description: ID del giocatore
-        schema:
-          type: string
-      - name: amount
-        in: body
-        required: true
-        description: Quantità di valuta da sottrarre (deve essere positiva)
-        schema:
-          type: object
-          properties:
-            amount:
-              type: float
-    responses:
-      200:
-        description: Wallet aggiornato con successo
-      400:
-        description: Dati di input non validi o saldo insufficiente
-      404:
-        description: Giocatore non trovato
     """
     try:
         # Ottenere l'importo dal corpo della richiesta
@@ -190,7 +166,7 @@ def subtract_currency_from_player(playerId):
         return make_response(jsonify({'message': f'An error occurred: {str(e)}'}), 500)
     
 
-@app.route('/players/<playerId>/currency/add', methods=['POST'])
+@app.route('/authentication/players/<playerId>/currency/add', methods=['POST'])
 def add_currency_to_player(playerId):
     """
     Aggiunge monete di gioco al wallet del giocatore specificato
@@ -220,7 +196,7 @@ def add_currency_to_player(playerId):
         return make_response(jsonify({'message': f'An error occurred: {str(e)}'}), 500)
 
 
-@app.route('/players/<playerId>', methods=['GET'])
+@app.route('/authentication/players/<playerId>', methods=['GET'])
 def get_user_info(playerId):
   
     try:
@@ -246,7 +222,7 @@ def get_user_info(playerId):
         return make_response(jsonify({'message': f'An error occurred: {str(e)}'}), 500)
     
 
-@app.route('/players/<playerId>/currency/update', methods=['PATCH'])
+@app.route('/authentication/players/<playerId>/currency/update', methods=['PATCH'])
 def update_user_currency(playerId):
     """
     Aggiorna la quantità di currency nel wallet di un utente specifico.
