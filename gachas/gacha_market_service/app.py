@@ -88,7 +88,7 @@ with app.app_context():
 
 ### ADMIN ###
 
-@app.route('/players/<userId>/transactions', methods=['GET'])
+@app.route('/market_service/players/<userId>/transactions', methods=['GET'])
 def get_user_transactions(userId):
     """
     Restituisce lo storico delle transazioni per un utente specifico.
@@ -119,7 +119,7 @@ def get_user_transactions(userId):
 
 ### FINE ADMIN ###
 
-@app.route('/players/<playerId>/currency/buy', methods=['POST'])
+@app.route('/market_service/players/<playerId>/currency/buy', methods=['POST'])
 def buy_in_game_currency(playerId):
     """
     Compra la valuta di gioco per il wallet del giocatore specificato.
@@ -165,7 +165,7 @@ def buy_in_game_currency(playerId):
     
     
     
-@app.route('/catalog', methods=['GET'])
+@app.route('/market_service/catalog', methods=['GET'])
 def get_catalog():
     """
     Restituisce il catalogo completo dei piloti (gachas).
@@ -194,7 +194,7 @@ def get_catalog():
         return make_response(jsonify({'message': f'An internal error occurred: {str(e)}'}), 500)
 
 # Endpoint per acquistare una roll (gacha)
-@app.route('/players/<playerId>/gacha/roll', methods=['POST'])
+@app.route('/market_service/players/<playerId>/gacha/roll', methods=['POST'])
 def buy_gacha_roll(playerId):
     """
     Consente all'utente di acquistare una roll (gacha) per ottenere un pilota casuale.

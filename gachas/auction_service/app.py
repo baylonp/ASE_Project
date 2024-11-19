@@ -34,7 +34,7 @@ GACHA_SERVICE_URL = 'http://gacha_service:5000'
 AUTH_SERVICE_URL = 'http://authentication_service:5000'
 
 
-@app.route('/players/<userId>/setAuction', methods=['POST'])
+@app.route('/auction_service/players/<userId>/setAuction', methods=['POST'])
 def set_auction(userId):
     """
     Permette a un utente di mettere all'asta uno dei suoi gacha
@@ -84,7 +84,7 @@ def set_auction(userId):
         return make_response(jsonify({'message': f'An internal error occurred: {str(e)}'}), 500)
 
 
-@app.route('/auctions/active', methods=['GET'])
+@app.route('/auction_service/auctions/active', methods=['GET'])
 def get_active_auctions():
     """
     Restituisce la lista di tutte le aste attive
@@ -117,7 +117,7 @@ def get_active_auctions():
 
 
 
-@app.route('/auctions/<auctionID>/bid', methods=['POST'])
+@app.route('/auction_service/auctions/<auctionID>/bid', methods=['POST'])
 def place_bid(auctionID):
     """
     Permette a un utente di fare una puntata su un'asta specifica
