@@ -129,6 +129,67 @@ def get_user_id():
 
 
 
+@app.route('/players/<playerId>/currency/subtract', methods=['PATCH'])
+def subtract_currency_from_player(playerId):
+    """
+    Sottrae monete di gioco dal wallet del giocatore specificato
+    ---
+    parameters:
+      - name: playerId
+        in: path
+        required: true
+        description: ID del giocatore
+        schema:
+          type: string
+      - name: amount
+        in: body
+        required: true
+        description: Quantità di valuta da sottrarre (deve essere positiva)
+        schema:
+          type: object
+          properties:
+            amount:
+              type: float
+    responses:
+      200:
+        description: Wallet aggiornato con successo
+      400:
+        description: Dati di input non validi o saldo insufficiente
+      404:
+        description: Giocatore non trovato
+    """
+    try:
+        # Ottenere l'importo dal corpo della richiesta
+        data = request.get_json()
+        if not data or 'amount' not in data:
+            return make_response(jsonify({'message': 'Invalid input data: "amount" field is required'}), 400)
+
+        amount = data['amount']
+
+        # Validare che l'importo sia positivo
+        if amount <= 0:
+            return make_response(jsonify({'message': 'Amount must be greater than zero'}), 400)
+
+        # Recuperare l'utente dal database in base al playerId
+        user = User.query.filter_by(id=playerId).first()
+
+        if not user:
+            return make_response(jsonify({'message': 'Player not found'}), 404)
+
+        # Verifica se l'utente ha abbastanza currency per sottrazioni
+        if user.wallet < amount:
+            return make_response(jsonify({'message': 'Insufficient funds'}), 400)
+
+        # Sottrarre l'importo dal wallet dell'utente
+        user.wallet -= amount
+        db.session.commit()
+
+        return make_response(jsonify({'message': 'Wallet updated successfully', 'new_wallet_balance': user.wallet}), 200)
+
+    except Exception as e:
+        return make_response(jsonify({'message': f'An error occurred: {str(e)}'}), 500)
+    
+
 @app.route('/players/<playerId>/currency/add', methods=['POST'])
 def add_currency_to_player(playerId):
     """

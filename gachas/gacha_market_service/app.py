@@ -163,6 +163,35 @@ def buy_in_game_currency(playerId):
     except Exception as e:
         return make_response(jsonify({'message': f'An internal error occurred: {str(e)}'}), 500)
     
+    
+    
+@app.route('/catalog', methods=['GET'])
+def get_catalog():
+    """
+    Restituisce il catalogo completo dei piloti (gachas).
+    """
+    try:
+        # Recupera tutti i piloti dal database
+        pilots = Pilot.query.all()
+        
+        if not pilots:
+            return make_response(jsonify({'message': 'No pilots available in the catalog'}), 404)
+
+        # Prepara i risultati da restituire
+        result = [
+            {
+                'gacha_id': pilot.id,
+                'pilot_name': pilot.pilot_name,
+                'rarity': pilot.rarity,
+                'experience': pilot.experience,
+                'ability': pilot.ability
+            } for pilot in pilots
+        ]
+
+        return make_response(jsonify(result), 200)
+
+    except Exception as e:
+        return make_response(jsonify({'message': f'An internal error occurred: {str(e)}'}), 500)
 
 # Endpoint per acquistare una roll (gacha)
 @app.route('/players/<playerId>/gacha/roll', methods=['POST'])

@@ -18,7 +18,7 @@ class Auction(db.Model):
     auction_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     gacha_id = db.Column(db.Integer, nullable=False)
     issuer_id = db.Column(db.String, nullable=False)
-    current_user_winner = db.Column(db.String, nullable=True, default=None)
+    current_user_winner_id = db.Column(db.Integer, nullable=True, default=None)
     current_bid = db.Column(db.Float, nullable=False)
     is_active = db.Column(db.Boolean, default=True)
     start_time = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
@@ -31,6 +31,8 @@ with app.app_context():
     db.create_all()
 
 GACHA_SERVICE_URL = 'http://gacha_service:5000'
+AUTH_SERVICE_URL = 'http://authentication_service:5000'
+
 
 @app.route('/players/<userId>/setAuction', methods=['POST'])
 def set_auction(userId):
@@ -59,6 +61,7 @@ def set_auction(userId):
         new_auction = Auction(
             gacha_id=gacha_id,
             issuer_id=userId,
+            current_user_winner_id=userId,
             current_bid=base_price,
             is_active=True,
             start_time=datetime.now(timezone.utc)  # Timestamp in UTC
@@ -70,7 +73,7 @@ def set_auction(userId):
 
         # Attivare un timer per disattivare l'asta dopo 1 minuto
         auction_id = new_auction.auction_id
-        timer = threading.Timer(60.0, end_auction, [auction_id])
+        timer = threading.Timer(240.0, end_auction, [auction_id])
         timer.start()
 
         return make_response(jsonify({'message': 'Auction created successfully', 'auction_id': auction_id}), 201)
@@ -102,6 +105,7 @@ def get_active_auctions():
                 'auction_id': auction.auction_id,
                 'gacha_id': auction.gacha_id,
                 'issuer_id': auction.issuer_id,
+                'current_user_winner_id': auction.current_user_winner_id,
                 'current_bid': auction.current_bid,
                 'start_time': auction.start_time.isoformat()  # Convertire il timestamp in un formato leggibile
             })
@@ -113,9 +117,79 @@ def get_active_auctions():
 
 
 
+@app.route('/auctions/<auctionID>/bid', methods=['POST'])
+def place_bid(auctionID):
+    """
+    Permette a un utente di fare una puntata su un'asta specifica
+    """
+    try:
+        # Ottenere i dati dall'input JSON
+        data = request.json
+        if not data or 'user_id' not in data or 'bid_amount' not in data:
+            return make_response(jsonify({'message': 'Invalid input data'}), 400)
+
+        user_id = data['user_id']
+        bid_amount = data['bid_amount']
+
+        # Recuperare l'asta dal database
+        auction = Auction.query.get(auctionID)
+        if not auction:
+            return make_response(jsonify({'message': 'Auction not found'}), 404)
+
+        # Controllare se l'asta è attiva
+        if not auction.is_active:
+            return make_response(jsonify({'message': 'Auction is no longer active'}), 400)
+
+        # Verificare che l'utente abbia fondi sufficienti
+        response = requests.get(f"{AUTH_SERVICE_URL}/players/{user_id}")
+        if response.status_code != 200:
+            return make_response(jsonify({'message': 'Failed to retrieve user information from authentication service'}), 500)
+
+        user_data = response.json()
+        wallet_balance = user_data.get('wallet', 0)
+
+        if wallet_balance < bid_amount:
+            return make_response(jsonify({'message': 'Insufficient funds'}), 400)
+
+        # Controllare se la puntata è superiore all'attuale
+        if bid_amount <= auction.current_bid:
+            return make_response(jsonify({'message': 'Bid amount must be higher than the current bid'}), 400)
+
+        # Restituire i fondi al precedente vincitore (se esiste e non è l'emittente dell'asta)
+        if auction.current_user_winner_id and auction.current_user_winner_id != auction.issuer_id:
+            refund_response = requests.post(
+                f"{AUTH_SERVICE_URL}/players/{auction.current_user_winner_id}/currency/add",
+                params={'amount': auction.current_bid}
+            )
+            if refund_response.status_code != 200:
+                return make_response(jsonify({'message': 'Failed to refund previous bidder'}), 500)
+
+        # Decrementare l'importo dal wallet del nuovo offerente
+        debit_response = requests.patch(
+            f"{AUTH_SERVICE_URL}/players/{user_id}/currency/subtract",
+            json={'amount': bid_amount}  # L'importo deve essere sottratto
+        )
+        if debit_response.status_code != 200:
+            return make_response(jsonify({'message': 'Failed to debit user funds'}), 500)
+
+        # Aggiornare l'asta con il nuovo vincitore e la nuova puntata
+        auction.current_user_winner_id = user_id
+        auction.current_bid = bid_amount
+        db.session.commit()
+
+        return make_response(jsonify({'message': 'Bid placed successfully'}), 200)
+
+    except requests.exceptions.RequestException as e:
+        return make_response(jsonify({'message': f'An error occurred while communicating with other services: {str(e)}'}), 500)
+    except Exception as e:
+        return make_response(jsonify({'message': f'An internal error occurred: {str(e)}'}), 500)
+    
+
+
+
 def end_auction(auction_id):
     """
-    Funzione per disattivare l'asta dopo 1 minuto
+    Funzione per disattivare l'asta dopo 1 minuto e assegnare il gacha all'utente vincitore
     """
     with app.app_context():
         auction = Auction.query.get(auction_id)
@@ -123,7 +197,42 @@ def end_auction(auction_id):
             auction.is_active = False
             db.session.commit()
 
+            # Se il vincitore è diverso dall'emittente, aggiungi i soldi della puntata all'issuer dell'asta
+            if auction.current_user_winner_id and auction.current_user_winner_id != auction.issuer_id:
+                add_funds_response = requests.post(
+                    f"{AUTH_SERVICE_URL}/players/{auction.issuer_id}/currency/add",
+                    params={'amount': auction.current_bid}
+                )
+                if add_funds_response.status_code != 200:
+                    print(f"Failed to add funds to the issuer {auction.issuer_id} for auction {auction_id}")
+                else:
+                    print(f"Funds from the auction successfully added to issuer {auction.issuer_id}")
 
+            # Assegnare il gacha all'utente vincitore usando l'endpoint update_owner in gacha_service
+            if auction.current_user_winner_id:
+                update_owner_response = requests.patch(
+                    f"{GACHA_SERVICE_URL}/players/{auction.current_user_winner_id}/gachas/{auction.gacha_id}/update_owner"
+                )
+
+                if update_owner_response.status_code != 200:
+                    print(f"Failed to transfer ownership of gacha {auction.gacha_id} to the winner of auction {auction_id}")
+                else:
+                    print(f"Gacha {auction.gacha_id} successfully transferred to user {auction.current_user_winner_id}")
+
+
+
+"""
+def end_auction(auction_id):
+    
+    #Funzione per disattivare l'asta dopo 1 minuto
+    
+    with app.app_context():
+        auction = Auction.query.get(auction_id)
+        if auction and auction.is_active:
+            auction.is_active = False
+            db.session.commit()
+
+"""
 
 
 

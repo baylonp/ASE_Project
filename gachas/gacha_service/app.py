@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
+import requests
 
 app = Flask(__name__)
 
@@ -19,16 +20,6 @@ class GachaCollection(db.Model):
     rarity = db.Column(db.String, nullable=False)
     experience = db.Column(db.String, nullable=False)
     ability = db.Column(db.String, nullable=False)
-
-# Definizione del modello GachaCatalog
-class GachaCatalog(db.Model):
-    tablename = 'gacha_catalog'
-    gacha_id = db.Column(db.Integer, primary_key=True)
-    pilot_name = db.Column(db.String, nullable=False)
-    rarity = db.Column(db.String, nullable=False)
-    experience = db.Column(db.String, nullable=False)
-    ability = db.Column(db.String, nullable=False)
-
 
 
 # Creazione del database
@@ -99,66 +90,66 @@ def add_gacha_to_player(userID):
     return make_response(jsonify({'message': 'Gacha added successfully'}), 201)
 
 
+GACHA_MARKET_SERVICE_URL = 'http://gacha_market_service:5000/catalog' 
 
-@app.route('/players/<userID>/missing_gachas', methods=['GET'])
+@app.route('/players/<userID>/gachas/missing', methods=['GET'])
 def get_missing_gachas(userID):
     """
     Restituisce i gachas mancanti dalla collezione di un giocatore rispetto al catalogo completo
+    ---
     """
-    # Trova tutti i gachas posseduti dall'utente
-    user_gachas = GachaCollection.query.filter_by(user_id=userID).all()
-    user_gacha_ids = {gacha.gacha_id for gacha in user_gachas}
+    try:
+        # Recuperare la collezione di gachas dell'utente
+        user_gachas = GachaCollection.query.filter_by(user_id=userID).all()
+        user_gacha_ids = {gacha.gacha_id for gacha in user_gachas}
 
-    # Trova tutti i gachas nel catalogo
-    all_gachas = GachaCatalog.query.all()
+        # Effettuare una richiesta al servizio gacha_market_service per ottenere il catalogo completo dei gachas
+        response = requests.get(f"{GACHA_MARKET_SERVICE_URL}")
 
-    # Filtra i gachas mancanti
-    missing_gachas = [gacha for gacha in all_gachas if gacha.gacha_id not in user_gacha_ids]
+        if response.status_code != 200:
+            return make_response(jsonify({'message': 'Failed to retrieve the gacha catalog from gacha_market_service'}), 500)
 
-    if not missing_gachas:
-        return make_response(jsonify({'message': 'Player has all gachas'}), 200)
+        # Catalogo completo dei gachas
+        catalog = response.json()
 
-    result = []
-    for gacha in missing_gachas:
-        result.append({
-            'gachaId': gacha.gacha_id,
-            'pilotName': gacha.pilot_name,
-            'rarity': gacha.rarity
-        })
+        # Trovare i gachas mancanti nella collezione dell'utente
+        missing_gachas = [gacha for gacha in catalog if gacha['gacha_id'] not in user_gacha_ids]
 
-    return make_response(jsonify({'message': 'Missing Gachas are CAMBIATO: '}, result), 201)
-    #return jsonify(result), 200
+        if not missing_gachas:
+            return make_response(jsonify({'message': 'Player has all gachas'}), 200)
+
+        return jsonify(missing_gachas), 200
+
+    except requests.exceptions.RequestException as e:
+        return make_response(jsonify({'message': f'An error occurred while communicating with the gacha market service: {str(e)}'}), 500)
+    except Exception as e:
+        return make_response(jsonify({'message': f'An internal error occurred: {str(e)}'}), 500)
 
 
-##BURNER DB INITIALIZATION- DA TOGLIERE
-
-@app.route('/catalog/init', methods=['POST'])
-def initialize_catalog():
+@app.route('/players/<userID>/gachas/<gachaID>/update_owner', methods=['PATCH'])
+def update_gacha_owner(userID, gachaID):
     """
-    Popola il catalogo con gachas di esempio per testare gli endpoint
+    Aggiorna l'user_id del gacha specificato nella collezione dell'utente
+    ---
     """
-    sample_gachas = [
-        {"gacha_id": "gacha001", "pilot_name": "Pilot Alpha", "rarity": "Rare", "experience": "0", "ability": "Speed Boost"},
-        {"gacha_id": "gacha002", "pilot_name": "Pilot Beta", "rarity": "Epic", "experience": "3", "ability": "Shield"},
-        {"gacha_id": "gacha003", "pilot_name": "Pilot Gamma", "rarity": "Legendary", "experience": "0", "ability": "Double Attack"},
-        {"gacha_id": "gacha004", "pilot_name": "Pilot Delta", "rarity": "Common", "experience": "5", "ability": "Dodge"},
-        {"gacha_id": "gacha005", "pilot_name": "Pilot Epsilon", "rarity": "Rare", "experience": "0", "ability": "Fire Strike"}
-    ]
-
-    for gacha_data in sample_gachas:
-        gacha = GachaCatalog.query.filter_by(gacha_id=gacha_data["gacha_id"]).first()
+    try:
+        # Recuperare il gacha specifico dalla collezione in base al gachaID
+        gacha = GachaCollection.query.filter_by(gacha_id=gachaID).first()
+        
+        # Controllo se il gacha esiste nel database
         if not gacha:
-            new_gacha = GachaCatalog(
-                gacha_id=gacha_data["gacha_id"],
-                pilot_name=gacha_data["pilot_name"],
-                rarity=gacha_data["rarity"],
-                experience=gacha_data["experience"],
-                ability=gacha_data["ability"]
-            )
-            db.session.add(new_gacha)
+            return make_response(jsonify({'message': 'Gacha not found'}), 404)
 
-    db.session.commit()
-    return make_response(jsonify({'message': 'Catalog initialized successfully'}), 201)
+        # Aggiorna l'user_id del gacha
+        gacha.user_id = userID
+        db.session.commit()
+
+        return make_response(jsonify({'message': 'Gacha ownership updated successfully'}), 200)
+
+    except Exception as e:
+        return make_response(jsonify({'message': f'An internal error occurred: {str(e)}'}), 500)
+    
+    
 
 
 if __name__ == 'main':
