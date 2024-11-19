@@ -17,7 +17,7 @@ class Auction(db.Model):
     tablename = 'auctions'
     auction_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     gacha_id = db.Column(db.Integer, nullable=False)
-    issuer_id = db.Column(db.String, nullable=False)
+    issuer_id = db.Column(db.Integer, nullable=False)
     current_user_winner_id = db.Column(db.Integer, nullable=True, default=None)
     current_bid = db.Column(db.Float, nullable=False)
     is_active = db.Column(db.Boolean, default=True)

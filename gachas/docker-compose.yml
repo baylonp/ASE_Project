@@ -58,17 +58,17 @@ services:
 
 
   #nginx:
-    #image: nginx:latest
-    #container_name: nginx_gateway
-    #ports:
-    #  - "80:80"  # Porta esterna (host) 80 mappata sulla porta interna del container 80
-    #volumes:
-    #  - ./nginx:/etc/nginx/conf.d
+  #  image: nginx:latest
+  #  container_name: nginx_gateway
+  #  ports:
+  #    - "80:80"  # Porta esterna (host) 80 mappata sulla porta interna del container 80
+  #  volumes:
+  #    - ./nginx:/etc/nginx/conf.d
   # Associa il file di configurazione di Nginx
-    #depends_on:
-    #  - authentication
-    #  - gacha_service
-    #  - gacha_market_service
+  #   depends_on:
+  #    - authentication
+  #    - gacha_service
+ #     - gacha_market_service
 
 volumes:
   sqldata1:

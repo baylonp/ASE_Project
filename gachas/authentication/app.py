@@ -53,7 +53,7 @@ def create_account():
     
     return make_response(jsonify({'message': 'Account created successfully'}), 201)
 
-@app.route('/auth', methods=['POST'])
+@app.route('/authentication/auth', methods=['POST'])
 def login():
     data = request.json
     if not data or 'username' not in data or 'password' not in data:
@@ -112,7 +112,7 @@ def update_account():
     return make_response(jsonify({'message': 'Account updated successfully'}), 200)
 
 
-@app.route('/userId', methods=['GET'])
+@app.route('/authentication/userId', methods=['GET'])
 def get_user_id():
 
     username = request.args.get('username')
