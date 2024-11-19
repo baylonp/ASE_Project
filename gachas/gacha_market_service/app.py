@@ -135,7 +135,7 @@ def buy_in_game_currency(playerId):
 
         # Effettuare una richiesta POST al servizio di autenticazione per aggiornare il wallet dell'utente
         response = requests.post(
-            f"{AUTH_SERVICE_URL}/players/{playerId}/currency/add",
+            f"{AUTH_SERVICE_URL}/authentication/players/{playerId}/currency/add",
             params={'amount': amount}
         )
 
@@ -206,7 +206,7 @@ def buy_gacha_roll(playerId):
         ROLL_COST = 100
 
         # Effettuare una richiesta al servizio di autenticazione per verificare il wallet dell'utente
-        response = requests.get(f"{AUTH_SERVICE_URL}/players/{playerId}")
+        response = requests.get(f"{AUTH_SERVICE_URL}/authentication/players/{playerId}")
 
         if response.status_code == 404:
             return make_response(jsonify({'message': 'Player not found'}), 404)
@@ -244,7 +244,7 @@ def buy_gacha_roll(playerId):
         }
 
         add_gacha_response = requests.post(
-            f"{GACHA_SERVICE_URL}/players/{playerId}/gachas",
+            f"{GACHA_SERVICE_URL}/gacha_service/players/{playerId}/gachas",
             json=gacha_data
         )
 

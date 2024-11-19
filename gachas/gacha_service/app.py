@@ -90,7 +90,7 @@ def add_gacha_to_player(userID):
     return make_response(jsonify({'message': 'Gacha added successfully'}), 201)
 
 
-GACHA_MARKET_SERVICE_URL = 'http://gacha_market_service:5000/catalog' 
+GACHA_MARKET_SERVICE_URL = 'http://gacha_market_service:5000/market_service/catalog' 
 
 @app.route('/gacha_service/players/<userID>/gachas/missing', methods=['GET'])
 def get_missing_gachas(userID):

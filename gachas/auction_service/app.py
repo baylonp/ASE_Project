@@ -50,7 +50,7 @@ def set_auction(userId):
         base_price = data['base_price']
 
         # Effettuare una richiesta GET al gacha_service per verificare se l'utente possiede il gacha
-        response = requests.get(f"{GACHA_SERVICE_URL}/players/{userId}/gachas/{gacha_id}")
+        response = requests.get(f"{GACHA_SERVICE_URL}/gacha_service/players/{userId}/gachas/{gacha_id}")
 
         if response.status_code == 404:
             return make_response(jsonify({'message': 'Gacha not found or not owned by user'}), 404)
@@ -141,7 +141,7 @@ def place_bid(auctionID):
             return make_response(jsonify({'message': 'Auction is no longer active'}), 400)
 
         # Verificare che l'utente abbia fondi sufficienti
-        response = requests.get(f"{AUTH_SERVICE_URL}/players/{user_id}")
+        response = requests.get(f"{AUTH_SERVICE_URL}/authentication/players/{user_id}")
         if response.status_code != 200:
             return make_response(jsonify({'message': 'Failed to retrieve user information from authentication service'}), 500)
 
@@ -158,7 +158,7 @@ def place_bid(auctionID):
         # Restituire i fondi al precedente vincitore (se esiste e non è l'emittente dell'asta)
         if auction.current_user_winner_id and auction.current_user_winner_id != auction.issuer_id:
             refund_response = requests.post(
-                f"{AUTH_SERVICE_URL}/players/{auction.current_user_winner_id}/currency/add",
+                f"{AUTH_SERVICE_URL}/authentication/players/{auction.current_user_winner_id}/currency/add",
                 params={'amount': auction.current_bid}
             )
             if refund_response.status_code != 200:
@@ -166,7 +166,7 @@ def place_bid(auctionID):
 
         # Decrementare l'importo dal wallet del nuovo offerente
         debit_response = requests.patch(
-            f"{AUTH_SERVICE_URL}/players/{user_id}/currency/subtract",
+            f"{AUTH_SERVICE_URL}/authentication/players/{user_id}/currency/subtract",
             json={'amount': bid_amount}  # L'importo deve essere sottratto
         )
         if debit_response.status_code != 200:
@@ -200,7 +200,7 @@ def end_auction(auction_id):
             # Se il vincitore è diverso dall'emittente, aggiungi i soldi della puntata all'issuer dell'asta
             if auction.current_user_winner_id and auction.current_user_winner_id != auction.issuer_id:
                 add_funds_response = requests.post(
-                    f"{AUTH_SERVICE_URL}/players/{auction.issuer_id}/currency/add",
+                    f"{AUTH_SERVICE_URL}/authentication/players/{auction.issuer_id}/currency/add",
                     params={'amount': auction.current_bid}
                 )
                 if add_funds_response.status_code != 200:
@@ -211,7 +211,7 @@ def end_auction(auction_id):
             # Assegnare il gacha all'utente vincitore usando l'endpoint update_owner in gacha_service
             if auction.current_user_winner_id:
                 update_owner_response = requests.patch(
-                    f"{GACHA_SERVICE_URL}/players/{auction.current_user_winner_id}/gachas/{auction.gacha_id}/update_owner"
+                    f"{GACHA_SERVICE_URL}/gacha_service/players/{auction.current_user_winner_id}/gachas/{auction.gacha_id}/update_owner"
                 )
 
                 if update_owner_response.status_code != 200:
