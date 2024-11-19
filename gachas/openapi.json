@@ -956,7 +956,7 @@
         }
       }
     },
-    "/gacha/players/{userID}/gachas": {
+    "/gacha_service/players/{userID}/gachas": {
       "get": {
         "tags": [
           "Gacha Service"
@@ -1122,7 +1122,7 @@
         }
       }
     },
-    "/gacha/players/{userID}/gachas/{gachaId}": {
+    "/gacha_service/players/{userID}/gachas/{gachaId}": {
       "get": {
         "tags": [
           "Gacha Service"
@@ -1208,7 +1208,7 @@
         }
       }
     },
-    "/gacha/players/{userID}/gachas/missing": {
+    "/gacha_service/players/{userID}/gachas/missing": {
       "get": {
         "tags": [
           "Gacha Service"
@@ -1295,7 +1295,7 @@
         }
       }
     },
-    "/gacha/players/{userID}/gachas/{gachaID}/update_owner": {
+    "/gacha_service/players/{userID}/gachas/{gachaID}/update_owner": {
       "patch": {
         "tags": [
           "Gacha Service"
@@ -1377,7 +1377,7 @@
         }
       }
     },
-    "/gacha-market/players/{userId}/transactions": {
+    "/market_service/players/{userId}/transactions": {
       "get": {
         "tags": [
           "Gacha Market Service"
@@ -1469,7 +1469,7 @@
         }
       }
     },
-    "/gacha-market/players/{playerId}/currency/buy": {
+    "/market_service/players/{playerId}/currency/buy": {
       "post": {
         "tags": [
           "Gacha Market Service"
@@ -1590,7 +1590,7 @@
         }
       }
     },
-    "/gacha-market/players/{playerId}/gacha/roll": {
+    "/market_service/players/{playerId}/gacha/roll": {
       "post": {
         "tags": [
           "Gacha Market Service"
@@ -1721,7 +1721,7 @@
         }
       }
     },
-    "/gacha-market/catalog": {
+    "/market_service/catalog": {
       "get": {
         "tags": [
           "Gacha Market Service"
@@ -1804,7 +1804,7 @@
         }
       }
     },
-    "/auction/auctions/active": {
+    "/auction_service/auctions/active": {
       "get": {
         "tags": [
           "Gacha Auction Service"
@@ -1889,7 +1889,7 @@
         }
       }
     },
-    "/auction/players/{userId}/setAuction": {
+    "/auction_service/players/{userId}/setAuction": {
       "post": {
         "tags": [
           "Gacha Auction Service"
@@ -2015,7 +2015,7 @@
         }
       }
     },
-    "/auction/auctions/{auctionID}/bid": {
+    "/auction_service/auctions/{auctionID}/bid": {
       "post": {
         "tags": [
           "Gacha Auction Service"
