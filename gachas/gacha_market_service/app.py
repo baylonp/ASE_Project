@@ -227,7 +227,7 @@ def buy_gacha_roll(playerId):
         
         # Aggiornare il wallet dell'utente
         update_response = requests.patch(
-            f"{AUTH_SERVICE_URL}/players/{playerId}/currency/update",
+            f"{AUTH_SERVICE_URL}/authentication/players/{playerId}/currency/update",
             json={'amount': -ROLL_COST}  # Sottrarre l'importo della roll dal wallet
         )
 
