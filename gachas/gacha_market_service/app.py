@@ -86,6 +86,8 @@ with app.app_context():
     
     db.session.commit()
 
+    
+
 ### ADMIN ###
 
 @app.route('/market_service/players/<userId>/transactions', methods=['GET'])
@@ -118,6 +120,8 @@ def get_user_transactions(userId):
 
 
 ### FINE ADMIN ###
+
+
 
 @app.route('/market_service/players/<playerId>/currency/buy', methods=['POST'])
 def buy_in_game_currency(playerId):
@@ -244,7 +248,7 @@ def buy_gacha_roll(playerId):
         }
 
         add_gacha_response = requests.post(
-            f"{GACHA_SERVICE_URL}/players/{playerId}/gachas",
+            f"{GACHA_SERVICE_URL}/gacha_service/players/{playerId}/gachas",
             json=gacha_data
         )
 
