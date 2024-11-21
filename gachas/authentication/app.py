@@ -62,7 +62,7 @@ def login():
     user = User.query.filter_by(username=data['username']).first()
     if user and checkpw(data['password'].encode('utf-8'), user.password.encode('utf-8')):
         session_id = str(hash(user.username + user.password))
-        return make_response(jsonify({'message': 'Login successful', 'sessionId': session_id}), 200)
+        return make_response(jsonify({'message': 'Login successful', 'sessionId': session_id, 'userId': user.id}), 200)
     
     return make_response(jsonify({'message': 'Invalid credentials'}), 401)
 

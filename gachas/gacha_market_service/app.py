@@ -138,9 +138,9 @@ def buy_in_game_currency(playerId):
             return make_response(jsonify({'message': 'Invalid input data: amount must be greater than zero'}), 400)
 
         # Effettuare una richiesta POST al servizio di autenticazione per aggiornare il wallet dell'utente
-        response = requests.post(
-            f"{AUTH_SERVICE_URL}/authentication/players/{playerId}/currency/add",
-            params={'amount': amount}
+        response = requests.patch(
+            f"{AUTH_SERVICE_URL}/authentication/players/{playerId}/currency/update",
+            json={'amount': amount}
         )
 
         # Gestire la risposta del servizio di autenticazione
