@@ -68,7 +68,7 @@ services:
       - authentication
       - gacha_service
       - gacha_market_service
-     # - auction_service
+      - auction_service
 
 volumes:
   sqldata1:
