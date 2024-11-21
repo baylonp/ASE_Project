@@ -1,0 +1,58 @@
+name: CI Workflow
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  setup-and-test:
+    name: Setup and Test Microservices
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout the repo
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      # 2. Set up Node.js (required for Newman)
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '16'
+      
+      # 3. Set up Python
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with: 
+          python-version: '3.12'
+
+      # 4. Install Newman
+      - name: Install Newman
+        run: npm install -g newman
+
+      # 5. Set up Docker
+      - name: Set up Docker
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker.io
+          sudo apt-get install docker-compose-plugin
+
+  integration-tests:
+    name: Integration Tests
+    needs: setup-and-test
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Start services in detached mode
+      - name: Start services with Docker Compose
+        run: docker compose -f gachas/docker-compose.yml up -- build -d
+
+      # 3. Run integration tests with Newman
+      - name: Run integration tests
+        run: newman run docs/TEST/COMPLETE LOGIC.postman_collection.json
