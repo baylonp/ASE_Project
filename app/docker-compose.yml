@@ -1,0 +1,25 @@
+services:
+  calc1:
+    build: ./calc
+    ports:
+      - 5001:5000
+    depends_on:
+      - db
+
+  calc2:
+    build: ./calc
+    ports:
+      - 5003:5000
+    depends_on:
+      - db
+
+  string:
+    build: ./string
+    ports:
+      - 5002:5000
+    depends_on:
+      - db
+  db:
+    image: redis:7-alpine
+    restart: always
+    command: redis-server --save 20 1 --loglevel warning

@@ -1,0 +1,72 @@
+tosca_definitions_version: micro_tosca_yaml_1.1
+description: hello-world
+imports:
+- micro: https://di-unipi-socc.github.io/microTOSCA/1.1/microTOSCA.yaml
+topology_template:
+  node_templates:
+    calc 1:
+      type: micro.nodes.Service
+      requirements:
+      - interaction: antiWobbly
+    calc 2:
+      type: micro.nodes.Service
+      requirements:
+      - interaction: antiWobbly
+    string:
+      type: micro.nodes.Service
+      requirements:
+      - interaction: antiWobbly
+    db:
+      type: micro.nodes.Datastore
+    api gateway:
+      type: micro.nodes.MessageRouter
+      requirements:
+      - interaction: calc 1
+      - interaction: calc 2
+      - interaction: string
+    DB manager:
+      type: micro.nodes.Service
+      requirements:
+      - interaction: db
+      - interaction: antiWobbly
+    antiWobbly:
+      type: micro.nodes.MessageBroker
+  groups:
+    adad:
+      type: micro.groups.Edge
+      members:
+      - api gateway
+  relationship_templates:
+    t:
+      type: micro.relationships.InteractsWith
+      properties:
+        timeout: true
+    c:
+      type: micro.relationships.InteractsWith
+      properties:
+        circuit_breaker: true
+    d:
+      type: micro.relationships.InteractsWith
+      properties:
+        dynamic_discovery: true
+    tc:
+      type: micro.relationships.InteractsWith
+      properties:
+        timeout: true
+        circuit_breaker: true
+    td:
+      type: micro.relationships.InteractsWith
+      properties:
+        timeout: true
+        dynamic_discovery: true
+    cd:
+      type: micro.relationships.InteractsWith
+      properties:
+        circuit_breaker: true
+        dynamic_discovery: true
+    tcd:
+      type: micro.relationships.InteractsWith
+      properties:
+        timeout: true
+        circuit_breaker: true
+        dynamic_discovery: true
