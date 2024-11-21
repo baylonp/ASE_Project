@@ -88,7 +88,7 @@ with app.app_context():
 
 ### ADMIN ###
 
-@app.route('/players/<userId>/transactions', methods=['GET'])
+@app.route('/market_service/players/<userId>/transactions', methods=['GET'])
 def get_user_transactions(userId):
     """
     Restituisce lo storico delle transazioni per un utente specifico.
@@ -119,7 +119,7 @@ def get_user_transactions(userId):
 
 ### FINE ADMIN ###
 
-@app.route('/players/<playerId>/currency/buy', methods=['POST'])
+@app.route('/market_service/players/<playerId>/currency/buy', methods=['POST'])
 def buy_in_game_currency(playerId):
     """
     Compra la valuta di gioco per il wallet del giocatore specificato.
@@ -135,7 +135,7 @@ def buy_in_game_currency(playerId):
 
         # Effettuare una richiesta POST al servizio di autenticazione per aggiornare il wallet dell'utente
         response = requests.post(
-            f"{AUTH_SERVICE_URL}/players/{playerId}/currency/add",
+            f"{AUTH_SERVICE_URL}/authentication/players/{playerId}/currency/add",
             params={'amount': amount}
         )
 
@@ -165,7 +165,7 @@ def buy_in_game_currency(playerId):
     
     
     
-@app.route('/catalog', methods=['GET'])
+@app.route('/market_service/catalog', methods=['GET'])
 def get_catalog():
     """
     Restituisce il catalogo completo dei piloti (gachas).
@@ -194,7 +194,7 @@ def get_catalog():
         return make_response(jsonify({'message': f'An internal error occurred: {str(e)}'}), 500)
 
 # Endpoint per acquistare una roll (gacha)
-@app.route('/players/<playerId>/gacha/roll', methods=['POST'])
+@app.route('/market_service/players/<playerId>/gacha/roll', methods=['POST'])
 def buy_gacha_roll(playerId):
     """
     Consente all'utente di acquistare una roll (gacha) per ottenere un pilota casuale.
@@ -206,7 +206,7 @@ def buy_gacha_roll(playerId):
         ROLL_COST = 100
 
         # Effettuare una richiesta al servizio di autenticazione per verificare il wallet dell'utente
-        response = requests.get(f"{AUTH_SERVICE_URL}/players/{playerId}")
+        response = requests.get(f"{AUTH_SERVICE_URL}/authentication/players/{playerId}")
 
         if response.status_code == 404:
             return make_response(jsonify({'message': 'Player not found'}), 404)
@@ -227,7 +227,7 @@ def buy_gacha_roll(playerId):
         
         # Aggiornare il wallet dell'utente
         update_response = requests.patch(
-            f"{AUTH_SERVICE_URL}/players/{playerId}/currency/update",
+            f"{AUTH_SERVICE_URL}/authentication/players/{playerId}/currency/update",
             json={'amount': -ROLL_COST}  # Sottrarre l'importo della roll dal wallet
         )
 

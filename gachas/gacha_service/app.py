@@ -26,7 +26,11 @@ class GachaCollection(db.Model):
 with app.app_context():
     db.create_all()
 
-@app.route('/players/<userID>/gachas', methods=['GET'])
+
+GACHA_MARKET_SERVICE_URL = 'http://gacha_market_service:5000/market_service/catalog' 
+
+
+@app.route('/gacha_service/players/<userID>/gachas', methods=['GET'])
 def get_player_gachas(userID):
     """
     Restituisce la collezione di gachas di un giocatore specifico
@@ -45,7 +49,7 @@ def get_player_gachas(userID):
     
     return jsonify(result), 200
 
-@app.route('/players/<userID>/gachas/<gachaId>', methods=['GET'])
+@app.route('/gacha_service/players/<userID>/gachas/<gachaId>', methods=['GET'])
 def get_specific_gacha(userID, gachaId):
     """
     Restituisce i dettagli di un gacha specifico della collezione di un giocatore
@@ -64,7 +68,7 @@ def get_specific_gacha(userID, gachaId):
 
     return jsonify(result), 200
 
-@app.route('/players/<userID>/gachas', methods=['POST'])
+@app.route('/gacha_service/players/<userID>/gachas', methods=['POST'])
 def add_gacha_to_player(userID):
     """
     Aggiunge un nuovo gacha alla collezione di un utente specifico
@@ -90,9 +94,8 @@ def add_gacha_to_player(userID):
     return make_response(jsonify({'message': 'Gacha added successfully'}), 201)
 
 
-GACHA_MARKET_SERVICE_URL = 'http://gacha_market_service:5000/catalog' 
 
-@app.route('/players/<userID>/gachas/missing', methods=['GET'])
+@app.route('/gacha_service/players/<userID>/gachas/missing', methods=['GET'])
 def get_missing_gachas(userID):
     """
     Restituisce i gachas mancanti dalla collezione di un giocatore rispetto al catalogo completo
@@ -126,7 +129,7 @@ def get_missing_gachas(userID):
         return make_response(jsonify({'message': f'An internal error occurred: {str(e)}'}), 500)
 
 
-@app.route('/players/<userID>/gachas/<gachaID>/update_owner', methods=['PATCH'])
+@app.route('/gacha_service/players/<userID>/gachas/<gachaID>/update_owner', methods=['PATCH'])
 def update_gacha_owner(userID, gachaID):
     """
     Aggiorna l'user_id del gacha specificato nella collezione dell'utente
