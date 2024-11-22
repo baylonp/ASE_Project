@@ -62,7 +62,10 @@ jobs:
 
       # 2. Start services in detached mode
       - name: Start services with Docker Compose
-        run: docker compose -f /ASE_Project/gachas/docker-compose.yml up -- build -d
+        run: |
+            pwd
+            ls
+            docker compose -f /ASE_Project/gachas/docker-compose.yml up -- build -d
         
 
       # 3. Run integration tests with Newman
