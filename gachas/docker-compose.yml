@@ -1,0 +1,81 @@
+services:
+  authentication:
+    build:
+      context: ./authentication
+      dockerfile: Dockerfile
+    container_name: authentication_service
+    ports:
+      - "5001:5000"  # Porta esterna (host) 5001 mappata sulla porta interna del container 5000
+    volumes:
+      - sqldata1:/data  # Volume sqldata1 montato all'interno della cartella /data nel container
+    environment:
+      FLASK_ENV: development
+
+  gacha_service:
+    build:
+      context: ./gacha_service
+      dockerfile: Dockerfile
+    container_name: gacha_service
+    ports:
+      - "5002:5000"  # Porta esterna (host) 5002 mappata sulla porta interna del container 5000
+    volumes:
+      - sqldata2_GachaManager:/data  # Volume sqldata2_GM montato all'interno della cartella /data nel container
+    environment:
+      FLASK_ENV: development
+    depends_on:
+      - authentication
+
+  gacha_market_service:
+    build:
+      context: ./gacha_market_service
+      dockerfile: Dockerfile
+    container_name: gacha_market_service
+    ports:
+      - "5003:5000"  # Porta esterna (host) 5003 mappata sulla porta interna del container 5000
+    volumes:
+      - sqldata3_GachaMarket:/data  # Volume sqldata2_GM montato all'interno della cartella /data nel container
+    environment:
+      FLASK_ENV: development
+    depends_on:
+      - authentication
+      - gacha_service
+
+  auction_service:
+    build:
+      context: ./auction_service
+      dockerfile: Dockerfile
+    container_name: auction_service
+    ports:
+      - "5004:5000"  # Porta esterna (host) 5004 mappata sulla porta interna del container 5000
+    volumes:
+      - sqldata4_Auctions:/data  
+    environment:
+      FLASK_ENV: development
+    depends_on:
+      - authentication
+      - gacha_service
+      - gacha_market_service
+
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx_gateway
+    ports:
+      - "80:80"  # Porta esterna (host) 80 mappata sulla porta interna del container 80
+    volumes:
+      - ./nginx:/etc/nginx/conf.d  # Associa il file di configurazione di Nginx
+    depends_on:
+      - authentication
+      - gacha_service
+      - gacha_market_service
+      - auction_service
+
+volumes:
+  sqldata1:
+    driver: local
+  sqldata2_GachaManager:
+    driver: local
+  sqldata3_GachaMarket:
+    driver: local
+  sqldata4_Auctions:
+    driver: local
