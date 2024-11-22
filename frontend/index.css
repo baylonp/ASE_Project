@@ -1,0 +1,81 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+  padding: 20px;
+  background-color: #f4f4f9;
+}
+.container {
+  max-width: 400px;
+  margin: auto;
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.logo {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.logo img {
+  max-width: 100%;
+  height: auto;
+  max-height: 150px;
+}
+.toggle-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  gap: 10px;
+}
+.toggle-buttons button {
+  width: 48%; /* Larghezza per farli uguali con spazio */
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+}
+.login-button {
+  background-color: #007bff;
+  color: white;
+}
+.login-button:hover {
+  background-color: #0056b3;
+}
+.register-button {
+  background-color: #5cb85c;
+  color: white;
+}
+.register-button:hover {
+  background-color: #4cae4c;
+}
+.form-group {
+  margin-bottom: 15px;
+}
+
+input[type='text'],
+input[type='password'],
+input[type='email'] {
+  width: 90%; /* Stessa larghezza */
+  padding: 10px; /* Stesso padding */
+  font-size: 16px; /* Stesso font */
+  margin-bottom: 10px; /* Stesso margine */
+  border: 1px solid #ddd; /* Stesso bordo */
+  border-radius: 4px; /* Stessi bordi arrotondati */
+  box-sizing: border-box; /* Assicura il rispetto del padding */
+}
+
+button[type='button'] {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.hidden {
+  display: none;
+}
+.message {
+  margin-top: 15px;
+  text-align: center;
+}
