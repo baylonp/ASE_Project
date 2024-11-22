@@ -3,6 +3,7 @@
 from flask import Flask, request, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
 from bcrypt import hashpw, gensalt, checkpw
+import requests
 
 # Configura l'app Flask
 app = Flask(__name__)
@@ -30,6 +31,9 @@ class User(db.Model):
 # Crea il database se non esiste
 with app.app_context():
     db.create_all()
+
+
+GACHA_SERVICE_URL = 'http://gacha_service:5000'
 
 # Definizione degli endpoint
 
@@ -69,14 +73,30 @@ def login():
 @app.route('/authentication/account', methods=['DELETE'])
 def delete_account():
     account_id = request.args.get('accountId')
+    
+    # Verifica se l'utente esiste nel database
     user = User.query.get(account_id)
     if not user:
         return make_response(jsonify({'message': 'Account not found'}), 404)
     
-    db.session.delete(user)
-    db.session.commit()
-    
-    return make_response(jsonify({'message': 'Account deleted successfully'}), 200)
+    try:
+        # Effettuare una richiesta DELETE al servizio gacha_service per eliminare la gacha collection dell'utente
+        gacha_response = requests.delete(f"{GACHA_SERVICE_URL}/gacha_service/players/{account_id}/gachas")
+
+        # Controlla la risposta del gacha_service
+        if gacha_response.status_code != 200 and gacha_response.status_code != 404:
+            return make_response(jsonify({'message': 'Failed to delete Gacha collection from gacha_service'}), 500)
+
+        # Cancellare l'account utente
+        db.session.delete(user)
+        db.session.commit()
+
+        return make_response(jsonify({'message': 'Account and associated Gacha collection deleted successfully'}), 200)
+
+    except requests.exceptions.RequestException as e:
+        return make_response(jsonify({'message': f'An error occurred while communicating with the gacha service: {str(e)}'}), 500)
+    except Exception as e:
+        return make_response(jsonify({'message': f'An internal error occurred: {str(e)}'}), 500)
 
 
 

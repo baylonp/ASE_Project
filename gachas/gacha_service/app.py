@@ -30,24 +30,41 @@ with app.app_context():
 GACHA_MARKET_SERVICE_URL = 'http://gacha_market_service:5000/market_service/catalog' 
 
 
-@app.route('/gacha_service/players/<userID>/gachas', methods=['GET'])
-def get_player_gachas(userID):
-    """
-    Restituisce la collezione di gachas di un giocatore specifico
-    """
-    gachas = GachaCollection.query.filter_by(user_id=userID).all()
-    if not gachas:
-        return make_response(jsonify({'message': 'Player not found'}), 404)
+@app.route('/gacha_service/players/<userID>/gachas', methods=['GET', 'DELETE'])
+def handle_user_gachas(userID):
+    if request.method == 'GET':
+        # Esistente: restituisce la collezione di gachas di un giocatore specifico
+        gachas = GachaCollection.query.filter_by(user_id=userID).all()
+        if not gachas:
+            return make_response(jsonify({'message': 'Player not found'}), 404)
 
-    result = []
-    for gacha in gachas:
-        result.append({
-            'gachaId': gacha.gacha_id,
-            'name': gacha.pilot_name,
-            'rarity': gacha.rarity
-        })
+        result = []
+        for gacha in gachas:
+            result.append({
+                'gachaId': gacha.gacha_id,
+                'name': gacha.pilot_name,
+                'rarity': gacha.rarity
+            })
+        
+        return jsonify(result), 200
     
-    return jsonify(result), 200
+    elif request.method == 'DELETE':
+        # Nuovo: elimina tutti i gacha associati a un utente specifico
+        try:
+            user_gachas = GachaCollection.query.filter_by(user_id=userID).all()
+            if not user_gachas:
+                return make_response(jsonify({'message': 'No Gacha collection found for this user'}), 404)
+
+            # Cancellare tutte le gachas associate all'utente
+            for gacha in user_gachas:
+                db.session.delete(gacha)
+
+            db.session.commit()
+
+            return make_response(jsonify({'message': 'Gacha collection deleted successfully'}), 200)
+
+        except Exception as e:
+            return make_response(jsonify({'message': f'An internal error occurred: {str(e)}'}), 500)
 
 @app.route('/gacha_service/players/<userID>/gachas/<gachaId>', methods=['GET'])
 def get_specific_gacha(userID, gachaId):
