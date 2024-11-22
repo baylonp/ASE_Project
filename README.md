@@ -2,10 +2,10 @@
 # **Advanced Software Engineering Project - A.A. 2024/2025**
 
 ## **Collaborators**
-- a
-- a
-- a
-- a
+- Davide Di Rocco  
+- Luca Cremonese
+- Iacopo Cioni
+- Niccolò Zarulli
 
 ---
 
@@ -66,25 +66,14 @@ This project uses specific dependencies listed in the `requirements.txt` files i
    cd ASE_Project
    ```
 
-2. **Pull the Docker image**
-   ```bash
-   sudo docker pull python:3.12-slim
-   ```
-
 ---
 
 ## **Building**
 
 1. **Create, Build & Start the Docker containers (first time)**
-   This command creates the containers for each microservice:
+   This command creates and builds the containers for each microservice:
    ```bash
-   sudo docker compose up
-   ```
-
-2. **Build the Docker containers**
-   This command build the containers for each microservice:
-   ```bash
-   sudo docker compose build
+   sudo docker compose up --build -d
    ```
 
 ---
@@ -99,14 +88,14 @@ This project uses specific dependencies listed in the `requirements.txt` files i
 
 2. **Access the system**
    The main gateway will be accessible at:  
-   `http://127.0.0.1:5000  
+   `http://localhost  
 
 ---
 
 ## **Stopping**
 
 1. **Stop the Docker environment**
-   Start the entire microservices architecture:
+   Stop the entire microservices architecture:
    ```bash
    sudo docker compose stop
    ```
@@ -121,7 +110,7 @@ Functional tests simulate complete usage flows. Postman collection files are ava
 1. **Run the tests with Newman:**
    Execute the collection to verify the APIs of the microservices. Use Newman (Postman CLI) to run the tests:
    ```bash
-   newman run docs/postman/<collection>.json
+   newman run docs/TEST/COMPLETE_LOGIC_collection.json
    ```
 
 ### **Performance Testing with Locust**
@@ -133,7 +122,7 @@ Performance tests evaluate how the gateway handles high loads.
    ```
 
 2. **Configure the test:**
-   - Open the Locust interface at .
+   - Open the Locust interface
    - Set the number of simulated users and the request rate.
    - Start the test and analyze the results.
 
