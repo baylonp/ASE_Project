@@ -1,0 +1,70 @@
+name: NEW CI Workflow
+
+on:
+  push:
+    branches:
+      - test
+  pull_request:
+
+jobs:
+  setup-and-test:
+    name: Setup and Test Microservices
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout the repo
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      # 2. Set up Node.js (required for Newman)
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '16'
+      
+      # 3. Set up Python
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with: 
+          python-version: '3.12'
+
+      # 4. Install Newman
+      - name: Install Newman
+        run: npm install -g newman
+
+      # 5. Set up Docker
+      - name: Set up Docker
+        run: |
+            for pkg in docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd runc; do sudo apt-get remove $pkg; done
+            sudo apt-get update
+            sudo apt-get install ca-certificates curl
+            sudo install -m 0755 -d /etc/apt/keyrings
+            sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+            sudo chmod a+r /etc/apt/keyrings/docker.asc
+            
+            # Add the repository to Apt sources:
+            echo \
+              "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+              $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+              sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+            sudo apt-get update
+            sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+  integration-tests:
+    name: Integration Tests
+    needs: setup-and-test
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Start services in detached mode
+      - name: Start services with Docker Compose
+        run: docker compose -f test/gachas/docker-compose.yml up -- build -d
+        
+
+      # 3. Run integration tests with Newman
+      - name: Run integration tests
+        run: newman run docs/TEST/COMPLETE LOGIC.postman_collection.json
