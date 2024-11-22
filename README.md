@@ -12,8 +12,8 @@
 ## **Description**
 This project implements the backend for a Gacha Game system, following a microservices architecture. Each microservice is containerized using Docker and communicates via REST APIs. The backend supports features such as:
 - Authentication to the system.
-- Managing an in-game currency.
-- Gacha rolling (providing images and item details).
+- Managing in-game currency.
+- Gacha rolling.
 - A market system with auctions for buying and selling items.
 
 ---
