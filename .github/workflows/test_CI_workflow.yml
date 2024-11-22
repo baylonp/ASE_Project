@@ -63,6 +63,7 @@ jobs:
       # 2. Start services in detached mode
       - name: Start services with Docker Compose
         run: |
+            cd gachas/
             pwd
             ls
             docker compose -f /ASE_Project/gachas/docker-compose.yml up -- build -d
