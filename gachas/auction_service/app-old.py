@@ -4,9 +4,6 @@ from datetime import datetime, timezone, timedelta
 import requests
 import threading
 
-##NOSTRO
-
-
 app = Flask(__name__)
 
 # Configurazione del database per le aste
@@ -54,18 +51,11 @@ def set_auction(userId):
 
         # Effettuare una richiesta GET al gacha_service per verificare se l'utente possiede il gacha
         response = requests.get(f"{GACHA_SERVICE_URL}/gacha_service/players/{userId}/gachas/{gacha_id}")
-      
 
-    
         if response.status_code == 404:
-                
             return make_response(jsonify({'message': 'Gacha not found or not owned by user'}), 404)
-
         elif response.status_code != 200:
-
             return make_response(jsonify({'message': 'Error communicating with gacha_service'}), 500)
-
-
 
         # Creare una nuova asta nel database
         new_auction = Auction(
@@ -167,17 +157,17 @@ def place_bid(auctionID):
 
         # Restituire i fondi al precedente vincitore (se esiste e non è l'emittente dell'asta)
         if auction.current_user_winner_id and auction.current_user_winner_id != auction.issuer_id:
-            refund_response = requests.patch(
-                f"{AUTH_SERVICE_URL}/authentication/players/{auction.current_user_winner_id}/currency/update",
-                json={'amount': auction.current_bid}
+            refund_response = requests.post(
+                f"{AUTH_SERVICE_URL}/authentication/players/{auction.current_user_winner_id}/currency/add",
+                params={'amount': auction.current_bid}
             )
             if refund_response.status_code != 200:
                 return make_response(jsonify({'message': 'Failed to refund previous bidder'}), 500)
 
         # Decrementare l'importo dal wallet del nuovo offerente
         debit_response = requests.patch(
-            f"{AUTH_SERVICE_URL}/authentication/players/{user_id}/currency/update",
-            json={'amount': -bid_amount}  # L'importo deve essere sottratto
+            f"{AUTH_SERVICE_URL}/authentication/players/{user_id}/currency/subtract",
+            json={'amount': bid_amount}  # L'importo deve essere sottratto
         )
         if debit_response.status_code != 200:
             return make_response(jsonify({'message': 'Failed to debit user funds'}), 500)
@@ -209,9 +199,9 @@ def end_auction(auction_id):
 
             # Se il vincitore è diverso dall'emittente, aggiungi i soldi della puntata all'issuer dell'asta
             if auction.current_user_winner_id and auction.current_user_winner_id != auction.issuer_id:
-                add_funds_response = requests.patch(
-                    f"{AUTH_SERVICE_URL}/authentication/players/{auction.issuer_id}/currency/update",
-                    json={'amount': auction.current_bid}
+                add_funds_response = requests.post(
+                    f"{AUTH_SERVICE_URL}/authentication/players/{auction.issuer_id}/currency/add",
+                    params={'amount': auction.current_bid}
                 )
                 if add_funds_response.status_code != 200:
                     print(f"Failed to add funds to the issuer {auction.issuer_id} for auction {auction_id}")
@@ -231,6 +221,18 @@ def end_auction(auction_id):
 
 
 
+"""
+def end_auction(auction_id):
+    
+    #Funzione per disattivare l'asta dopo 1 minuto
+    
+    with app.app_context():
+        auction = Auction.query.get(auction_id)
+        if auction and auction.is_active:
+            auction.is_active = False
+            db.session.commit()
+
+"""
 
 
 

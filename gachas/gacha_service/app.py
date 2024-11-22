@@ -14,7 +14,7 @@ db = SQLAlchemy(app)
 class GachaCollection(db.Model):
     tablename = 'gacha_collection'
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.String, nullable=False)
+    user_id = db.Column(db.Integer, nullable=False)
     gacha_id = db.Column(db.Integer, nullable=False)
     pilot_name = db.Column(db.String, nullable=False)
     rarity = db.Column(db.String, nullable=False)
@@ -73,7 +73,7 @@ def get_specific_gacha(userID, gachaId):
     """
     gacha = GachaCollection.query.filter_by(user_id=userID, gacha_id=gachaId).first()
     if not gacha:
-        return make_response(jsonify({'message': 'Gacha or player not found'}), 404)
+        return make_response(jsonify({'message':'Gacha or player not found'}), 404)
 
     result = {
         'gachaId': gacha.gacha_id,
