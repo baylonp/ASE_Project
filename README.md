@@ -4,8 +4,8 @@
 ## **Collaborators**
 - Davide Di Rocco  
 - Luca Cremonese
-- Iacopo Cioni
 - Niccolò Zarulli
+- Jacopo Cioni
 
 ---
 
