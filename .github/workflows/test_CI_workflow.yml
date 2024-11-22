@@ -71,4 +71,8 @@ jobs:
 
       # 3. Run integration tests with Newman
       - name: Run integration tests
-        run: newman run docs/TEST/COMPLETE LOGIC.postman_collection.json
+        run: |
+            pwd
+            cd docs/TEST/
+            pwd
+            newman run docs/TEST/COMPLETE LOGIC.postman_collection.json
