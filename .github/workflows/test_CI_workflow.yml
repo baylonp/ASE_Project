@@ -75,4 +75,4 @@ jobs:
             pwd
             cd docs/TEST/
             pwd
-            newman run docs/TEST/COMPLETE LOGIC.postman_collection.json
+            newman run docs/TEST/COMPLETE_LOGIC.postman_collection.json
