@@ -1,0 +1,1990 @@
+{
+	"info": {
+		"_postman_id": "b94fb473-71af-4066-8a93-98598ed425a3",
+		"name": "COMPLETE_LOGIC",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39565549"
+	},
+	"item": [
+		{
+			"name": "User 1-First Account Creation",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Questo script può essere usato negli script di Postman per verificare la risposta di un endpoint",
+							"pm.test(\"Create Account - Status Code is 201\", function () {",
+							"    // Verifica che la risposta abbia lo status code 201, che indica la creazione avvenuta con successo",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test(\"Create Account - Response Structure\", function () {",
+							"    // Verifica che la risposta contenga un messaggio di successo",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.have.property(\"message\", \"Account created successfully\");",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"testuser1\",\n    \"password\": \"testpassword\",\n    \"email\": \"testuser1@example.com\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost/authentication/account",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"authentication",
+						"account"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User 2 -Second Account Creation",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Questo script può essere usato negli script di Postman per verificare la risposta di un endpoint",
+							"pm.test(\"Create Account - Status Code is 201\", function () {",
+							"    // Verifica che la risposta abbia lo status code 201, che indica la creazione avvenuta con successo",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test(\"Create Account - Response Structure\", function () {",
+							"    // Verifica che la risposta contenga un messaggio di successo",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.have.property(\"message\", \"Account created successfully\");",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"testuser2\",\n    \"password\": \"testpassword\",\n    \"email\": \"testuser2@example.com\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost/authentication/account",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"authentication",
+						"account"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User 3- Third Account Creation",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Questo script può essere usato negli script di Postman per verificare la risposta di un endpoint",
+							"pm.test(\"Create Account - Status Code is 201\", function () {",
+							"    // Verifica che la risposta abbia lo status code 201, che indica la creazione avvenuta con successo",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test(\"Create Account - Response Structure\", function () {",
+							"    // Verifica che la risposta contenga un messaggio di successo",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.have.property(\"message\", \"Account created successfully\");",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"testuser3\",\n    \"password\": \"testpassword\",\n    \"email\": \"testuser3@example.com\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost/authentication/account",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"authentication",
+						"account"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Account Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Verifica che lo status code della risposta sia 200, indicando un login riuscito",
+							"pm.test(\"Login - Status Code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Verifica che la risposta contenga un messaggio di successo e un sessionId",
+							"pm.test(\"Login - Response Structure\", function () {",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.have.property(\"message\", \"Login successful\");",
+							"    pm.expect(responseJson).to.have.property(\"sessionId\");",
+							"});",
+							"",
+							"// Salva il sessionId come variabile di ambiente per utilizzarlo in richieste successive",
+							"if (pm.response.code === 200) {",
+							"    const responseJson = pm.response.json();",
+							"    pm.environment.set(\"sessionId\", responseJson.sessionId);",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"testuser1\",\n    \"password\": \"testpassword\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost/authentication/auth",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"authentication",
+						"auth"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Account",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Questo script può essere usato negli script di Postman per verificare la risposta di un endpoint PATCH",
+							"pm.test(\"Update Account - Status Code is 200\", function () {",
+							"    // Verifica che la risposta abbia lo status code 200, che indica un aggiornamento avvenuto con successo",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Update Account - Response Structure\", function () {",
+							"    // Verifica che la risposta contenga un messaggio di aggiornamento avvenuto con successo",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.have.property(\"message\", \"Account updated successfully\");",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"iacopo1\",\n    \"email\": \"iacopo1@gmail.com\",\n    \"password\": \"password1\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost/authentication/account?accountId=1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"authentication",
+						"account"
+					],
+					"query": [
+						{
+							"key": "accountId",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get User ID",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Questo script può essere utilizzato negli script di Postman per verificare la risposta di un endpoint GET",
+							"pm.test(\"Get User ID - Status Code is 200\", function () {",
+							"    // Verifica che la risposta abbia lo status code 200, che indica che l'operazione è avvenuta con successo",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Get User ID - Response Structure\", function () {",
+							"    // Verifica che la risposta contenga l'ID dell'utente",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.have.property(\"userId\");",
+							"    pm.expect(responseJson.userId).to.be.a(\"number\");",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost/authentication/userId?username=iacopo1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"authentication",
+						"userId"
+					],
+					"query": [
+						{
+							"key": "username",
+							"value": "iacopo1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Questo script può essere usato negli script di Postman per verificare la risposta di un endpoint POST",
+							"pm.test(\"Add Currency - Status Code is 200\", function () {",
+							"    // Verifica che la risposta abbia lo status code 200, che indica che l'operazione è avvenuta con successo",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Add Currency - Currency Added Successfully\", function () {",
+							"    // Verifica che la risposta contenga un messaggio di aggiunta avvenuta con successo",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.have.property(\"message\", \"Currency added successfully\");",
+							"});",
+							"",
+							"pm.test(\"Add Currency - New Wallet Balance is Present\", function () {",
+							"    // Verifica che la risposta contenga il nuovo saldo del wallet dell'utente",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.have.property(\"new_wallet_balance\");",
+							"    pm.expect(responseJson.new_wallet_balance).to.be.a(\"number\");",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost/authentication/players/1/currency/add?amount=200",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"authentication",
+						"players",
+						"1",
+						"currency",
+						"add"
+					],
+					"query": [
+						{
+							"key": "amount",
+							"value": "200"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Subtract",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Questo script può essere usato negli script di Postman per verificare la risposta di un endpoint PATCH",
+							"pm.test(\"Subtract Currency - Status Code is 200\", function () {",
+							"    // Verifica che la risposta abbia lo status code 200, che indica che l'operazione è avvenuta con successo",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Subtract Currency - Wallet Updated Successfully\", function () {",
+							"    // Verifica che la risposta contenga un messaggio di aggiornamento avvenuto con successo",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.have.property(\"message\", \"Wallet updated successfully\");",
+							"});",
+							"",
+							"pm.test(\"Subtract Currency - New Wallet Balance is Present\", function () {",
+							"    // Verifica che la risposta contenga il nuovo saldo del wallet dell'utente",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.have.property(\"new_wallet_balance\");",
+							"    pm.expect(responseJson.new_wallet_balance).to.be.a(\"number\");",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\n\"amount\": 200.0\n\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost/authentication/players/1/currency/subtract",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"authentication",
+						"players",
+						"1",
+						"currency",
+						"subtract"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetUserInfo",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Questo script può essere usato negli script di Postman per verificare la risposta di un endpoint GET",
+							"pm.test(\"Get User Info - Status Code is 200\", function () {",
+							"    // Verifica che la risposta abbia lo status code 200, che indica che l'operazione è avvenuta con successo",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Get User Info - User Data Returned Successfully\", function () {",
+							"    // Verifica che la risposta contenga tutte le informazioni dell'utente",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.have.property(\"id\");",
+							"    pm.expect(responseJson).to.have.property(\"username\");",
+							"    pm.expect(responseJson).to.have.property(\"email\");",
+							"    pm.expect(responseJson).to.have.property(\"password\");",
+							"    pm.expect(responseJson).to.have.property(\"wallet\");",
+							"",
+							"    // Verifica che ciascun campo abbia il tipo corretto",
+							"    pm.expect(responseJson.id).to.be.a(\"number\");",
+							"    pm.expect(responseJson.username).to.be.a(\"string\");",
+							"    pm.expect(responseJson.email).to.be.a(\"string\");",
+							"    pm.expect(responseJson.password).to.be.a(\"string\");",
+							"    pm.expect(responseJson.wallet).to.be.a(\"number\");",
+							"});",
+							"",
+							"pm.test(\"Get User Info - No User Found (404)\", function () {",
+							"    // Verifica se lo status code 404 viene restituito correttamente quando l'utente non viene trovato",
+							"    if (pm.response.status === 404) {",
+							"        const responseJson = pm.response.json();",
+							"        pm.expect(responseJson).to.have.property(\"message\", \"Player not found\");",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost/authentication/players/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"authentication",
+						"players",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User 1 Buy Currency",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Buy In-Game Currency - Status Code 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"if (pm.response.code === 200) {",
+							"    pm.test(\"Buy In-Game Currency - Transaction Successful\", function () {",
+							"        const responseJson = pm.response.json();",
+							"        pm.expect(responseJson).to.have.property(\"message\", \"In-game currency purchased successfully\");",
+							"    });",
+							"} else if (pm.response.code === 404) {",
+							"    pm.test(\"Buy In-Game Currency - Player Not Found\", function () {",
+							"        const responseJson = pm.response.json();",
+							"        pm.expect(responseJson).to.have.property(\"message\", \"Player not found\");",
+							"    });",
+							"} else {",
+							"    pm.test(\"Buy In-Game Currency - Failed to Add Currency\", function () {",
+							"        const responseJson = pm.response.json();",
+							"        pm.expect(responseJson).to.have.property(\"message\", \"Failed to add currency\");",
+							"    });",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost/market_service/players/1/currency/buy?amount=500",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"market_service",
+						"players",
+						"1",
+						"currency",
+						"buy"
+					],
+					"query": [
+						{
+							"key": "amount",
+							"value": "500"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User 2 Buy Currency",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Buy In-Game Currency - Status Code 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"if (pm.response.code === 200) {",
+							"    pm.test(\"Buy In-Game Currency - Transaction Successful\", function () {",
+							"        const responseJson = pm.response.json();",
+							"        pm.expect(responseJson).to.have.property(\"message\", \"In-game currency purchased successfully\");",
+							"    });",
+							"} else if (pm.response.code === 404) {",
+							"    pm.test(\"Buy In-Game Currency - Player Not Found\", function () {",
+							"        const responseJson = pm.response.json();",
+							"        pm.expect(responseJson).to.have.property(\"message\", \"Player not found\");",
+							"    });",
+							"} else {",
+							"    pm.test(\"Buy In-Game Currency - Failed to Add Currency\", function () {",
+							"        const responseJson = pm.response.json();",
+							"        pm.expect(responseJson).to.have.property(\"message\", \"Failed to add currency\");",
+							"    });",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost/market_service/players/2/currency/buy?amount=500",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"market_service",
+						"players",
+						"2",
+						"currency",
+						"buy"
+					],
+					"query": [
+						{
+							"key": "amount",
+							"value": "500"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User 3 Buy Currency",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Buy In-Game Currency - Status Code 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"if (pm.response.code === 200) {",
+							"    pm.test(\"Buy In-Game Currency - Transaction Successful\", function () {",
+							"        const responseJson = pm.response.json();",
+							"        pm.expect(responseJson).to.have.property(\"message\", \"In-game currency purchased successfully\");",
+							"    });",
+							"} else if (pm.response.code === 404) {",
+							"    pm.test(\"Buy In-Game Currency - Player Not Found\", function () {",
+							"        const responseJson = pm.response.json();",
+							"        pm.expect(responseJson).to.have.property(\"message\", \"Player not found\");",
+							"    });",
+							"} else {",
+							"    pm.test(\"Buy In-Game Currency - Failed to Add Currency\", function () {",
+							"        const responseJson = pm.response.json();",
+							"        pm.expect(responseJson).to.have.property(\"message\", \"Failed to add currency\");",
+							"    });",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost/market_service/players/3/currency/buy?amount=500",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"market_service",
+						"players",
+						"3",
+						"currency",
+						"buy"
+					],
+					"query": [
+						{
+							"key": "amount",
+							"value": "500"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get User Transaction",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Test per lo stato della risposta - 200 OK",
+							"pm.test(\"Get User Transactions - Status Code 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Test per verificare che le transazioni siano state recuperate correttamente",
+							"pm.test(\"Get User Transactions - Transactions Retrieved Successfully\", function () {",
+							"    // Verifica che la risposta sia un JSON e contenga una lista di transazioni",
+							"    const responseJson = pm.response.json();",
+							"    ",
+							"    // Se ci sono transazioni, devono essere un array",
+							"    pm.expect(responseJson).to.be.an(\"array\");",
+							"    if (responseJson.length > 0) {",
+							"        // Verifica che ogni transazione abbia le proprietà previste",
+							"        responseJson.forEach(transaction => {",
+							"            pm.expect(transaction).to.have.property(\"id\");",
+							"            pm.expect(transaction).to.have.property(\"user_id\");",
+							"            pm.expect(transaction).to.have.property(\"amount_spent\");",
+							"            pm.expect(transaction).to.have.property(\"timestamp\");",
+							"        });",
+							"    }",
+							"});",
+							"",
+							"// Test per gestire il caso in cui non ci siano transazioni (status code 404)",
+							"pm.test(\"Get User Transactions - No Transactions Found (404)\", function () {",
+							"    if (pm.response.status === 404) {",
+							"        const responseJson = pm.response.json();",
+							"        pm.expect(responseJson).to.have.property(\"message\", \"No transactions found for this user\");",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost/market_service/players/1/transactions",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"market_service",
+						"players",
+						"1",
+						"transactions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "See Catalogue",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Get Catalog - Status Code 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"if (pm.response.code === 200) {",
+							"    pm.test(\"Get Catalog - Catalog Retrieved Successfully\", function () {",
+							"        const responseJson = pm.response.json();",
+							"        pm.expect(responseJson).to.be.an(\"array\");",
+							"        pm.expect(responseJson.length).to.be.greaterThan(0);",
+							"    });",
+							"} else if (pm.response.code === 404) {",
+							"    pm.test(\"Get Catalog - No Pilots Found\", function () {",
+							"        const responseJson = pm.response.json();",
+							"        pm.expect(responseJson).to.have.property(\"message\", \"No pilots available in the catalog\");",
+							"    });",
+							"} else {",
+							"    pm.test(\"Get Catalog - Internal Error\", function () {",
+							"        const responseJson = pm.response.json();",
+							"        pm.expect(responseJson).to.have.property(\"message\");",
+							"        pm.expect(responseJson.message).to.include(\"An internal error occurred\");",
+							"    });",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost/market_service/catalog",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"market_service",
+						"catalog"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User 1 -Gacha Roll",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Buy Gacha Roll - Status Code\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"if (pm.response.code === 200) {",
+							"    pm.test(\"Buy Gacha Roll - Roll Purchased Successfully\", function () {",
+							"        const responseJson = pm.response.json();",
+							"        pm.expect(responseJson).to.have.property('message', 'Roll purchased successfully');",
+							"        pm.expect(responseJson).to.have.property('pilot');",
+							"        pm.expect(responseJson.pilot).to.have.property('id');",
+							"        pm.expect(responseJson.pilot).to.have.property('pilot_name');",
+							"        pm.expect(responseJson.pilot).to.have.property('rarity');",
+							"        pm.expect(responseJson.pilot).to.have.property('experience');",
+							"        pm.expect(responseJson.pilot).to.have.property('ability');",
+							"    });",
+							"} else if (pm.response.code === 400) {",
+							"    pm.test(\"Buy Gacha Roll - Not Enough In-Game Currency\", function () {",
+							"        const responseJson = pm.response.json();",
+							"        pm.expect(responseJson).to.have.property('message', 'Not enough in-game currency to purchase a roll');",
+							"    });",
+							"} else if (pm.response.code === 404) {",
+							"    pm.test(\"Buy Gacha Roll - Player or Pilots Not Found\", function () {",
+							"        const responseJson = pm.response.json();",
+							"        pm.expect(responseJson).to.have.property('message');",
+							"        pm.expect(responseJson.message).to.match(/Player not found|No pilots available/);",
+							"    });",
+							"} else {",
+							"    pm.test(\"Buy Gacha Roll - Internal Error\", function () {",
+							"        const responseJson = pm.response.json();",
+							"        pm.expect(responseJson).to.have.property('message');",
+							"        pm.expect(responseJson.message).to.include(\"An internal error occurred\");",
+							"    });",
+							"}",
+							"",
+							"const responseJson = pm.response.json();",
+							"pm.environment.set(\"gachaId\", responseJson.pilot.id);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost/market_service/players/1/gacha/roll",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"market_service",
+						"players",
+						"1",
+						"gacha",
+						"roll"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User 1 -Set Auction",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Test per verificare lo status della richiesta",
+							"pm.test(\"Set Auction - Status Code\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"// Test per verificare la risposta di successo",
+							"if (pm.response.status === 201) {",
+							"    pm.test(\"Set Auction - Auction Created Successfully\", function () {",
+							"        const responseJson = pm.response.json();",
+							"        ",
+							"        // Verifica che ci sia un messaggio di successo",
+							"        pm.expect(responseJson).to.have.property('message', 'Auction created successfully');",
+							"        ",
+							"        // Verifica che l'ID dell'asta sia presente nella risposta",
+							"        pm.expect(responseJson).to.have.property('auction_id');",
+							"    });",
+							"} ",
+							"",
+							"// Test per verificare se il gacha non è stato trovato o non appartiene all'utente",
+							"else if (pm.response.status === 404) {",
+							"    pm.test(\"Set Auction - Gacha Not Found or Not Owned by User\", function () {",
+							"        const responseJson = pm.response.json();",
+							"        ",
+							"        // Verifica il messaggio di errore corretto",
+							"        pm.expect(responseJson).to.have.property('message', 'Gacha not found or not owned by user');",
+							"    });",
+							"} ",
+							"",
+							"// Test per verificare errori nella comunicazione con il servizio gacha_service",
+							"else if (pm.response.status === 500) {",
+							"    pm.test(\"Set Auction - Error Communicating with Gacha Service\", function () {",
+							"        const responseJson = pm.response.json();",
+							"        ",
+							"        // Verifica il messaggio di errore",
+							"        pm.expect(responseJson).to.have.property('message');",
+							"        pm.expect(responseJson.message).to.include('An error occurred while communicating with the gacha service');",
+							"    });",
+							"} ",
+							"",
+							"// Test per eventuali errori interni",
+							"else {",
+							"    pm.test(\"Set Auction - Internal Error\", function () {",
+							"        const responseJson = pm.response.json();",
+							"        ",
+							"        // Verifica che il messaggio di errore esista",
+							"        pm.expect(responseJson).to.have.property('message');",
+							"        pm.expect(responseJson.message).to.include('An internal error occurred');",
+							"    });",
+							"}",
+							"",
+							"const responseJson = pm.response.json();",
+							"pm.environment.set(\"auctionID\", responseJson.auction_id);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"gacha_id\": {{gachaId}},\n    \"base_price\": 200.0\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost/auction_service/players/1/setAuction",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"auction_service",
+						"players",
+						"1",
+						"setAuction"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "See Active Auctions",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Test per verificare lo status della richiesta",
+							"pm.test(\"Get Active Auctions - Status Code\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Test per verificare la risposta di successo e che ci siano aste attive",
+							"if (pm.response.status === 200) {",
+							"    pm.test(\"Get Active Auctions - Auctions Retrieved Successfully\", function () {",
+							"        const responseJson = pm.response.json();",
+							"        ",
+							"        // Verifica che ci sia una risposta JSON e che sia un array",
+							"        pm.expect(responseJson).to.be.an(\"array\");",
+							"        ",
+							"        // Se ci sono aste attive, verifica che ogni asta abbia le proprietà corrette",
+							"        if (responseJson.length > 0) {",
+							"            responseJson.forEach(auction => {",
+							"                pm.expect(auction).to.have.property(\"auction_id\");",
+							"                pm.expect(auction).to.have.property(\"gacha_id\");",
+							"                pm.expect(auction).to.have.property(\"issuer_id\");",
+							"                pm.expect(auction).to.have.property(\"current_user_winner_id\");",
+							"                pm.expect(auction).to.have.property(\"current_bid\");",
+							"                pm.expect(auction).to.have.property(\"start_time\");",
+							"            });",
+							"        }",
+							"    });",
+							"} ",
+							"",
+							"// Test per il caso in cui non ci siano aste attive (404)",
+							"else if (pm.response.status === 404) {",
+							"    pm.test(\"Get Active Auctions - No Active Auctions Found\", function () {",
+							"        const responseJson = pm.response.json();",
+							"        ",
+							"        // Verifica il messaggio di errore corretto",
+							"        pm.expect(responseJson).to.have.property('message', 'No active auctions found');",
+							"    });",
+							"} ",
+							"",
+							"// Test per eventuali errori interni",
+							"else {",
+							"    pm.test(\"Get Active Auctions - Internal Error\", function () {",
+							"        const responseJson = pm.response.json();",
+							"        ",
+							"        // Verifica che il messaggio di errore esista",
+							"        pm.expect(responseJson).to.have.property('message');",
+							"        pm.expect(responseJson.message).to.include('An internal error occurred');",
+							"    });",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost/auction_service/auctions/active",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"auction_service",
+						"auctions",
+						"active"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User 2-Bid",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Test per verificare lo stato della richiesta",
+							"pm.test(\"Place Bid - Status Code\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Test per la risposta di successo quando l'utente ha effettuato la puntata con successo",
+							"if (pm.response.status === 200) {",
+							"    pm.test(\"Place Bid - Bid Placed Successfully\", function () {",
+							"        const responseJson = pm.response.json();",
+							"        pm.expect(responseJson).to.have.property('message', 'Bid placed successfully');",
+							"    });",
+							"}",
+							"",
+							"// Test per il caso in cui i dati di input siano invalidi (400)",
+							"else if (pm.response.status === 400) {",
+							"    pm.test(\"Place Bid - Invalid Input Data or Insufficient Funds\", function () {",
+							"        const responseJson = pm.response.json();",
+							"        pm.expect(responseJson).to.have.property('message');",
+							"        pm.expect(responseJson.message).to.match(/Invalid input data|Insufficient funds|Auction is no longer active|Bid amount must be higher than the current bid/);",
+							"    });",
+							"}",
+							"",
+							"// Test per il caso in cui l'asta non sia trovata (404)",
+							"else if (pm.response.status === 404) {",
+							"    pm.test(\"Place Bid - Auction Not Found\", function () {",
+							"        const responseJson = pm.response.json();",
+							"        pm.expect(responseJson).to.have.property('message', 'Auction not found');",
+							"    });",
+							"}",
+							"",
+							"// Test per il caso di errore durante la comunicazione con altri servizi (500)",
+							"else if (pm.response.status === 500) {",
+							"    pm.test(\"Place Bid - Internal Error or Failed to Communicate with Other Services\", function () {",
+							"        const responseJson = pm.response.json();",
+							"        pm.expect(responseJson).to.have.property('message');",
+							"        pm.expect(responseJson.message).to.include('An internal error occurred');",
+							"    });",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"user_id\": \"2\",\n  \"bid_amount\": 300.0\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost/auction_service/auctions/{{auctionID}}/bid",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"auction_service",
+						"auctions",
+						"{{auctionID}}",
+						"bid"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User 3-Bid",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Test per verificare lo stato della richiesta",
+							"pm.test(\"Place Bid - Status Code\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Test per la risposta di successo quando l'utente ha effettuato la puntata con successo",
+							"if (pm.response.status === 200) {",
+							"    pm.test(\"Place Bid - Bid Placed Successfully\", function () {",
+							"        const responseJson = pm.response.json();",
+							"        pm.expect(responseJson).to.have.property('message', 'Bid placed successfully');",
+							"    });",
+							"}",
+							"",
+							"// Test per il caso in cui i dati di input siano invalidi (400)",
+							"else if (pm.response.status === 400) {",
+							"    pm.test(\"Place Bid - Invalid Input Data or Insufficient Funds\", function () {",
+							"        const responseJson = pm.response.json();",
+							"        pm.expect(responseJson).to.have.property('message');",
+							"        pm.expect(responseJson.message).to.match(/Invalid input data|Insufficient funds|Auction is no longer active|Bid amount must be higher than the current bid/);",
+							"    });",
+							"}",
+							"",
+							"// Test per il caso in cui l'asta non sia trovata (404)",
+							"else if (pm.response.status === 404) {",
+							"    pm.test(\"Place Bid - Auction Not Found\", function () {",
+							"        const responseJson = pm.response.json();",
+							"        pm.expect(responseJson).to.have.property('message', 'Auction not found');",
+							"    });",
+							"}",
+							"",
+							"// Test per il caso di errore durante la comunicazione con altri servizi (500)",
+							"else if (pm.response.status === 500) {",
+							"    pm.test(\"Place Bid - Internal Error or Failed to Communicate with Other Services\", function () {",
+							"        const responseJson = pm.response.json();",
+							"        pm.expect(responseJson).to.have.property('message');",
+							"        pm.expect(responseJson.message).to.include('An internal error occurred');",
+							"    });",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"user_id\": \"2\",\n  \"bid_amount\": 500.0\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost/auction_service/auctions/{{auctionID}}/bid",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"auction_service",
+						"auctions",
+						"{{auctionID}}",
+						"bid"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Check User 1 Wallet after Auction",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Test per verificare che l'utente con ID 1 abbia 1000 nel wallet",
+							"pm.test(\"Get User Info - Wallet Balance is 1000 for User ID 1\", function () {",
+							"    const responseJson = pm.response.json();",
+							"    ",
+							"    // Verifica che l'ID sia 1 e il saldo del wallet sia 1000",
+							"    if (responseJson.id === 1) {",
+							"        pm.expect(responseJson.wallet).to.equal(1000);",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost/authentication/players/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"authentication",
+						"players",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Check User 2 Wallet after Auction",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Test per verificare che l'utente con ID 1 abbia 1000 nel wallet",
+							"pm.test(\"Get User Info - Wallet Balance is 500 for User ID 2\", function () {",
+							"    const responseJson = pm.response.json();",
+							"    ",
+							"    // Verifica che l'ID sia 1 e il saldo del wallet sia 1000",
+							"    if (responseJson.id === 2) {",
+							"        pm.expect(responseJson.wallet).to.equal(500);",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost/authentication/players/2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"authentication",
+						"players",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Check User 3 Wallet after Auction",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Test per verificare che l'utente con ID 1 abbia 1000 nel wallet",
+							"pm.test(\"Get User Info - Wallet Balance is 0 for User ID 3\", function () {",
+							"    const responseJson = pm.response.json();",
+							"    ",
+							"    // Verifica che l'ID sia 1 e il saldo del wallet sia 1000",
+							"    if (responseJson.id === 3) {",
+							"        pm.expect(responseJson.wallet).to.equal(0);",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost/authentication/players/3",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"authentication",
+						"players",
+						"3"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Player Gachas",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Test dello status code 200 OK",
+							"pm.test(\"Get Player Gachas - Status Code 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Se il codice di stato è 200, verifica il contenuto della risposta",
+							"if (pm.response.code === 200) {",
+							"    pm.test(\"Get Player Gachas - Correct Response Structure\", function () {",
+							"        let responseJson = pm.response.json();",
+							"        ",
+							"        // Verifica che la risposta sia un array",
+							"        pm.expect(responseJson).to.be.an(\"array\");",
+							"        ",
+							"        // Se l'array non è vuoto, controlla che ogni oggetto abbia le proprietà previste",
+							"        if (responseJson.length > 0) {",
+							"            responseJson.forEach(gacha => {",
+							"                pm.expect(gacha).to.have.property(\"gachaId\");",
+							"                pm.expect(gacha).to.have.property(\"name\");",
+							"                pm.expect(gacha).to.have.property(\"rarity\");",
+							"            });",
+							"        }",
+							"    });",
+							"}",
+							"",
+							"if (pm.response.code === 404) {",
+							"    pm.test(\"Get Player Gachas - Player Not Found\", function () {",
+							"        let responseJson = pm.response.json();",
+							"        pm.expect(responseJson).to.have.property(\"message\", \"Player not found\");",
+							"    });",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost/gacha_service/players/3/gachas",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"gacha_service",
+						"players",
+						"3",
+						"gachas"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Player Missing Gachas",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Get Missing Gachas - Status Code 200\", function () {",
+							"    // Verifica che la risposta abbia lo status code 200",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Get Missing Gachas - Missing Gachas Retrieved Successfully\", function () {",
+							"    // Se lo status code è 200, verifica che il risultato sia un array di gachas mancanti",
+							"    if (pm.response.status === 200) {",
+							"        const responseJson = pm.response.json();",
+							"        pm.expect(responseJson).to.be.an(\"array\");",
+							"",
+							"        if (responseJson.length > 0) {",
+							"            // Verifica che ogni oggetto nell'array abbia le proprietà corrette",
+							"            responseJson.forEach(gacha => {",
+							"                pm.expect(gacha).to.have.property(\"gacha_id\");",
+							"                pm.expect(gacha).to.have.property(\"pilot_name\");",
+							"                pm.expect(gacha).to.have.property(\"rarity\");",
+							"                pm.expect(gacha).to.have.property(\"experience\");",
+							"                pm.expect(gacha).to.have.property(\"ability\");",
+							"            });",
+							"        } else {",
+							"            pm.test(\"Get Missing Gachas - Player has all gachas\", function () {",
+							"                const responseJson = pm.response.json();",
+							"                pm.expect(responseJson).to.have.property(\"message\", \"Player has all gachas\");",
+							"            });",
+							"        }",
+							"    }",
+							"});",
+							"",
+							"pm.test(\"Get Missing Gachas - Failed to Retrieve Gacha Catalog (500)\", function () {",
+							"    // Se lo status code è 500, assicuriamoci che il messaggio corrisponda a un errore di connessione",
+							"    if (pm.response.status === 500) {",
+							"        const responseJson = pm.response.json();",
+							"        pm.expect(responseJson).to.have.property(\"message\");",
+							"        pm.expect(responseJson.message).to.include(\"Failed to retrieve the gacha catalog from gacha_market_service\");",
+							"    }",
+							"});",
+							"",
+							"pm.test(\"Get Missing Gachas - Player Not Found (404)\", function () {",
+							"    // Se lo status code è 404, assicuriamoci che il messaggio corrisponda",
+							"    if (pm.response.status === 404) {",
+							"        const responseJson = pm.response.json();",
+							"        pm.expect(responseJson).to.have.property(\"message\", \"Player not found\");",
+							"    }",
+							"});",
+							"",
+							"pm.test(\"Get Missing Gachas - Internal Error\", function () {",
+							"    // Verifica che, se si verifica un errore interno, la risposta contenga il messaggio corretto",
+							"    if (pm.response.status === 500) {",
+							"        const responseJson = pm.response.json();",
+							"        pm.expect(responseJson).to.have.property(\"message\");",
+							"        pm.expect(responseJson.message).to.include(\"An internal error occurred\");",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost/gacha_service/players/1/gachas/missing",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"gacha_service",
+						"players",
+						"1",
+						"gachas",
+						"missing"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Specific  Gachas Info",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Recupera l'id del gacha dalla variabile d'ambiente",
+							"let gachaId = pm.environment.get(\"gachaId\");",
+							"",
+							"pm.test(\"Get Specific Gacha - Status Code 200\", function () {",
+							"    // Verifica che la risposta abbia lo status code 200",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Get Specific Gacha - Gacha Retrieved Successfully\", function () {",
+							"    // Verifica che ci sia una risposta JSON e contenga le informazioni corrette sul gacha",
+							"    const responseJson = pm.response.json();",
+							"    ",
+							"    pm.expect(responseJson).to.be.an(\"object\");",
+							"    pm.expect(responseJson).to.have.property(\"gachaId\", gachaId); // Verifica che l'ID sia quello salvato precedentemente",
+							"    pm.expect(responseJson).to.have.property(\"pilotName\");",
+							"    pm.expect(responseJson).to.have.property(\"rarity\");",
+							"    pm.expect(responseJson).to.have.property(\"experience\");",
+							"    pm.expect(responseJson).to.have.property(\"ability\");",
+							"});",
+							"",
+							"pm.test(\"Get Specific Gacha - Gacha or Player Not Found (404)\", function () {",
+							"    // Se lo status code è 404, assicuriamoci che il messaggio corrisponda",
+							"    if (pm.response.status === 404) {",
+							"        const responseJson = pm.response.json();",
+							"        pm.expect(responseJson).to.have.property(\"message\", \"Gacha or player not found\");",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost/gacha_service/players/3/gachas/{{gachaId}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"gacha_service",
+						"players",
+						"3",
+						"gachas",
+						"{{gachaId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Specific  Gachas Info Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Test per aggiornare il proprietario di un gacha specifico",
+							"",
+							"pm.test(\"Update Gacha Owner - Status Code 200\", function () {",
+							"    // Verifica che la risposta abbia lo status code 200",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Update Gacha Owner - Ownership Updated Successfully\", function () {",
+							"    // Se lo status code è 200, verifica che il messaggio sia \"Gacha ownership updated successfully\"",
+							"    if (pm.response.status === 200) {",
+							"        const responseJson = pm.response.json();",
+							"        pm.expect(responseJson).to.have.property(\"message\", \"Gacha ownership updated successfully\");",
+							"    }",
+							"});",
+							"",
+							"pm.test(\"Update Gacha Owner - Gacha Not Found (404)\", function () {",
+							"    // Se lo status code è 404, assicuriamoci che il messaggio corrisponda a \"Gacha not found\"",
+							"    if (pm.response.status === 404) {",
+							"        const responseJson = pm.response.json();",
+							"        pm.expect(responseJson).to.have.property(\"message\", \"Gacha not found\");",
+							"    }",
+							"});",
+							"",
+							"pm.test(\"Update Gacha Owner - Internal Error\", function () {",
+							"    // Verifica che, se si verifica un errore interno, la risposta contenga il messaggio corretto",
+							"    if (pm.response.status === 500) {",
+							"        const responseJson = pm.response.json();",
+							"        pm.expect(responseJson).to.have.property(\"message\");",
+							"        pm.expect(responseJson.message).to.include(\"An internal error occurred\");",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost/gacha_service/players/3/gachas/{{gachaId}}/update_owner?userId=2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"gacha_service",
+						"players",
+						"3",
+						"gachas",
+						"{{gachaId}}",
+						"update_owner"
+					],
+					"query": [
+						{
+							"key": "userId",
+							"value": "2"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Account User 1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"",
+							"",
+							"pm.test(\"Delete Account - Status Code is 200\", function () {",
+							"    // Verifica che la risposta abbia lo status code 200, che indica che l'account è stato eliminato correttamente",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Delete Account - Success Message Returned\", function () {",
+							"    // Verifica che la risposta contenga il messaggio di successo",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.have.property(\"message\", \"Account and associated Gacha collection deleted successfully\");",
+							"});",
+							"",
+							"pm.test(\"Delete Account - Account Not Found (404)\", function () {",
+							"    // Verifica se lo status code 404 viene restituito correttamente quando l'account non viene trovato",
+							"    if (pm.response.status === 404) {",
+							"        const responseJson = pm.response.json();",
+							"        pm.expect(responseJson).to.have.property(\"message\", \"Account not found\");",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost/authentication/account?accountId=1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"authentication",
+						"account"
+					],
+					"query": [
+						{
+							"key": "accountId",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Account User 2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"",
+							"",
+							"pm.test(\"Delete Account - Status Code is 200\", function () {",
+							"    // Verifica che la risposta abbia lo status code 200, che indica che l'account è stato eliminato correttamente",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Delete Account - Success Message Returned\", function () {",
+							"    // Verifica che la risposta contenga il messaggio di successo",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.have.property(\"message\", \"Account and associated Gacha collection deleted successfully\");",
+							"});",
+							"",
+							"pm.test(\"Delete Account - Account Not Found (404)\", function () {",
+							"    // Verifica se lo status code 404 viene restituito correttamente quando l'account non viene trovato",
+							"    if (pm.response.status === 404) {",
+							"        const responseJson = pm.response.json();",
+							"        pm.expect(responseJson).to.have.property(\"message\", \"Account not found\");",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost/authentication/account?accountId=2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"authentication",
+						"account"
+					],
+					"query": [
+						{
+							"key": "accountId",
+							"value": "2"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Account User 3",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"",
+							"",
+							"pm.test(\"Delete Account - Status Code is 200\", function () {",
+							"    // Verifica che la risposta abbia lo status code 200, che indica che l'account è stato eliminato correttamente",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Delete Account - Success Message Returned\", function () {",
+							"    // Verifica che la risposta contenga il messaggio di successo",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.have.property(\"message\", \"Account and associated Gacha collection deleted successfully\");",
+							"});",
+							"",
+							"pm.test(\"Delete Account - Account Not Found (404)\", function () {",
+							"    // Verifica se lo status code 404 viene restituito correttamente quando l'account non viene trovato",
+							"    if (pm.response.status === 404) {",
+							"        const responseJson = pm.response.json();",
+							"        pm.expect(responseJson).to.have.property(\"message\", \"Account not found\");",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost/authentication/account?accountId=3",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"authentication",
+						"account"
+					],
+					"query": [
+						{
+							"key": "accountId",
+							"value": "3"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

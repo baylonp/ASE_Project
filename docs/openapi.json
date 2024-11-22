@@ -1,0 +1,883 @@
+{
+"openapi": "3.0.0",
+  "info": {
+    "title": "Game API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/account": {
+      "post": {
+        "summary": "Create a new game account/profile",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Account created successfully"
+          },
+          "400": {
+            "description": "Invalid input data"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete an existing game account/profile",
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Account deleted successfully"
+          },
+          "404": {
+            "description": "Account not found"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Modify an existing game account/profile",
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Account updated successfully"
+          },
+          "400": {
+            "description": "Invalid input data"
+          },
+          "404": {
+            "description": "Account not found"
+          }
+        }
+      }
+    },
+    "/auth": {
+      "post": {
+        "summary": "Login to the system",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful"
+          },
+          "401": {
+            "description": "Invalid credentials"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Logout from the system",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Logout successful"
+          },
+          "404": {
+            "description": "Session not found"
+          }
+        }
+      }
+    },
+    
+    "/userId": {
+      "get": {
+        "summary": "Retrieve the userId of a user",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The username of the user"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User ID retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "userId": {
+                      "type": "integer",
+                      "example": 1
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "User not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Username is required"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+      "/players/{playerId}/currency/add": {
+        "post": {
+          "summary": "Add in-game currency to player's wallet",
+          "parameters": [
+            {
+              "name": "playerId",
+              "in": "path",
+              "required": true,
+              "description": "ID of the player",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "amount",
+              "in": "query",
+              "required": true,
+              "description": "Amount of currency to add",
+              "schema": {
+                "type": "number"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Currency added successfully"
+            },
+            "400": {
+              "description": "Invalid input data"
+            },
+            "404": {
+              "description": "Player not found"
+            }
+          }
+        }
+      },
+
+      "/players/{playerId}": {
+        "get": {
+          "summary": "Retrieve all information for the specified user",
+          "parameters": [
+            {
+              "name": "playerId",
+              "in": "path",
+              "required": true,
+              "description": "ID of the player",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "User information retrieved successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "username": {
+                        "type": "string"
+                      },
+                      "email": {
+                        "type": "string"
+                      },
+                      "password": {
+                        "type": "string"
+                      },
+                      "wallet": {
+                        "type": "integer"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Player not found"
+            }
+          }
+        }
+      },
+      "/players/{playerId}/currency/update": {
+        "patch": {
+          "summary": "Update the user's in-game currency wallet",
+          "parameters": [
+            {
+              "name": "playerId",
+              "in": "path",
+              "required": true,
+              "description": "ID of the player",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "amount": {
+                      "type": "integer",
+                      "description": "The amount of currency to add or subtract (can be positive or negative)"
+                    }
+                  },
+                  "required": [
+                    "amount"
+                  ]
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Wallet updated successfully"
+            },
+            "400": {
+              "description": "Invalid input data or insufficient funds"
+            },
+            "404": {
+              "description": "Player not found"
+            }
+          }
+        }
+      },
+      "/players/{userId}/transactions": {
+        "get": {
+          "summary": "Retrieve transaction history for a specific user",
+          "parameters": [
+            {
+              "name": "userId",
+              "in": "path",
+              "required": true,
+              "description": "ID of the player",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Transactions retrieved successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "user_id": {
+                          "type": "string"
+                        },
+                        "amount_spent": {
+                          "type": "float"
+                        },
+                        "timestamp": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "No transactions found for this user"
+            }
+          }
+        }
+      },
+      "/players/{userId}/setAuction": {
+      "post": {
+        "summary": "Set an auction for a specific gacha owned by a user",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "description": "ID of the user who wants to set an auction",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "gacha_id": {
+                    "type": "integer",
+                    "description": "ID of the gacha to be auctioned"
+                  },
+                  "base_price": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "Starting price for the auction"
+                  }
+                },
+                "required": ["gacha_id", "base_price"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Auction created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "auction_id": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input data"
+          },
+          "404": {
+            "description": "Gacha not found or not owned by user"
+          },
+          "500": {
+            "description": "Internal server error or error communicating with gacha_service"
+          }
+        }
+      }
+    },
+    "/auctions/active": {
+      "get": {
+        "summary": "Get all active auctions",
+        "responses": {
+          "200": {
+            "description": "List of active auctions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "auction_id": {
+                        "type": "integer"
+                      },
+                      "gacha_id": {
+                        "type": "integer"
+                      },
+                      "issuer_id": {
+                        "type": "string"
+                      },
+                      "current_bid": {
+                        "type": "number",
+                        "format": "float"
+                      },
+                      "start_time": {
+                        "type": "string",
+                        "format": "date-time"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No active auctions found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Auction": {
+        "type": "object",
+        "properties": {
+          "auction_id": {
+            "type": "integer"
+          },
+          "gacha_id": {
+            "type": "integer"
+          },
+          "issuer_id": {
+            "type": "string"
+          },
+          "current_user_winner": {
+            "type": "string",
+            "nullable": true
+          },
+          "current_bid": {
+            "type": "number",
+            "format": "float"
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "start_time": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+
+// ## FINO QUA IMPLEMENTATO
+
+
+    "/players/{userID}/gachas": {
+      "get": {
+        "summary": "See the player's gacha collection",
+        "parameters": [
+          {
+            "name": "userID",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Player's gacha collection retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "gachaId": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "rarity": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Player not found"
+          }
+        }
+      }
+    },
+    "/players/{userID}/gachas/{gachaId}": {
+      "get": {
+        "summary": "See info of a specific gacha in the player's collection",
+        "parameters": [
+          {
+            "name": "userID",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "gachaId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Gacha details retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "gachaId": {
+                      "type": "string"
+                    },
+                    "pilotName": {
+                      "type": "string"
+                    },
+                    "rarity": {
+                      "type": "string"
+                    },
+                    "experience": {
+                      "type": "string"
+                    },
+                    "ability": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Gacha or player not found"
+          }
+        }
+      }
+    },
+    "/players/{playerId}/gacha-roll": {
+      "post": {
+        "summary": "Use in-game currency to roll a gacha",
+        "parameters": [
+          {
+            "name": "playerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Gacha rolled successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "gachaId": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "rarity": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Insufficient in-game currency"
+          }
+        }
+      }
+    },
+    "/players/{playerId}/currency/buy": {
+      "post": {
+        "summary": "Buy in-game currency",
+        "parameters": [
+          {
+            "name": "playerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "amount",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "In-game currency purchased successfully"
+          },
+          "400": {
+            "description": "Invalid input data"
+          }
+        }
+      }
+    },
+    "/players/{playerId}/transactions": {
+      "get": {
+        "summary": "View the transaction history",
+        "parameters": [
+          {
+            "name": "playerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Transaction history retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "transactionId": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "amount": {
+                        "type": "number"
+                      },
+                      "date": {
+                        "type": "string",
+                        "format": "date-time"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/players/{playerId}/auction": {
+      "post": {
+        "summary": "Set an auction for one of the player's gachas",
+        "parameters": [
+          {
+            "name": "playerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "gachaId": {
+                    "type": "string"
+                  },
+                  "startingBid": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Auction created successfully"
+          },
+          "404": {
+            "description": "Gacha not found"
+          }
+        }
+      }
+    },
+    "/players/{playerId}/auction/bid": {
+      "post": {
+        "summary": "Bid for a gacha from the market",
+        "parameters": [
+          {
+            "name": "playerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "auctionId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "bidAmount",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bid placed successfully"
+          },
+          "400": {
+            "description": "Bid amount too low or insufficient currency"
+          },
+          "404": {
+            "description": "Auction not found"
+          }
+        }
+      }
+    },
+    "/admin/accounts": {
+      "get": {
+        "summary": "Check all user accounts/profiles",
+        "responses": {
+          "200": {
+            "description": "List of user accounts retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "accountId": {
+                        "type": "string"
+                      },
+                      "username": {
+                        "type": "string"
+                      },
+                      "email": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
