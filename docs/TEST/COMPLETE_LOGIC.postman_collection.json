@@ -1,13 +1,13 @@
 {
 	"info": {
 		"_postman_id": "b94fb473-71af-4066-8a93-98598ed425a3",
-		"name": "COMPLETE LOGIC",
+		"name": "COMPLETE_LOGIC",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "39565549"
 	},
 	"item": [
 		{
-			"name": "Account Creation",
+			"name": "First Account Creation",
 			"event": [
 				{
 					"listen": "test",
@@ -36,6 +36,56 @@
 				"body": {
 					"mode": "raw",
 					"raw": "{\n    \"username\": \"testuser1\",\n    \"password\": \"testpassword\",\n    \"email\": \"testuser1@example.com\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost/authentication/account",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"authentication",
+						"account"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Second Account Creation",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Questo script può essere usato negli script di Postman per verificare la risposta di un endpoint",
+							"pm.test(\"Create Account - Status Code is 201\", function () {",
+							"    // Verifica che la risposta abbia lo status code 201, che indica la creazione avvenuta con successo",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test(\"Create Account - Response Structure\", function () {",
+							"    // Verifica che la risposta contenga un messaggio di successo",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.have.property(\"message\", \"Account created successfully\");",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"testuser2\",\n    \"password\": \"testpassword\",\n    \"email\": \"testuser2@example.com\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -672,7 +722,10 @@
 							"        pm.expect(responseJson).to.have.property('message');",
 							"        pm.expect(responseJson.message).to.include(\"An internal error occurred\");",
 							"    });",
-							"}"
+							"}",
+							"",
+							"const responseJson = pm.response.json();",
+							"pm.environment.set(\"gachaId\", responseJson.pilot.id);"
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -709,6 +762,331 @@
 			"response": []
 		},
 		{
+			"name": "Get Player Gachas",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Test dello status code 200 OK",
+							"pm.test(\"Get Player Gachas - Status Code 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Se il codice di stato è 200, verifica il contenuto della risposta",
+							"if (pm.response.code === 200) {",
+							"    pm.test(\"Get Player Gachas - Correct Response Structure\", function () {",
+							"        let responseJson = pm.response.json();",
+							"        ",
+							"        // Verifica che la risposta sia un array",
+							"        pm.expect(responseJson).to.be.an(\"array\");",
+							"        ",
+							"        // Se l'array non è vuoto, controlla che ogni oggetto abbia le proprietà previste",
+							"        if (responseJson.length > 0) {",
+							"            responseJson.forEach(gacha => {",
+							"                pm.expect(gacha).to.have.property(\"gachaId\");",
+							"                pm.expect(gacha).to.have.property(\"name\");",
+							"                pm.expect(gacha).to.have.property(\"rarity\");",
+							"            });",
+							"        }",
+							"    });",
+							"}",
+							"",
+							"if (pm.response.code === 404) {",
+							"    pm.test(\"Get Player Gachas - Player Not Found\", function () {",
+							"        let responseJson = pm.response.json();",
+							"        pm.expect(responseJson).to.have.property(\"message\", \"Player not found\");",
+							"    });",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost/gacha_service/players/1/gachas",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"gacha_service",
+						"players",
+						"1",
+						"gachas"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Player Missing Gachas",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Get Missing Gachas - Status Code 200\", function () {",
+							"    // Verifica che la risposta abbia lo status code 200",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Get Missing Gachas - Missing Gachas Retrieved Successfully\", function () {",
+							"    // Se lo status code è 200, verifica che il risultato sia un array di gachas mancanti",
+							"    if (pm.response.status === 200) {",
+							"        const responseJson = pm.response.json();",
+							"        pm.expect(responseJson).to.be.an(\"array\");",
+							"",
+							"        if (responseJson.length > 0) {",
+							"            // Verifica che ogni oggetto nell'array abbia le proprietà corrette",
+							"            responseJson.forEach(gacha => {",
+							"                pm.expect(gacha).to.have.property(\"gacha_id\");",
+							"                pm.expect(gacha).to.have.property(\"pilot_name\");",
+							"                pm.expect(gacha).to.have.property(\"rarity\");",
+							"                pm.expect(gacha).to.have.property(\"experience\");",
+							"                pm.expect(gacha).to.have.property(\"ability\");",
+							"            });",
+							"        } else {",
+							"            pm.test(\"Get Missing Gachas - Player has all gachas\", function () {",
+							"                const responseJson = pm.response.json();",
+							"                pm.expect(responseJson).to.have.property(\"message\", \"Player has all gachas\");",
+							"            });",
+							"        }",
+							"    }",
+							"});",
+							"",
+							"pm.test(\"Get Missing Gachas - Failed to Retrieve Gacha Catalog (500)\", function () {",
+							"    // Se lo status code è 500, assicuriamoci che il messaggio corrisponda a un errore di connessione",
+							"    if (pm.response.status === 500) {",
+							"        const responseJson = pm.response.json();",
+							"        pm.expect(responseJson).to.have.property(\"message\");",
+							"        pm.expect(responseJson.message).to.include(\"Failed to retrieve the gacha catalog from gacha_market_service\");",
+							"    }",
+							"});",
+							"",
+							"pm.test(\"Get Missing Gachas - Player Not Found (404)\", function () {",
+							"    // Se lo status code è 404, assicuriamoci che il messaggio corrisponda",
+							"    if (pm.response.status === 404) {",
+							"        const responseJson = pm.response.json();",
+							"        pm.expect(responseJson).to.have.property(\"message\", \"Player not found\");",
+							"    }",
+							"});",
+							"",
+							"pm.test(\"Get Missing Gachas - Internal Error\", function () {",
+							"    // Verifica che, se si verifica un errore interno, la risposta contenga il messaggio corretto",
+							"    if (pm.response.status === 500) {",
+							"        const responseJson = pm.response.json();",
+							"        pm.expect(responseJson).to.have.property(\"message\");",
+							"        pm.expect(responseJson.message).to.include(\"An internal error occurred\");",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost/gacha_service/players/1/gachas/missing",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"gacha_service",
+						"players",
+						"1",
+						"gachas",
+						"missing"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Specific  Gachas Info",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Recupera l'id del gacha dalla variabile d'ambiente",
+							"let gachaId = pm.environment.get(\"gachaId\");",
+							"",
+							"pm.test(\"Get Specific Gacha - Status Code 200\", function () {",
+							"    // Verifica che la risposta abbia lo status code 200",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Get Specific Gacha - Gacha Retrieved Successfully\", function () {",
+							"    // Verifica che ci sia una risposta JSON e contenga le informazioni corrette sul gacha",
+							"    const responseJson = pm.response.json();",
+							"    ",
+							"    pm.expect(responseJson).to.be.an(\"object\");",
+							"    pm.expect(responseJson).to.have.property(\"gachaId\", gachaId); // Verifica che l'ID sia quello salvato precedentemente",
+							"    pm.expect(responseJson).to.have.property(\"pilotName\");",
+							"    pm.expect(responseJson).to.have.property(\"rarity\");",
+							"    pm.expect(responseJson).to.have.property(\"experience\");",
+							"    pm.expect(responseJson).to.have.property(\"ability\");",
+							"});",
+							"",
+							"pm.test(\"Get Specific Gacha - Gacha or Player Not Found (404)\", function () {",
+							"    // Se lo status code è 404, assicuriamoci che il messaggio corrisponda",
+							"    if (pm.response.status === 404) {",
+							"        const responseJson = pm.response.json();",
+							"        pm.expect(responseJson).to.have.property(\"message\", \"Gacha or player not found\");",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost/gacha_service/players/1/gachas/{{gachaId}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"gacha_service",
+						"players",
+						"1",
+						"gachas",
+						"{{gachaId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Specific  Gachas Info Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Test per aggiornare il proprietario di un gacha specifico",
+							"",
+							"pm.test(\"Update Gacha Owner - Status Code 200\", function () {",
+							"    // Verifica che la risposta abbia lo status code 200",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Update Gacha Owner - Ownership Updated Successfully\", function () {",
+							"    // Se lo status code è 200, verifica che il messaggio sia \"Gacha ownership updated successfully\"",
+							"    if (pm.response.status === 200) {",
+							"        const responseJson = pm.response.json();",
+							"        pm.expect(responseJson).to.have.property(\"message\", \"Gacha ownership updated successfully\");",
+							"    }",
+							"});",
+							"",
+							"pm.test(\"Update Gacha Owner - Gacha Not Found (404)\", function () {",
+							"    // Se lo status code è 404, assicuriamoci che il messaggio corrisponda a \"Gacha not found\"",
+							"    if (pm.response.status === 404) {",
+							"        const responseJson = pm.response.json();",
+							"        pm.expect(responseJson).to.have.property(\"message\", \"Gacha not found\");",
+							"    }",
+							"});",
+							"",
+							"pm.test(\"Update Gacha Owner - Internal Error\", function () {",
+							"    // Verifica che, se si verifica un errore interno, la risposta contenga il messaggio corretto",
+							"    if (pm.response.status === 500) {",
+							"        const responseJson = pm.response.json();",
+							"        pm.expect(responseJson).to.have.property(\"message\");",
+							"        pm.expect(responseJson.message).to.include(\"An internal error occurred\");",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost/gacha_service/players/1/gachas/{{gachaId}}/update_owner?userId=2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"gacha_service",
+						"players",
+						"1",
+						"gachas",
+						"{{gachaId}}",
+						"update_owner"
+					],
+					"query": [
+						{
+							"key": "userId",
+							"value": "2"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Delete Account",
 			"event": [
 				{
@@ -725,7 +1103,7 @@
 							"pm.test(\"Delete Account - Success Message Returned\", function () {",
 							"    // Verifica che la risposta contenga il messaggio di successo",
 							"    const responseJson = pm.response.json();",
-							"    pm.expect(responseJson).to.have.property(\"message\", \"Account deleted successfully\");",
+							"    pm.expect(responseJson).to.have.property(\"message\", \"Account and associated Gacha collection deleted successfully\");",
 							"});",
 							"",
 							"pm.test(\"Delete Account - Account Not Found (404)\", function () {",
@@ -772,6 +1150,28 @@
 				}
 			},
 			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
 		}
 	]
 }
