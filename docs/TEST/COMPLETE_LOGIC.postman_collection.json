@@ -725,7 +725,7 @@
 							"pm.test(\"Delete Account - Success Message Returned\", function () {",
 							"    // Verifica che la risposta contenga il messaggio di successo",
 							"    const responseJson = pm.response.json();",
-							"    pm.expect(responseJson).to.have.property(\"message\", \"Account deleted successfully\");",
+							"    pm.expect(responseJson).to.have.property(\"message\", \"Account and associated Gacha collection deleted successfully\");",
 							"});",
 							"",
 							"pm.test(\"Delete Account - Account Not Found (404)\", function () {",
