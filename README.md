@@ -42,12 +42,12 @@ ASE_Project/
 ## **Requirements**
 ### **Required Tools**
 Ensure you have the following tools installed:
-- **Docker** (latest version recommended)
-- **Docker Compose** (compatible with your Docker installation)
-- **Newman** (to test the endpoints)
-- **Locust** (to do performance testing)
-- **Python** (specific version indicated in `requirements.txt`)
-- **Git** (to clone the repository)
+- **Docker** 
+- **Docker Compose** 
+- **Newman** 
+- **Locust** 
+- **Python** 
+- **Git**
 
 ### **Python Dependencies**
 This project uses specific dependencies listed in the `requirements.txt` files inside the microservices. Examples:
@@ -110,7 +110,7 @@ Functional tests simulate complete usage flows. Postman collection files are ava
 1. **Run the tests with Newman:**
    Execute the collection to verify the APIs of the microservices. Use Newman (Postman CLI) to run the tests:
    ```bash
-   newman run docs/TEST/COMPLETE_LOGIC_collection.json
+   newman run docs/TEST/COMPLETE_LOGIC.postman_collection.json
    ```
 
 ### **Performance Testing with Locust**
@@ -125,8 +125,5 @@ Performance tests evaluate how the gateway handles high loads.
    - Open the Locust interface
    - Set the number of simulated users and the request rate.
    - Start the test and analyze the results.
-
-3. **Verify rarity distribution:**
-   Locust will check that the rarity distribution for Gacha rolls remains accurate, even under high request loads.
 
 ---
