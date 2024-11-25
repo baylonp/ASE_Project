@@ -1,10 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --global-font-color: #ffffff; /* Define a reusable variable */
+}
+
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
+  /*font-family: Arial, sans-serif;*/
+  background-color: #000000;
+  color: var(--global-font-color);
 }
 
 .error {
   color: red;
+}
+
+/* Default link color */
+a {
+  color: #ff0000;
+  text-decoration: none; /* Optional: Remove underline */
+  transition: color 0;
+}
+
+/* Link color on hover */
+a:hover {
+  color: #ea6e6e; /* Red */
 }
 
 .login-container,

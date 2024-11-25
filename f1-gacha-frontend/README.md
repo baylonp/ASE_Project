@@ -1,3 +1,30 @@
+## F1 Gacha Frontend Build
+
+Dovreste avere installato NodeJS (18 >).
+
+1. (Fare questo passaggio solo se i successivi falliscono, è la creazione base del prpgetto, che in teoria non dovreste fare)
+
+```bash
+npx create-next-app@latest f1-gacha-frontend
+```
+
+2. ho installato le dependencies (alcune le avevo gia, queste sono le ocmplete prese dal package.json)
+
+```bash
+npm install axios next react react-dom react-toastify @mui/material @emotion/styled @emotion/react
+```
+
+3. buildate e runnate
+
+```bash
+npm run build
+npm run start
+# o se avete pnpm
+pnpm dev
+```
+
+## Auto Generated
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started

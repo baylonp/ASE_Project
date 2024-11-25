@@ -1,5 +1,6 @@
 // app/layout.tsx
 import './styles/globals.css';
+import { inter } from './fonts/fonts';
 
 export const metadata = {
   title: 'F1 Gachas',
@@ -12,7 +13,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className={inter.className}>
       <body>
         <main>{children}</main>
       </body>
