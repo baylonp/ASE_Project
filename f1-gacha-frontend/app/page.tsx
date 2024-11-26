@@ -2,10 +2,13 @@
 'use client';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import './styles/landing.css';
+import { Button } from '@mui/material';
+import LoginSharpIcon from '@mui/icons-material/LoginSharp';
 
 export default function Page() {
   const router = useRouter();
-  const handleEnter = async () => {
+  const handleEnter = () => {
     router.push('/access');
   };
   return (
@@ -31,15 +34,17 @@ export default function Page() {
             width={500}
             height={300}
             priority
-            className="mb-4"
+            className="mb-4 shadow-image"
           />
           {/* Enter Button */}
-          <button
-            className="bg-white text-black rounded-full shadow hover:bg-red-100 w-1/6"
+          <Button
+            variant="contained"
+            color="inherit"
             onClick={handleEnter}
+            startIcon={<LoginSharpIcon />} // Adds the icon to the start of the button
           >
             Enter
-          </button>
+          </Button>
         </div>
       </div>
     </div>

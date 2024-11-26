@@ -11,7 +11,7 @@ npx create-next-app@latest f1-gacha-frontend
 2. ho installato le dependencies (alcune le avevo gia, queste sono le ocmplete prese dal package.json)
 
 ```bash
-npm install axios next react react-dom react-toastify @mui/material @emotion/styled @emotion/react
+npm install axios next react react-dom react-toastify @mui/material @emotion/styled @emotion/react @mui/icons-material
 ```
 
 3. buildate e runnate

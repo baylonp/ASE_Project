@@ -1,0 +1,14 @@
+.login-grid {
+  display: inline-grid;
+  justify-content: space-evenly;
+  grid-template-columns: auto auto;
+  gap: 10%;
+  padding: 10% 10% 10% 10%;
+}
+
+.image-f1 {
+  display: block;
+  position: relative;
+  margin: 40% 5% 40% 5%;
+  width: 100%;
+}

@@ -1,0 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.shadow-image {
+  box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.5); /* Shadow settings */
+  border-radius: 8px; /* Optional: adds rounded corners */
+}
