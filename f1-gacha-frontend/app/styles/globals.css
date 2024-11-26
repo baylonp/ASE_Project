@@ -28,12 +28,3 @@ a {
 a:hover {
   color: #ea6e6e; /* Red */
 }
-
-.login-container,
-.signup-container,
-.dashboard-container {
-  max-width: 400px;
-  margin: 0 auto;
-  padding: 20px;
-  text-align: center;
-}

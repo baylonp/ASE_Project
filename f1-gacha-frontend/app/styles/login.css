@@ -1,14 +1,33 @@
 .login-grid {
-  display: inline-grid;
-  justify-content: space-evenly;
+  display: grid;
+  justify-content: space-between;
   grid-template-columns: auto auto;
   gap: 10%;
-  padding: 10% 10% 10% 10%;
+  padding: 0 10% 0 10%;
+  /*align-items: center;*/
+  justify-items: center;
+  align-items: center;
+  height: 100vh; /* Ensure the grid takes up 100% of the viewport height */
+  overflow: hidden; /* Prevent any overflow, preventing scrolling */
 }
 
+/*
+.image-container {
+  align-items: center; 
+  width: 100%; 
+}
+
+
 .image-f1 {
+  max-width: 100%; 
+  height: auto; 
   display: block;
-  position: relative;
-  margin: 40% 5% 40% 5%;
-  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}*/
+
+.login-container {
+  justify-items: center;
+  align-items: center;
+  width: 100%; /* L'immagine occuperà tutta l'altezza disponibile */
 }

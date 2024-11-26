@@ -39,7 +39,13 @@ export default function Page() {
           {/* Enter Button */}
           <Button
             variant="contained"
-            color="inherit"
+            sx={{
+              backgroundColor: 'red', // Custom button color
+              color: 'white', // Text and icon color
+              '&:hover': {
+                backgroundColor: '#ff9a9a', // Hover state color
+              },
+            }}
             onClick={handleEnter}
             startIcon={<LoginSharpIcon />} // Adds the icon to the start of the button
           >

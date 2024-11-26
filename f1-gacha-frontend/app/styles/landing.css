@@ -4,5 +4,7 @@
 
 .shadow-image {
   box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.5); /* Shadow settings */
+  background-color: white;
   border-radius: 8px; /* Optional: adds rounded corners */
+  padding: 5% 5% 5% 5%;
 }
