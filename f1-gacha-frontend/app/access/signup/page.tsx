@@ -21,7 +21,7 @@ export default function SignupPage() {
 
   const handleSignUp = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log('SignUp Attempt:', { username, password });
+    console.log('SignUp Attempt:', { username, password, email });
     // Add login logic here (e.g., API call)
     router.push('/dashboard');
   };
