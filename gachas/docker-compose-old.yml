@@ -11,8 +11,7 @@ services:
     environment:
       FLASK_ENV: development
 
-
-  gatcha_service:
+  gacha_service:
     build:
       context: ./gacha_service
       dockerfile: Dockerfile
@@ -24,9 +23,7 @@ services:
     environment:
       FLASK_ENV: development
     depends_on:
-      - authentication  
-   
-
+      - authentication
 
   gacha_market_service:
     build:
@@ -40,9 +37,71 @@ services:
     environment:
       FLASK_ENV: development
     depends_on:
-      - authentication  
-      - gatcha_service
+      - authentication
+      - gacha_service
 
+  auction_service:
+    build:
+      context: ./auction_service
+      dockerfile: Dockerfile
+    container_name: auction_service
+    ports:
+      - "5004:5000"  # Porta esterna (host) 5004 mappata sulla porta interna del container 5000
+    volumes:
+      - sqldata4_Auctions:/data  
+    environment:
+      FLASK_ENV: development
+    depends_on:
+      - authentication
+      - gacha_service
+      - gacha_market_service
+
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx_gateway
+    ports:
+      - "80:80"  # Porta esterna (host) 80 mappata sulla porta interna del container 80
+    volumes:
+      - ./nginx:/etc/nginx/conf.d  # Associa il file di configurazione di Nginx
+    depends_on:
+      - authentication
+      - gacha_service
+      - gacha_market_service
+      - auction_service
+
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0.6
+    environment:
+      - KC_DB = postgres
+      - KC_DB_URL = jdbc:postgresql://postgres:5432/keycloak
+      - KC_DB_USERNAME = keycloak
+      - KC_DB_PASSWORD = keycloakpassword
+      - KC_HOSTNAME = localhost
+      - KC_PROXY = edge
+      - KC_BOOTSTRAP_ADMIN_USERNAME=admin
+      - KC_BOOTSTRAP_ADMIN_PASSWORD=admin
+    container_name: keycloak
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    command: start-dev
+    volumes:
+      - keycloak_data:/opt/jboss/keycloak/standalone/data
+
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: keycloakpassword
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+  
 
 volumes:
   sqldata1:
@@ -51,3 +110,6 @@ volumes:
     driver: local
   sqldata3_GachaMarket:
     driver: local
+  sqldata4_Auctions:
+    driver: local
+  postgres_data:

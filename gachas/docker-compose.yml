@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile
     container_name: authentication_service
     ports:
-      - "5001:5000"  # Porta esterna (host) 5001 mappata sulla porta interna del container 5000
+      - ":5000"  # Porta esterna (host) 5001 mappata sulla porta interna del container 5000
     volumes:
       - sqldata1:/data  # Volume sqldata1 montato all'interno della cartella /data nel container
     environment:
@@ -17,7 +17,7 @@ services:
       dockerfile: Dockerfile
     container_name: gacha_service
     ports:
-      - "5002:5000"  # Porta esterna (host) 5002 mappata sulla porta interna del container 5000
+      - ":5000"  # Porta esterna (host) 5002 mappata sulla porta interna del container 5000
     volumes:
       - sqldata2_GachaManager:/data  # Volume sqldata2_GM montato all'interno della cartella /data nel container
     environment:
@@ -31,7 +31,7 @@ services:
       dockerfile: Dockerfile
     container_name: gacha_market_service
     ports:
-      - "5003:5000"  # Porta esterna (host) 5003 mappata sulla porta interna del container 5000
+      - ":5000"  # Porta esterna (host) 5003 mappata sulla porta interna del container 5000
     volumes:
       - sqldata3_GachaMarket:/data  # Volume sqldata2_GM montato all'interno della cartella /data nel container
     environment:
@@ -46,7 +46,7 @@ services:
       dockerfile: Dockerfile
     container_name: auction_service
     ports:
-      - "5004:5000"  # Porta esterna (host) 5004 mappata sulla porta interna del container 5000
+      - ":5000"  # Porta esterna (host) 5004 mappata sulla porta interna del container 5000
     volumes:
       - sqldata4_Auctions:/data  
     environment:
@@ -69,6 +69,9 @@ services:
       - gacha_service
       - gacha_market_service
       - auction_service
+
+
+
 
 volumes:
   sqldata1:

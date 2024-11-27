@@ -1,42 +1,23 @@
 import requests
 from flask import Flask, request, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
+app = Flask(__name__)
 import random
 from datetime import datetime, timezone
-from functools import wraps
-import jwt
- 
-app = Flask(__name__)
- 
+
 # Configurazione dell'URL del servizio di autenticazione
 AUTH_SERVICE_URL = 'http://authentication:5000' 
 GACHA_SERVICE_URL = 'http://gacha_service:5000'
- 
+
 # Configurazione del database SQLite
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////data/gacha_market.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////data/transaction_history.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = 'your_secret_key'
- 
+
 # Inizializza SQLAlchemy
 db = SQLAlchemy(app)
- 
-# Decoratore per proteggere gli endpoint con autenticazione JWT
-def token_required(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        token = request.headers.get('x-access-token')  # Il token deve essere inviato nell'header della richiesta
-        if not token:
-            return jsonify({'message': 'Token is missing!'}), 401
-        try:
-            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
-            current_user_id = data['user_id']  # Ricaviamo l'ID utente dal token
-        except jwt.ExpiredSignatureError:
-            return jsonify({'message': 'Token has expired!'}), 401
-        except jwt.InvalidTokenError:
-            return jsonify({'message': 'Token is invalid!'}), 401
-        return f(current_user_id, token, *args, **kwargs)  # Passiamo l'ID utente e il token come parametro
-    return decorated
- 
+
+
 # Definizione del modello Pilot
 class Pilot(db.Model):
     tablename = 'pilots'
@@ -45,10 +26,11 @@ class Pilot(db.Model):
     rarity = db.Column(db.String(50), nullable=False)
     experience = db.Column(db.Integer, nullable=False)
     ability = db.Column(db.String(200), nullable=False)
- 
-    def __repr__(self):
+
+    def repr(self):
         return f'<Pilot {self.pilot_name}>'
- 
+    
+
 # Definizione del modello Transaction
 class Transaction(db.Model):
     tablename = 'transactions'
@@ -56,15 +38,17 @@ class Transaction(db.Model):
     user_id = db.Column(db.String, nullable=False)
     amount_spent = db.Column(db.Float, nullable=False)
     timestamp = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
- 
-    def __repr__(self):
+
+    def repr(self):
         return f'<Transaction {self.id}, User {self.user_id}, Amount Spent {self.amount_spent}>'
- 
+
+
 # Creazione del database (se necessario) e popolazione iniziale
 with app.app_context():
     db.create_all()
- 
-    # Popolamento del database con i dati dei piloti, se non già presenti
+
+    # Dati dei piloti da popolare nel database al momento della creazione della tabella
+
     pilots_data = [
         {"pilot_name": "Max Verstappen", "rarity": "Leggendaria", "experience": 95, "ability": "Dominatore assoluto nelle situazioni di alta pressione, aggressivo e veloce"},
         {"pilot_name": "Charles Leclerc", "rarity": "Leggendaria", "experience": 92, "ability": "Eccellente nelle qualifiche e in grado di trarre il meglio dalla vettura anche in situazioni difficili"},
@@ -87,7 +71,8 @@ with app.app_context():
         {"pilot_name": "Zhou Guanyu", "rarity": "Comune", "experience": 72, "ability": "Pilota in crescita, sempre più consistente e sicuro nelle sue performance"},
         {"pilot_name": "Franco Colapinto", "rarity": "Comune", "experience": 70, "ability": "Promessa emergente, con grandi potenzialità per il futuro"}
     ]
- 
+
+    # Popolamento del database con i dati dei piloti, se non già presenti
     for pilot in pilots_data:
         existing_pilot = Pilot.query.filter_by(pilot_name=pilot['pilot_name']).first()
         if not existing_pilot:
@@ -98,27 +83,27 @@ with app.app_context():
                 ability=pilot['ability']
             )
             db.session.add(new_pilot)
- 
+    
     db.session.commit()
- 
+
+    
+
 ### ADMIN ###
- 
+
 @app.route('/market_service/players/<userId>/transactions', methods=['GET'])
-@token_required
-def get_user_transactions(current_user_id, token, userId):
+def get_user_transactions(userId):
     """
     Restituisce lo storico delle transazioni per un utente specifico.
     """
     try:
-        if str(current_user_id) != userId:
-            return jsonify({'message': 'Unauthorized access'}), 403
- 
         # Recupera tutte le transazioni per l'utente specificato
         transactions = Transaction.query.filter_by(user_id=userId).all()
- 
+
+        # Controlla se ci sono transazioni per questo utente
         if not transactions:
             return make_response(jsonify({'message': 'No transactions found for this user'}), 404)
- 
+
+        # Prepara i risultati da restituire
         result = [
             {
                 'id': transaction.id,
@@ -127,37 +112,41 @@ def get_user_transactions(current_user_id, token, userId):
                 'timestamp': transaction.timestamp.isoformat()
             } for transaction in transactions
         ]
- 
+
         return make_response(jsonify(result), 200)
- 
+
     except Exception as e:
         return make_response(jsonify({'message': f'An internal error occurred: {str(e)}'}), 500)
- 
+
+
 ### FINE ADMIN ###
- 
+
+
+
 @app.route('/market_service/players/<playerId>/currency/buy', methods=['POST'])
-@token_required
-def buy_in_game_currency(current_user_id, token, playerId):
+def buy_in_game_currency(playerId):
     """
     Compra la valuta di gioco per il wallet del giocatore specificato.
+    ---
     """
     try:
-        if str(current_user_id) != playerId:
-            return jsonify({'message': 'Unauthorized access'}), 403
- 
+        # Ottenere l'importo dalla query string
         amount = request.args.get('amount', type=float)
- 
+
+        # Validare l'importo specificato
         if amount is None or amount <= 0:
             return make_response(jsonify({'message': 'Invalid input data: amount must be greater than zero'}), 400)
- 
-        headers = {'x-access-token': token}  # Aggiungi il token all'header
+
+        # Effettuare una richiesta POST al servizio di autenticazione per aggiornare il wallet dell'utente
         response = requests.patch(
             f"{AUTH_SERVICE_URL}/authentication/players/{playerId}/currency/update",
-            json={'amount': amount},
-            headers=headers
+            json={'amount': amount}
         )
- 
+
+        # Gestire la risposta del servizio di autenticazione
         if response.status_code == 200:
+
+            # Creare una nuova transazione nel database delle transazioni
             new_transaction = Transaction(
                 user_id=playerId,
                 amount_spent=amount,
@@ -165,30 +154,34 @@ def buy_in_game_currency(current_user_id, token, playerId):
             )
             db.session.add(new_transaction)
             db.session.commit()
- 
+
+
             return make_response(jsonify({'message': 'In-game currency purchased successfully'}), 200)
         elif response.status_code == 404:
             return make_response(jsonify({'message': 'Player not found'}), 404)
         else:
             return make_response(jsonify({'message': 'Failed to add currency'}), response.status_code)
- 
+
     except requests.exceptions.RequestException as e:
         return make_response(jsonify({'message': f'An error occurred while communicating with the auth service: {str(e)}'}), 500)
     except Exception as e:
         return make_response(jsonify({'message': f'An internal error occurred: {str(e)}'}), 500)
- 
+    
+    
+    
 @app.route('/market_service/catalog', methods=['GET'])
-@token_required
-def get_catalog(current_user_id, token):
+def get_catalog():
     """
     Restituisce il catalogo completo dei piloti (gachas).
     """
     try:
+        # Recupera tutti i piloti dal database
         pilots = Pilot.query.all()
- 
+        
         if not pilots:
             return make_response(jsonify({'message': 'No pilots available in the catalog'}), 404)
- 
+
+        # Prepara i risultati da restituire
         result = [
             {
                 'gacha_id': pilot.id,
@@ -198,52 +191,54 @@ def get_catalog(current_user_id, token):
                 'ability': pilot.ability
             } for pilot in pilots
         ]
- 
+
         return make_response(jsonify(result), 200)
- 
+
     except Exception as e:
         return make_response(jsonify({'message': f'An internal error occurred: {str(e)}'}), 500)
- 
+
 # Endpoint per acquistare una roll (gacha)
 @app.route('/market_service/players/<playerId>/gacha/roll', methods=['POST'])
-@token_required
-def buy_gacha_roll(current_user_id, token, playerId):
+def buy_gacha_roll(playerId):
     """
     Consente all'utente di acquistare una roll (gacha) per ottenere un pilota casuale.
+    L'utente spende una quantità fissa di in-game currency per ottenere il pilota.
+    ---
     """
     try:
-        if str(current_user_id) != playerId:
-            return jsonify({'message': 'Unauthorized access'}), 403
- 
+        # Importo fisso della roll
         ROLL_COST = 100
- 
-        headers = {'x-access-token': token}  # Aggiungi il token all'header
-        response = requests.get(f"{AUTH_SERVICE_URL}/authentication/players/{playerId}", headers=headers)
- 
+
+        # Effettuare una richiesta al servizio di autenticazione per verificare il wallet dell'utente
+        response = requests.get(f"{AUTH_SERVICE_URL}/authentication/players/{playerId}")
+
         if response.status_code == 404:
             return make_response(jsonify({'message': 'Player not found'}), 404)
- 
+
         user_data = response.json()
         user_wallet = user_data.get('wallet', 0)
- 
+
+        # Verificare se l'utente ha abbastanza in-game currency
         if user_wallet < ROLL_COST:
             return make_response(jsonify({'message': 'Not enough in-game currency to purchase a roll'}), 400)
- 
+
+        # Scegliere un pilota casuale dal database
         pilots = Pilot.query.all()
         if not pilots:
             return make_response(jsonify({'message': 'No pilots available'}), 404)
- 
+
         selected_pilot = random.choice(pilots)
- 
+        
+        # Aggiornare il wallet dell'utente
         update_response = requests.patch(
             f"{AUTH_SERVICE_URL}/authentication/players/{playerId}/currency/update",
-            json={'amount': -ROLL_COST},
-            headers=headers
+            json={'amount': -ROLL_COST}  # Sottrarre l'importo della roll dal wallet
         )
- 
+
         if update_response.status_code != 200:
             return make_response(jsonify({'message': 'Failed to update user wallet'}), 500)
- 
+
+        # Aggiungi il pilota alla collezione dell'utente chiamando il microservizio gacha_service
         gacha_data = {
             "gacha_id": selected_pilot.id,
             "pilot_name": selected_pilot.pilot_name,
@@ -251,16 +246,16 @@ def buy_gacha_roll(current_user_id, token, playerId):
             "experience": selected_pilot.experience,
             "ability": selected_pilot.ability
         }
- 
+
         add_gacha_response = requests.post(
             f"{GACHA_SERVICE_URL}/gacha_service/players/{playerId}/gachas",
-            json=gacha_data,
-            headers=headers
+            json=gacha_data
         )
- 
+
         if add_gacha_response.status_code != 201:
             return make_response(jsonify({'message': 'Failed to add gacha to user collection'}), 500)
- 
+
+        # Restituire il pilota ottenuto
         return make_response(jsonify({
             'message': 'Roll purchased successfully',
             'pilot': {
@@ -271,11 +266,11 @@ def buy_gacha_roll(current_user_id, token, playerId):
                 'ability': selected_pilot.ability
             }
         }), 200)
- 
+
     except requests.exceptions.RequestException as e:
         return make_response(jsonify({'message': f'An error occurred while communicating with the auth or gacha service: {str(e)}'}), 500)
     except Exception as e:
         return make_response(jsonify({'message': f'An internal error occurred: {str(e)}'}), 500)
- 
-if __name__ == '__main__':
+
+if __name__ == 'main':
     app.run(debug=True)
