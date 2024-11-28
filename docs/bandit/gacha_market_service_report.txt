@@ -1,0 +1,170 @@
+Run started:2024-11-28 11:41:05.140109
+
+Test results:
+>> Issue: [B105:hardcoded_password_string] Possible hardcoded password: 'your_secret_key'
+   Severity: Low   Confidence: Medium
+   CWE: CWE-259 (https://cwe.mitre.org/data/definitions/259.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b105_hardcoded_password_string.html
+   Location: ./gacha_market_service/app.py:21:11
+20	app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+21	app.config['SECRET_KEY'] = 'your_secret_key'
+22	 
+
+--------------------------------------------------
+>> Issue: [B113:request_without_timeout] Call to requests without timeout
+   Severity: Medium   Confidence: Low
+   CWE: CWE-400 (https://cwe.mitre.org/data/definitions/400.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b113_request_without_timeout.html
+   Location: ./gacha_market_service/app.py:157:19
+156	        headers = {'x-access-token': token}  # Aggiungi il token all'header
+157	        response = requests.patch(
+158	            f"{AUTH_SERVICE_URL}/authentication/players/{playerId}/currency/update",
+159	            json={'amount': amount},
+160	            headers=headers
+161	        )
+162	 
+
+--------------------------------------------------
+>> Issue: [B113:request_without_timeout] Call to requests without timeout
+   Severity: Medium   Confidence: Low
+   CWE: CWE-400 (https://cwe.mitre.org/data/definitions/400.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b113_request_without_timeout.html
+   Location: ./gacha_market_service/app.py:265:19
+264	        headers = {'x-access-token': token}  # Aggiungi il token all'header
+265	        response = requests.get(f"{AUTH_SERVICE_URL}/authentication/players/{playerId}", headers=headers)
+266	 
+
+--------------------------------------------------
+>> Issue: [B311:blacklist] Standard pseudo-random generators are not suitable for security/cryptographic purposes.
+   Severity: Low   Confidence: High
+   CWE: CWE-330 (https://cwe.mitre.org/data/definitions/330.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/blacklists/blacklist_calls.html#b311-random
+   Location: ./gacha_market_service/app.py:280:25
+279	 
+280	        selected_pilot = random.choice(pilots)
+281	 
+
+--------------------------------------------------
+>> Issue: [B113:request_without_timeout] Call to requests without timeout
+   Severity: Medium   Confidence: Low
+   CWE: CWE-400 (https://cwe.mitre.org/data/definitions/400.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b113_request_without_timeout.html
+   Location: ./gacha_market_service/app.py:282:26
+281	 
+282	        update_response = requests.patch(
+283	            f"{AUTH_SERVICE_URL}/authentication/players/{playerId}/currency/update",
+284	            json={'amount': -ROLL_COST},
+285	            headers=headers
+286	        )
+287	 
+
+--------------------------------------------------
+>> Issue: [B113:request_without_timeout] Call to requests without timeout
+   Severity: Medium   Confidence: Low
+   CWE: CWE-400 (https://cwe.mitre.org/data/definitions/400.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b113_request_without_timeout.html
+   Location: ./gacha_market_service/app.py:299:29
+298	 
+299	        add_gacha_response = requests.post(
+300	            f"{GACHA_SERVICE_URL}/gacha_service/players/{playerId}/gachas",
+301	            json=gacha_data,
+302	            headers=headers
+303	        )
+304	 
+
+--------------------------------------------------
+>> Issue: [B201:flask_debug_true] A Flask app appears to be run with debug=True, which exposes the Werkzeug debugger and allows the execution of arbitrary code.
+   Severity: High   Confidence: Medium
+   CWE: CWE-94 (https://cwe.mitre.org/data/definitions/94.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b201_flask_debug_true.html
+   Location: ./gacha_market_service/app.py:325:4
+324	if __name__ == '__main__':
+325	    app.run(debug=True)
+
+--------------------------------------------------
+>> Issue: [B113:request_without_timeout] Call to requests without timeout
+   Severity: Medium   Confidence: Low
+   CWE: CWE-400 (https://cwe.mitre.org/data/definitions/400.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b113_request_without_timeout.html
+   Location: ./gacha_market_service/old-app.py:141:19
+140	        # Effettuare una richiesta POST al servizio di autenticazione per aggiornare il wallet dell'utente
+141	        response = requests.patch(
+142	            f"{AUTH_SERVICE_URL}/authentication/players/{playerId}/currency/update",
+143	            json={'amount': amount}
+144	        )
+145	
+
+--------------------------------------------------
+>> Issue: [B113:request_without_timeout] Call to requests without timeout
+   Severity: Medium   Confidence: Low
+   CWE: CWE-400 (https://cwe.mitre.org/data/definitions/400.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b113_request_without_timeout.html
+   Location: ./gacha_market_service/old-app.py:213:19
+212	        # Effettuare una richiesta al servizio di autenticazione per verificare il wallet dell'utente
+213	        response = requests.get(f"{AUTH_SERVICE_URL}/authentication/players/{playerId}")
+214	
+
+--------------------------------------------------
+>> Issue: [B311:blacklist] Standard pseudo-random generators are not suitable for security/cryptographic purposes.
+   Severity: Low   Confidence: High
+   CWE: CWE-330 (https://cwe.mitre.org/data/definitions/330.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/blacklists/blacklist_calls.html#b311-random
+   Location: ./gacha_market_service/old-app.py:230:25
+229	
+230	        selected_pilot = random.choice(pilots)
+231	        
+
+--------------------------------------------------
+>> Issue: [B113:request_without_timeout] Call to requests without timeout
+   Severity: Medium   Confidence: Low
+   CWE: CWE-400 (https://cwe.mitre.org/data/definitions/400.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b113_request_without_timeout.html
+   Location: ./gacha_market_service/old-app.py:233:26
+232	        # Aggiornare il wallet dell'utente
+233	        update_response = requests.patch(
+234	            f"{AUTH_SERVICE_URL}/authentication/players/{playerId}/currency/update",
+235	            json={'amount': -ROLL_COST}  # Sottrarre l'importo della roll dal wallet
+236	        )
+237	
+
+--------------------------------------------------
+>> Issue: [B113:request_without_timeout] Call to requests without timeout
+   Severity: Medium   Confidence: Low
+   CWE: CWE-400 (https://cwe.mitre.org/data/definitions/400.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b113_request_without_timeout.html
+   Location: ./gacha_market_service/old-app.py:250:29
+249	
+250	        add_gacha_response = requests.post(
+251	            f"{GACHA_SERVICE_URL}/gacha_service/players/{playerId}/gachas",
+252	            json=gacha_data
+253	        )
+254	
+
+--------------------------------------------------
+>> Issue: [B201:flask_debug_true] A Flask app appears to be run with debug=True, which exposes the Werkzeug debugger and allows the execution of arbitrary code.
+   Severity: High   Confidence: Medium
+   CWE: CWE-94 (https://cwe.mitre.org/data/definitions/94.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b201_flask_debug_true.html
+   Location: ./gacha_market_service/old-app.py:276:4
+275	if __name__ == 'main':
+276	    app.run(debug=True)
+
+--------------------------------------------------
+
+Code scanned:
+	Total lines of code: 440
+	Total lines skipped (#nosec): 0
+	Total potential issues skipped due to specifically being disabled (e.g., #nosec BXXX): 0
+
+Run metrics:
+	Total issues (by severity):
+		Undefined: 0
+		Low: 3
+		Medium: 8
+		High: 2
+	Total issues (by confidence):
+		Undefined: 0
+		Low: 8
+		Medium: 3
+		High: 2
+Files skipped (0):
