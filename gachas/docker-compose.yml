@@ -61,9 +61,11 @@ services:
     image: nginx:latest
     container_name: nginx_gateway
     ports:
+      - "443:443"
       - "80:80"  # Porta esterna (host) 80 mappata sulla porta interna del container 80
     volumes:
       - ./nginx:/etc/nginx/conf.d  # Associa il file di configurazione di Nginx
+      - ./nginx/ssl:/etc/nginx/ssl        
     depends_on:
       - authentication
       - gacha_service
