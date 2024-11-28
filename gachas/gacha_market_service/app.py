@@ -112,10 +112,12 @@ def get_user_transactions(current_user_id, token, userId):
     """
     Restituisce lo storico delle transazioni per un utente specifico.
     """
+    # Check if the Token UserId matches (AccountID)
+    # 403: Forbidden
+    if (current_user_id != userId): 
+        return make_response(jsonify({'message': 'Unauthorized access'}), 403)
+    
     try:
-        if str(current_user_id) != userId:
-            return jsonify({'message': 'Unauthorized access'}), 403
- 
         # Recupera tutte le transazioni per l'utente specificato
         transactions = Transaction.query.filter_by(user_id=userId).all()
  

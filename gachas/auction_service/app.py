@@ -53,7 +53,6 @@ def token_required(f):
         return f(current_user, token, *args, **kwargs)  # Passiamo anche il token come parametro
     return decorated
  
- 
 @app.route('/auction_service/players/<userId>/setAuction', methods=['POST'])
 @token_required
 def set_auction(current_user, token, userId):

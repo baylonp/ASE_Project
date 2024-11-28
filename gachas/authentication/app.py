@@ -106,6 +106,17 @@ def login():
 @token_required
 def delete_account(current_user, token):
     account_id = request.args.get('accountId')
+    if not account_id:
+        return make_response(jsonify({'message': 'Account ID is required'}), 400)
+
+    # Check if the Token UserId matches the one received (AccountID)
+    # 403: Forbidden
+    if (current_user.id != int(account_id)): 
+        return make_response(jsonify({
+    'message': 'PlayerID Invalid. You are not authorized.',
+    'accountID': account_id,  # Example additional field
+    'currUserID': current_user.id   # Another example additional field
+}), 403)
  
     # Verifica se l'utente esiste nel database
     user = User.query.get(account_id)
@@ -139,6 +150,11 @@ def update_account(current_user, token):
     account_id = request.args.get('accountId')
     if not account_id:
         return make_response(jsonify({'message': 'Account ID is required'}), 400)
+    
+    # Check if the Token UserId matches (AccountID)
+    # 403: Forbidden
+    if (current_user.id != int(account_id)): 
+        return make_response(jsonify({'message': 'AccountID Invalid. You are not authorized.'}), 403)
  
     user = User.query.get(account_id)
     if not user:
@@ -176,19 +192,25 @@ def get_user_id(current_user, token):
         return make_response(jsonify({'message': 'Username is required'}), 400)
  
     user = User.query.filter_by(username=username).first()
- 
     if not user:
         return make_response(jsonify({'message': 'User not found'}), 404)
+    
+    # Check if the Token UserId matches (user.id)
+    # 403: Forbidden
+    if (current_user.id != user.id): 
+        return make_response(jsonify({'message': 'UserID Invalid. You are not authorized.'}), 403)
  
     return jsonify({'userId': user.id}), 200
- 
- 
-
  
  
 @app.route('/authentication/players/<playerId>', methods=['GET'])
 @token_required
 def get_user_info(current_user, token, playerId):
+    # Check if the Token UserId matches (PlayerID)
+    # 403: Forbidden
+    if (current_user.id != int(playerId)): 
+        return make_response(jsonify({'message': 'PlayerID Invalid. You are not authorized.'}), 403)
+    
     try:
         # Recuperare l'utente dal database in base al playerId
         user = User.query.filter_by(id=playerId).first()
@@ -216,6 +238,15 @@ def add_currency_to_player(current_user, token, playerId):
     """
     Aggiunge monete di gioco al wallet del giocatore specificato
     """
+    # Check if the Token UserId matches (PlayerID)
+    # 403: Forbidden
+    if (current_user.id != int(playerId)): 
+        return make_response(jsonify({
+    'message': 'PlayerID Invalid. You are not authorized.',
+    'playerID': playerId,  # Example additional field
+    'currUserID': current_user.id   # Another example additional field
+}), 403)
+    
     try:
         # Ottieni l'importo specificato dall'utente tramite la query string
         amount = request.args.get('amount', type=int)
@@ -246,6 +277,11 @@ def subtract_currency_from_player(current_user, token, playerId):
     """
     Sottrae monete di gioco dal wallet del giocatore specificato
     """
+    # Check if the Token UserId matches (PlayerID)
+    # 403: Forbidden
+    if (current_user.id != int(playerId)): 
+        return make_response(jsonify({'message': 'PlayerID Invalid. You are not authorized.'}), 403)
+    
     try:
         # Ottenere l'importo dal corpo della richiesta
         data = request.get_json()
@@ -283,6 +319,11 @@ def update_user_currency(current_user,token, playerId):
     """
     Aggiorna la quantità di currency nel wallet di un utente specifico.
     """
+    # Check if the Token UserId matches (PlayerID)
+    # 403: Forbidden
+    if (current_user.id != int(playerId)): 
+        return make_response(jsonify({'message': 'PlayerID Invalid. You are not authorized.'}), 403)
+    
     try:
         # Ottieni l'importo dal corpo della richiesta
         data = request.get_json()

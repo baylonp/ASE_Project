@@ -181,6 +181,9 @@ def update_gacha_owner(current_user_id, token, userID, gachaID):
     """
     Aggiorna l'user_id del gacha specificato nella collezione dell'utente
     """
+    if str(current_user_id) != userID:
+        return jsonify({'message': 'Unauthorized access'}), 403
+    
     try:
  
         # Recuperare il gacha specifico dalla collezione in base al gachaID
