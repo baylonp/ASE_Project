@@ -34,6 +34,7 @@ services:
       - ":5000"  # Porta esterna (host) 5003 mappata sulla porta interna del container 5000
     volumes:
       - sqldata3_GachaMarket:/data  # Volume sqldata2_GM montato all'interno della cartella /data nel container
+      - ./images:/app/images
     environment:
       FLASK_ENV: development
     depends_on:

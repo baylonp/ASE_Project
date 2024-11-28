@@ -1,10 +1,13 @@
 import requests
-from flask import Flask, request, jsonify, make_response
+from flask import Flask, request, jsonify, make_response, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 import random
 from datetime import datetime, timezone
 from functools import wraps
 import jwt
+import os
+import base64
+from werkzeug.utils import secure_filename
  
 app = Flask(__name__)
  
@@ -176,7 +179,46 @@ def buy_in_game_currency(current_user_id, token, playerId):
         return make_response(jsonify({'message': f'An error occurred while communicating with the auth service: {str(e)}'}), 500)
     except Exception as e:
         return make_response(jsonify({'message': f'An internal error occurred: {str(e)}'}), 500)
- 
+    
+### IMAGE SERVING ###
+@app.route('/market_service/catalog', methods=['GET'])
+@token_required
+def get_catalog(current_user_id, token):
+    """
+    Restituisce il catalogo completo delle immagini (gachas).
+    """
+    try:
+        image_folder = '/app/images'  # Directory where images are stored in the container
+        image_files = os.listdir(image_folder)
+
+        if not image_files:
+            return make_response(jsonify({'message': 'No images available in the catalog'}), 404)
+
+        image_data = []
+
+        for image_file in image_files:
+            if image_file.lower().endswith(('.png', '.jpg', '.jpeg', '.gif')):
+                file_path = os.path.join(image_folder, image_file)
+                
+                # Open the image file and convert to base64 encoding
+                with open(file_path, "rb") as img_file:
+                    encoded_image = base64.b64encode(img_file.read()).decode('utf-8')
+                
+                image_data.append({
+                    'image_name': secure_filename(image_file),
+                    'image_base64': encoded_image
+                })
+
+        return make_response(jsonify(image_data), 200)
+
+    except Exception as e:
+        return make_response(jsonify({'message': f'An internal error occurred: {str(e)}'}), 500)
+
+### FINE IMAGE SERVING ####
+
+
+
+''' 
 @app.route('/market_service/catalog', methods=['GET'])
 @token_required
 def get_catalog(current_user_id, token):
@@ -203,6 +245,8 @@ def get_catalog(current_user_id, token):
  
     except Exception as e:
         return make_response(jsonify({'message': f'An internal error occurred: {str(e)}'}), 500)
+    
+'''   
  
 # Endpoint per acquistare una roll (gacha)
 @app.route('/market_service/players/<playerId>/gacha/roll', methods=['POST'])
