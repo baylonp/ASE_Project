@@ -288,8 +288,33 @@ def get_catalog(current_user_id, token):
  
     except Exception as e:
         return make_response(jsonify({'message': f'An internal error occurred: {str(e)}'}), 500)
-    
 
+# The Gacha Roll takes into consideration the Rarity of each Pilot
+def get_random_pilot(pilots):
+    # Example rarity weights (can be modified or made configurable)
+    rarity_weights = {
+        'Leggendaria': 1,
+        'Epica': 5,
+        'Rara': 20,
+        'Comune': 74
+    }
+
+    # Extract unique rarities dynamically
+    rarities = {pilot.rarity for pilot in pilots}
+
+    # Build weights dynamically based on available rarities
+    available_rarity_weights = [rarity_weights[rarity] for rarity in rarities]
+
+    # Select a rarity based on weights
+    selected_rarity = random.choices(list(rarities), weights=available_rarity_weights, k=1)[0]
+
+    # Filter pilots by the selected rarity
+    filtered_pilots = [pilot for pilot in pilots if pilot.rarity == selected_rarity]
+
+    # Select a random pilot from the filtered list
+    selected_pilot = random.choice(filtered_pilots)
+
+    return selected_pilot
  
 # Endpoint per acquistare una roll (gacha)
 @app.route('/market_service/players/<playerId>/gacha/roll', methods=['POST'])
@@ -319,8 +344,10 @@ def buy_gacha_roll(current_user_id, token, playerId):
         pilots = Pilot.query.all()
         if not pilots:
             return make_response(jsonify({'message': 'No pilots available'}), 404)
- 
-        selected_pilot = random.choice(pilots)
+    
+        # Gacha Roll with Rarity
+        # selected_pilot = random.choice(pilots)
+        selected_pilot = get_random_pilot(pilots)
  
         update_response = requests.patch(
             f"{AUTH_SERVICE_URL}/authentication/players/{playerId}/currency/update",
