@@ -43,8 +43,8 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost/authentication/account",
-					"protocol": "http",
+					"raw": "https://localhost/authentication/account",
+					"protocol": "https",
 					"host": [
 						"localhost"
 					],
@@ -93,8 +93,8 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost/authentication/account",
-					"protocol": "http",
+					"raw": "https://localhost/authentication/account",
+					"protocol": "https",
 					"host": [
 						"localhost"
 					],
@@ -143,8 +143,8 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost/authentication/account",
-					"protocol": "http",
+					"raw": "https://localhost/authentication/account",
+					"protocol": "https",
 					"host": [
 						"localhost"
 					],
@@ -157,28 +157,89 @@
 			"response": []
 		},
 		{
-			"name": "Account Login",
+			"name": "ADMIN LOGIN",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
 						"exec": [
-							"// Verifica che lo status code della risposta sia 200, indicando un login riuscito",
 							"pm.test(\"Login - Status Code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
 							"});",
 							"",
-							"// Verifica che la risposta contenga un messaggio di successo e un sessionId",
+							"// Verifica che la risposta contenga un messaggio di successo e un token",
 							"pm.test(\"Login - Response Structure\", function () {",
 							"    const responseJson = pm.response.json();",
 							"    pm.expect(responseJson).to.have.property(\"message\", \"Login successful\");",
-							"    pm.expect(responseJson).to.have.property(\"sessionId\");",
+							"    pm.expect(responseJson).to.have.property(\"token\");",
 							"});",
 							"",
-							"// Salva il sessionId come variabile di ambiente per utilizzarlo in richieste successive",
-							"if (pm.response.code === 200) {",
+							"// Salva il token JWT in una variabile d'ambiente per l'uso nelle richieste successive",
+							"",
+							"",
+							"",
+							"// Salva il token JWT in una variabile d'ambiente per l'uso nelle richieste successive",
+							"const responseJson = pm.response.json();",
+							"if (responseJson.token) {",
+							"    pm.environment.set(\"AdminToken\", responseJson.token);",
+							"    console.log(\"Token salvato come variabile d'ambiente: authToken\");",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"admin\",\n    \"password\": \"admin\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:444/admin_service/auth",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "444",
+					"path": [
+						"admin_service",
+						"auth"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "USER 1 Account Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Login - Status Code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Verifica che la risposta contenga un messaggio di successo e un token",
+							"pm.test(\"Login - Response Structure\", function () {",
 							"    const responseJson = pm.response.json();",
-							"    pm.environment.set(\"sessionId\", responseJson.sessionId);",
+							"    pm.expect(responseJson).to.have.property(\"message\", \"Login successful\");",
+							"    pm.expect(responseJson).to.have.property(\"token\");",
+							"});",
+							"",
+							"// Salva il token JWT in una variabile d'ambiente per l'uso nelle richieste successive",
+							"const responseJson = pm.response.json();",
+							"if (responseJson.token) {",
+							"    pm.environment.set(\"authToken1\", responseJson.token);",
+							"    console.log(\"Token salvato come variabile d'ambiente: authToken\");",
 							"}"
 						],
 						"type": "text/javascript",
@@ -199,14 +260,177 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost/authentication/auth",
-					"protocol": "http",
+					"raw": "https://localhost/authentication/auth",
+					"protocol": "https",
 					"host": [
 						"localhost"
 					],
 					"path": [
 						"authentication",
 						"auth"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "USER 2 Account Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Login - Status Code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Verifica che la risposta contenga un messaggio di successo e un token",
+							"pm.test(\"Login - Response Structure\", function () {",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.have.property(\"message\", \"Login successful\");",
+							"    pm.expect(responseJson).to.have.property(\"token\");",
+							"});",
+							"",
+							"// Salva il token JWT in una variabile d'ambiente per l'uso nelle richieste successive",
+							"const responseJson = pm.response.json();",
+							"if (responseJson.token) {",
+							"    pm.environment.set(\"authToken2\", responseJson.token);",
+							"    console.log(\"Token salvato come variabile d'ambiente: authToken\");",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"testuser2\",\n    \"password\": \"testpassword\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost/authentication/auth",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"authentication",
+						"auth"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "USER 3 Account Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Login - Status Code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Verifica che la risposta contenga un messaggio di successo e un token",
+							"pm.test(\"Login - Response Structure\", function () {",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.have.property(\"message\", \"Login successful\");",
+							"    pm.expect(responseJson).to.have.property(\"token\");",
+							"});",
+							"",
+							"// Salva il token JWT in una variabile d'ambiente per l'uso nelle richieste successive",
+							"const responseJson = pm.response.json();",
+							"if (responseJson.token) {",
+							"    pm.environment.set(\"authToken3\", responseJson.token);",
+							"    console.log(\"Token salvato come variabile d'ambiente: authToken\");",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"testuser3\",\n    \"password\": \"testpassword\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost/authentication/auth",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"authentication",
+						"auth"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ADMIN checks user info",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "{{AdminToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:444/admin_service/user_info/1 ",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "444",
+					"path": [
+						"admin_service",
+						"user_info",
+						"1 "
 					]
 				}
 			},
@@ -238,7 +462,13 @@
 			],
 			"request": {
 				"method": "PATCH",
-				"header": [],
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "{{authToken1}}",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
 					"raw": "{\n    \"username\": \"iacopo1\",\n    \"email\": \"iacopo1@gmail.com\",\n    \"password\": \"password1\"\n}\n",
@@ -249,8 +479,8 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost/authentication/account?accountId=1",
-					"protocol": "http",
+					"raw": "https://localhost/authentication/account?accountId=1",
+					"protocol": "https",
 					"host": [
 						"localhost"
 					],
@@ -298,7 +528,13 @@
 			},
 			"request": {
 				"method": "GET",
-				"header": [],
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "{{authToken1}}",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
 					"raw": "",
@@ -323,132 +559,6 @@
 							"key": "username",
 							"value": "iacopo1"
 						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Add",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"// Questo script può essere usato negli script di Postman per verificare la risposta di un endpoint POST",
-							"pm.test(\"Add Currency - Status Code is 200\", function () {",
-							"    // Verifica che la risposta abbia lo status code 200, che indica che l'operazione è avvenuta con successo",
-							"    pm.response.to.have.status(200);",
-							"});",
-							"",
-							"pm.test(\"Add Currency - Currency Added Successfully\", function () {",
-							"    // Verifica che la risposta contenga un messaggio di aggiunta avvenuta con successo",
-							"    const responseJson = pm.response.json();",
-							"    pm.expect(responseJson).to.have.property(\"message\", \"Currency added successfully\");",
-							"});",
-							"",
-							"pm.test(\"Add Currency - New Wallet Balance is Present\", function () {",
-							"    // Verifica che la risposta contenga il nuovo saldo del wallet dell'utente",
-							"    const responseJson = pm.response.json();",
-							"    pm.expect(responseJson).to.have.property(\"new_wallet_balance\");",
-							"    pm.expect(responseJson.new_wallet_balance).to.be.a(\"number\");",
-							"});"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost/authentication/players/1/currency/add?amount=200",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"path": [
-						"authentication",
-						"players",
-						"1",
-						"currency",
-						"add"
-					],
-					"query": [
-						{
-							"key": "amount",
-							"value": "200"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Subtract",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"// Questo script può essere usato negli script di Postman per verificare la risposta di un endpoint PATCH",
-							"pm.test(\"Subtract Currency - Status Code is 200\", function () {",
-							"    // Verifica che la risposta abbia lo status code 200, che indica che l'operazione è avvenuta con successo",
-							"    pm.response.to.have.status(200);",
-							"});",
-							"",
-							"pm.test(\"Subtract Currency - Wallet Updated Successfully\", function () {",
-							"    // Verifica che la risposta contenga un messaggio di aggiornamento avvenuto con successo",
-							"    const responseJson = pm.response.json();",
-							"    pm.expect(responseJson).to.have.property(\"message\", \"Wallet updated successfully\");",
-							"});",
-							"",
-							"pm.test(\"Subtract Currency - New Wallet Balance is Present\", function () {",
-							"    // Verifica che la risposta contenga il nuovo saldo del wallet dell'utente",
-							"    const responseJson = pm.response.json();",
-							"    pm.expect(responseJson).to.have.property(\"new_wallet_balance\");",
-							"    pm.expect(responseJson.new_wallet_balance).to.be.a(\"number\");",
-							"});"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "PATCH",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n\n\"amount\": 200.0\n\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost/authentication/players/1/currency/subtract",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"path": [
-						"authentication",
-						"players",
-						"1",
-						"currency",
-						"subtract"
 					]
 				}
 			},
@@ -502,7 +612,13 @@
 			},
 			"request": {
 				"method": "GET",
-				"header": [],
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "{{authToken1}}",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
 					"raw": "",
@@ -562,7 +678,13 @@
 			],
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "{{authToken1}}",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
 					"raw": "",
@@ -573,8 +695,8 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost/market_service/players/1/currency/buy?amount=500",
-					"protocol": "http",
+					"raw": "https://localhost/market_service/players/1/currency/buy?amount=500",
+					"protocol": "https",
 					"host": [
 						"localhost"
 					],
@@ -630,7 +752,13 @@
 			],
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "{{authToken2}}",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
 					"raw": "",
@@ -641,8 +769,8 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost/market_service/players/2/currency/buy?amount=500",
-					"protocol": "http",
+					"raw": "https://localhost/market_service/players/2/currency/buy?amount=500",
+					"protocol": "https",
 					"host": [
 						"localhost"
 					],
@@ -698,7 +826,13 @@
 			],
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "{{authToken3}}",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
 					"raw": "",
@@ -709,8 +843,8 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost/market_service/players/3/currency/buy?amount=500",
-					"protocol": "http",
+					"raw": "https://localhost/market_service/players/3/currency/buy?amount=500",
+					"protocol": "https",
 					"host": [
 						"localhost"
 					],
@@ -779,7 +913,13 @@
 			},
 			"request": {
 				"method": "GET",
-				"header": [],
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "{{authToken1}}",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
 					"raw": "",
@@ -790,8 +930,8 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost/market_service/players/1/transactions",
-					"protocol": "http",
+					"raw": "https://localhost/market_service/players/1/transactions",
+					"protocol": "https",
 					"host": [
 						"localhost"
 					],
@@ -845,7 +985,13 @@
 			},
 			"request": {
 				"method": "GET",
-				"header": [],
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "{{authToken1}}",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
 					"raw": "",
@@ -856,8 +1002,8 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost/market_service/catalog",
-					"protocol": "http",
+					"raw": "https://localhost/market_service/catalog",
+					"protocol": "https",
 					"host": [
 						"localhost"
 					],
@@ -920,7 +1066,13 @@
 			],
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "{{authToken1}}",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
 					"raw": "",
@@ -931,8 +1083,8 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost/market_service/players/1/gacha/roll",
-					"protocol": "http",
+					"raw": "https://localhost/market_service/players/1/gacha/roll",
+					"protocol": "https",
 					"host": [
 						"localhost"
 					],
@@ -1014,7 +1166,13 @@
 			],
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "{{authToken1}}",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
 					"raw": "{\n    \"gacha_id\": {{gachaId}},\n    \"base_price\": 200.0\n}",
@@ -1025,8 +1183,8 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost/auction_service/players/1/setAuction",
-					"protocol": "http",
+					"raw": "https://localhost/auction_service/players/1/setAuction",
+					"protocol": "https",
 					"host": [
 						"localhost"
 					],
@@ -1105,15 +1263,16 @@
 			},
 			"request": {
 				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "{{authToken1}}",
+						"type": "text"
 					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": []
 				},
 				"url": {
 					"raw": "http://localhost/auction_service/auctions/active",
@@ -1183,7 +1342,13 @@
 			],
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "{{authToken2}}",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
 					"raw": "{\n  \"user_id\": \"2\",\n  \"bid_amount\": 300.0\n}",
@@ -1194,8 +1359,8 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost/auction_service/auctions/{{auctionID}}/bid",
-					"protocol": "http",
+					"raw": "https://localhost/auction_service/auctions/{{auctionID}}/bid",
+					"protocol": "https",
 					"host": [
 						"localhost"
 					],
@@ -1253,7 +1418,18 @@
 							"        pm.expect(responseJson).to.have.property('message');",
 							"        pm.expect(responseJson.message).to.include('An internal error occurred');",
 							"    });",
-							"}"
+							"}",
+							"",
+							"",
+							"// Set delay time (in milliseconds)",
+							"let delay = 12000; ",
+							"",
+							"// Delay execution of the next request",
+							"setTimeout(function() {",
+							"    console.log('Next request will be executed after delay of ' + delay + 'ms');",
+							"}, delay);",
+							"",
+							""
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -1262,10 +1438,16 @@
 			],
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "{{authToken3}}",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"user_id\": \"2\",\n  \"bid_amount\": 500.0\n}",
+					"raw": "{\n  \"user_id\": \"3\",\n  \"bid_amount\": 500.0\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1273,8 +1455,8 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost/auction_service/auctions/{{auctionID}}/bid",
-					"protocol": "http",
+					"raw": "https://localhost/auction_service/auctions/{{auctionID}}/bid",
+					"protocol": "https",
 					"host": [
 						"localhost"
 					],
@@ -1295,6 +1477,16 @@
 					"listen": "test",
 					"script": {
 						"exec": [
+							"",
+							"// Set delay time (in milliseconds)",
+							"let delay = 5000; // 5000 ms = 5 seconds",
+							"",
+							"// Delay execution of the next request",
+							"setTimeout(function() {",
+							"    console.log('Next request will be executed after delay of ' + delay + 'ms');",
+							"}, delay);",
+							"",
+							"",
 							"// Test per verificare che l'utente con ID 1 abbia 1000 nel wallet",
 							"pm.test(\"Get User Info - Wallet Balance is 1000 for User ID 1\", function () {",
 							"    const responseJson = pm.response.json();",
@@ -1315,7 +1507,13 @@
 			},
 			"request": {
 				"method": "GET",
-				"header": [],
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "{{authToken1}}",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
 					"raw": "",
@@ -1367,7 +1565,13 @@
 			},
 			"request": {
 				"method": "GET",
-				"header": [],
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "{{authToken2}}",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
 					"raw": "",
@@ -1419,7 +1623,13 @@
 			},
 			"request": {
 				"method": "GET",
-				"header": [],
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "{{authToken3}}",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
 					"raw": "",
@@ -1492,7 +1702,13 @@
 			},
 			"request": {
 				"method": "GET",
-				"header": [],
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "{{authToken2}}",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
 					"raw": "",
@@ -1503,15 +1719,15 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost/gacha_service/players/3/gachas",
-					"protocol": "http",
+					"raw": "https://localhost/gacha_service/players/2/gachas",
+					"protocol": "https",
 					"host": [
 						"localhost"
 					],
 					"path": [
 						"gacha_service",
 						"players",
-						"3",
+						"2",
 						"gachas"
 					]
 				}
@@ -1590,7 +1806,13 @@
 			},
 			"request": {
 				"method": "GET",
-				"header": [],
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "{{authToken1}}",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
 					"raw": "",
@@ -1601,8 +1823,8 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost/gacha_service/players/1/gachas/missing",
-					"protocol": "http",
+					"raw": "https://localhost/gacha_service/players/1/gachas/missing",
+					"protocol": "https",
 					"host": [
 						"localhost"
 					],
@@ -1662,7 +1884,13 @@
 			},
 			"request": {
 				"method": "GET",
-				"header": [],
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "{{authToken1}}",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
 					"raw": "",
@@ -1673,15 +1901,15 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost/gacha_service/players/3/gachas/{{gachaId}}",
-					"protocol": "http",
+					"raw": "https://localhost/gacha_service/players/1/gachas/{{gachaId}}",
+					"protocol": "https",
 					"host": [
 						"localhost"
 					],
 					"path": [
 						"gacha_service",
 						"players",
-						"3",
+						"1",
 						"gachas",
 						"{{gachaId}}"
 					]
@@ -1690,7 +1918,7 @@
 			"response": []
 		},
 		{
-			"name": "Get Specific  Gachas Info Copy",
+			"name": "ADMIN changes Gacha Status",
 			"event": [
 				{
 					"listen": "test",
@@ -1735,10 +1963,16 @@
 			],
 			"request": {
 				"method": "PATCH",
-				"header": [],
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "{{AdminToken}}",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
-					"raw": "",
+					"raw": "{   \n    \"pilot_name\": \"Max Verstappen\",\n    \"rarity\": \"Leggendaria\",\n    \"experience\": 96,\n    \"ability\": \"Dominatore assoluto nelle situazioni di alta pressione, aggressivo e veloce\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1746,24 +1980,16 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost/gacha_service/players/3/gachas/{{gachaId}}/update_owner?userId=2",
-					"protocol": "http",
+					"raw": "https://localhost:444/admin_service/gachas/1",
+					"protocol": "https",
 					"host": [
 						"localhost"
 					],
+					"port": "444",
 					"path": [
-						"gacha_service",
-						"players",
-						"3",
+						"admin_service",
 						"gachas",
-						"{{gachaId}}",
-						"update_owner"
-					],
-					"query": [
-						{
-							"key": "userId",
-							"value": "2"
-						}
+						"1"
 					]
 				}
 			},
@@ -1804,7 +2030,13 @@
 			],
 			"request": {
 				"method": "DELETE",
-				"header": [],
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "{{authToken1}}",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
 					"raw": "",
@@ -1815,8 +2047,8 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost/authentication/account?accountId=1",
-					"protocol": "http",
+					"raw": "https://localhost/authentication/account?accountId=1",
+					"protocol": "https",
 					"host": [
 						"localhost"
 					],
@@ -1869,7 +2101,13 @@
 			],
 			"request": {
 				"method": "DELETE",
-				"header": [],
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "{{authToken2}}",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
 					"raw": "",
@@ -1880,8 +2118,8 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost/authentication/account?accountId=2",
-					"protocol": "http",
+					"raw": "https://localhost/authentication/account?accountId=2",
+					"protocol": "https",
 					"host": [
 						"localhost"
 					],
@@ -1934,7 +2172,13 @@
 			],
 			"request": {
 				"method": "DELETE",
-				"header": [],
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "{{authToken3}}",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
 					"raw": "",
@@ -1945,8 +2189,8 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost/authentication/account?accountId=3",
-					"protocol": "http",
+					"raw": "https://localhost/authentication/account?accountId=3",
+					"protocol": "https",
 					"host": [
 						"localhost"
 					],
