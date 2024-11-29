@@ -16,6 +16,10 @@ app.config['SECRET_KEY'] = 'your_secret_key'
  
 # Inizializza il database
 db = SQLAlchemy(app)
+
+GACHA_MARKET_SERVICE_URL = 'http://gacha_market_service:5000/market_service/admin/gachas'
+AUTH_SERVICE_URL = 'http://authentication_service:5000'
+GACHA_SERVICE_URL = 'http://gacha_service:5000/gacha_service/admin/update_all'
  
 # Definizione del modello Admin
 class Admin(db.Model):
@@ -77,6 +81,24 @@ def admin_login():
         return make_response(jsonify({'message': 'Login successful', 'token': token}), 200)
  
     return make_response(jsonify({'message': 'Invalid credentials'}), 401)
+
+
+# Endpoint per verificare se l'utente è un admin (usato da altri microservizi)
+@app.route('/admin_service/verify_admin', methods=['GET'])
+def verify_admin():
+    token = request.headers.get('x-access-token')
+    if not token:
+        return jsonify({'message': 'Token is missing!'}), 401
+    try:
+        data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
+        current_admin = Admin.query.filter_by(id=data['admin_id']).first()
+        if current_admin is None:
+            return jsonify({'message': 'Unauthorized access'}), 403
+        return jsonify({'message': 'Admin verified successfully'}), 200
+    except jwt.ExpiredSignatureError:
+        return jsonify({'message': 'Token has expired!'}), 401
+    except jwt.InvalidTokenError:
+        return jsonify({'message': 'Token is invalid!'}), 401
  
 
 
@@ -89,7 +111,6 @@ def get_user_info(current_admin, playerId):
     token = request.headers.get('x-access-token')
  
     # Effettua una richiesta al servizio di autenticazione per ottenere le informazioni sull'utente
-    AUTH_SERVICE_URL = 'http://authentication_service:5000'
     try:
         response = requests.get(f"{AUTH_SERVICE_URL}/authentication/players/{playerId}",
                                 headers={'x-access-token': token})
@@ -101,6 +122,33 @@ def get_user_info(current_admin, playerId):
             return make_response(jsonify({'message': 'Failed to retrieve user information'}), response.status_code)
     except requests.exceptions.RequestException as e:
         return make_response(jsonify({'message': f'An error occurred while communicating with the authentication service: {str(e)}'}), 500)
+    
+
+
+    # Endpoint per modificare un Gacha nel catalogo e aggiornare la collezione degli utenti
+@app.route('/admin_service/gachas/<gacha_id>', methods=['PATCH'])
+@token_required
+def update_gacha(current_admin, gacha_id):
+    data = request.json
+    if not data:
+        return make_response(jsonify({'message': 'Invalid input data'}), 400)
+
+    # Effettua una richiesta al gacha_market_service per aggiornare il catalogo
+    
+    try:
+        response = requests.patch(f"{GACHA_MARKET_SERVICE_URL}/{gacha_id}", json=data)
+        if response.status_code != 200:
+            return make_response(jsonify({'message': 'Failed to update gacha in catalog'}), response.status_code)
+
+        # Effettua una richiesta al gacha_service per aggiornare la collezione degli utenti
+        
+        update_response = requests.patch(f"{GACHA_SERVICE_URL}/{gacha_id}", json=data, headers={'x-access-token': request.headers.get('x-access-token')})
+        if update_response.status_code != 200:
+            return make_response(jsonify({'message': 'Failed to update gacha in user collections'}), update_response.status_code)
+
+        return make_response(jsonify({'message': 'Gacha updated successfully'}), 200)
+    except requests.exceptions.RequestException as e:
+        return make_response(jsonify({'message': f'An error occurred while communicating with the gacha market or gacha service: {str(e)}'}), 500)
  
 # Punto di ingresso dell'app
 if __name__ == '__main__':
