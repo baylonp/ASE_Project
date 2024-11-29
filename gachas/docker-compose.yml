@@ -11,8 +11,7 @@ services:
     environment:
       FLASK_ENV: development
     networks:
-      - user-network
-      - admin-network
+      - app-network
 
   gacha_service:
     build:
@@ -28,7 +27,7 @@ services:
     depends_on:
       - authentication
     networks:
-      - user-network
+      - app-network
       - admin-network
 
   gacha_market_service:
@@ -47,7 +46,7 @@ services:
       - authentication
       - gacha_service
     networks:
-      - user-network
+      - app-network
 
   auction_service:
     build:
@@ -65,28 +64,15 @@ services:
       - gacha_service
       - gacha_market_service
     networks:
-      - user-network
+      - app-network
 
 
-  nginx:
-    image: nginx:latest
-    container_name: nginx_gateway
-    ports:
-      - "443:443"
-      - "80:80"  # Porta esterna (host) 80 mappata sulla porta interna del container 80
-    volumes:
-      - ./nginx:/etc/nginx/conf.d  # Associa il file di configurazione di Nginx
-      - ./nginx/ssl:/etc/nginx/ssl        
-    depends_on:
-      - authentication
-      - gacha_service
-      - gacha_market_service
-      - auction_service
-    networks:
-      - user-network
+
     
-## ADMIN ##
-  admin_service:
+
+
+
+  admin_service:  ## ADMIN SERVICE
     build:
       context: ./admin_service
       dockerfile: Dockerfile
@@ -103,8 +89,48 @@ services:
       #- gacha_market_service
       - auction_service
     networks:
+      - app-network
       - admin-network
-## FINE ADMIN ##
+
+
+
+  user-nginx: ## USER NGINX
+    image: nginx:latest
+    container_name: user_nginx_gateway
+    ports:
+      - "443:443"
+      - "80:80"  # Porta esterna (host) 80 mappata sulla porta interna del container 80
+    volumes:
+      - ./nginx/user:/etc/nginx/conf.d  # Associa il file di configurazione di Nginx
+      - ./nginx/user/ssl:/etc/nginx/ssl        
+    depends_on:
+      - authentication
+      - gacha_service
+      - gacha_market_service
+      - auction_service
+    networks:
+      - app-network
+      - public-network
+
+  admin-nginx: ##ADMIN NGINX
+    image: nginx:latest
+    container_name: admin_nginx_gateway
+    ports:
+      - "444:443"
+      - "81:80"  # Porta esterna (host) 80 mappata sulla porta interna del container 80
+    volumes:
+      - ./nginx/admin:/etc/nginx/conf.d  # Associa il file di configurazione di Nginx
+      - ./nginx/admin/ssl:/etc/nginx/ssl        
+    depends_on:
+      - authentication
+      - gacha_service
+      - gacha_market_service
+      - auction_service
+    networks:
+      - app-network
+      - admin-network
+
+
 
 
 volumes:
@@ -121,9 +147,9 @@ volumes:
 
 
 networks:
-  user-network:
+  app-network:
+    driver: bridge
+  public-network:
     driver: bridge
   admin-network:
     driver: bridge
- # test-network:
-#   driver: bridge
