@@ -10,6 +10,9 @@ services:
       - sqldata1:/data  # Volume sqldata1 montato all'interno della cartella /data nel container
     environment:
       FLASK_ENV: development
+    networks:
+      - user-network
+      - admin-network
 
   gacha_service:
     build:
@@ -24,6 +27,9 @@ services:
       FLASK_ENV: development
     depends_on:
       - authentication
+    networks:
+      - user-network
+      - admin-network
 
   gacha_market_service:
     build:
@@ -40,6 +46,8 @@ services:
     depends_on:
       - authentication
       - gacha_service
+    networks:
+      - user-network
 
   auction_service:
     build:
@@ -56,6 +64,8 @@ services:
       - authentication
       - gacha_service
       - gacha_market_service
+    networks:
+      - user-network
 
 
   nginx:
@@ -72,8 +82,29 @@ services:
       - gacha_service
       - gacha_market_service
       - auction_service
-
-
+    networks:
+      - user-network
+    
+## ADMIN ##
+  admin_service:
+    build:
+      context: ./admin_service
+      dockerfile: Dockerfile
+    container_name: admin_service
+    ports:
+      - "5004:5000"  # Porta esterna (host) 5003 mappata sulla porta interna del container 5000
+    volumes:
+      - sqldata4_admin_service:/data  # Volume sqldata2_GM montato all'interno della cartella /data nel container
+    environment:
+      FLASK_ENV: development
+    depends_on:
+      - authentication
+      - gacha_service
+      #- gacha_market_service
+      - auction_service
+    networks:
+      - admin-network
+## FINE ADMIN ##
 
 
 volumes:
@@ -85,3 +116,14 @@ volumes:
     driver: local
   sqldata4_Auctions:
     driver: local
+  sqldata4_admin_service:
+    driver: local
+
+
+networks:
+  user-network:
+    driver: bridge
+  admin-network:
+    driver: bridge
+ # test-network:
+#   driver: bridge
