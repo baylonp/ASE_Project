@@ -321,8 +321,10 @@ def update_user_currency(current_user,token, playerId):
     """
     # Check if the Token UserId matches (PlayerID)
     # 403: Forbidden
-    if (current_user.id != int(playerId)): 
-        return make_response(jsonify({'message': 'PlayerID Invalid. You are not authorized.'}), 403)
+    #if (current_user.id != int(playerId)): 
+    #    return make_response(jsonify({'message': 'PlayerID Invalid. You are not authorized.'}), 403)
+
+    # -- (!) --- questa funzione viene usata quando auctionservice dever rimborsare un utente.
     
     try:
         # Ottieni l'importo dal corpo della richiesta

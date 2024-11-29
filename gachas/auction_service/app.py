@@ -96,7 +96,7 @@ def set_auction(current_user, token, userId):
  
         # Attivare un timer per disattivare l'asta dopo 1 minuto, passando il token come argomento
         auction_id = new_auction.auction_id
-        timer = threading.Timer(10.0, end_auction, [auction_id, token])
+        timer = threading.Timer(9.0, end_auction, [auction_id, token])
         timer.start()
  
         return make_response(jsonify({'message': 'Auction created successfully', 'auction_id': auction_id}), 201)

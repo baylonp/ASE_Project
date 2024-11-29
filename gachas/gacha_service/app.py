@@ -58,7 +58,7 @@ def handle_user_gachas(current_user_id, token, userID):
         # Esistente: restituisce la collezione di gachas di un giocatore specifico
         gachas = GachaCollection.query.filter_by(user_id=userID).all()
         if not gachas:
-            return make_response(jsonify({'message': 'Player not found'}), 404)
+            return make_response(jsonify({'message': 'Player does not own any Gachas'}), 204)
  
         result = []
         for gacha in gachas:
