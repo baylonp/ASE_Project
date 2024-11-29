@@ -154,7 +154,7 @@ def get_user_transactions(current_user_id, token, userId):
     """
     # Check if the Token UserId matches (AccountID)
     # 403: Forbidden
-    if (current_user_id != userId): 
+    if (str(current_user_id) != userId): 
         return make_response(jsonify({'message': 'Unauthorized access'}), 403)
     
     try:
@@ -221,7 +221,8 @@ def buy_in_game_currency(current_user_id, token, playerId):
         return make_response(jsonify({'message': f'An error occurred while communicating with the auth service: {str(e)}'}), 500)
     except Exception as e:
         return make_response(jsonify({'message': f'An internal error occurred: {str(e)}'}), 500)
-    
+
+'''   
 ### IMAGE SERVING ###
 @app.route('/market_service/catalog', methods=['GET'])
 @token_required
@@ -258,9 +259,9 @@ def get_catalog(current_user_id, token):
 
 ### FINE IMAGE SERVING ####
 
+'''
 
-
-''' 
+ 
 @app.route('/market_service/catalog', methods=['GET'])
 @token_required
 def get_catalog(current_user_id, token):
@@ -288,7 +289,7 @@ def get_catalog(current_user_id, token):
     except Exception as e:
         return make_response(jsonify({'message': f'An internal error occurred: {str(e)}'}), 500)
     
-'''   
+
  
 # Endpoint per acquistare una roll (gacha)
 @app.route('/market_service/players/<playerId>/gacha/roll', methods=['POST'])

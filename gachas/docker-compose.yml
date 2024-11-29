@@ -28,7 +28,7 @@ services:
       - authentication
     networks:
       - app-network
-      - admin-network
+      #- admin-network
 
   gacha_market_service:
     build:

@@ -42,7 +42,7 @@ with app.app_context():
 # Funzione per creare un token JWT per l'admin
 def generate_jwt(admin):
     payload = {
-        'admin_id': admin.id,
+        'user_id': admin.id,
         'username': admin.username,
         'exp': datetime.now(timezone.utc) + timedelta(hours=2)  # Scadenza del token in 2 ore
     }
@@ -58,7 +58,7 @@ def token_required(f):
             return jsonify({'message': 'Token is missing!'}), 401
         try:
             data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
-            current_admin = Admin.query.filter_by(id=data['admin_id']).first()
+            current_admin = Admin.query.filter_by(id=data['user_id']).first()
             if current_admin is None:
                 raise jwt.InvalidTokenError
         except jwt.ExpiredSignatureError:
@@ -85,13 +85,14 @@ def admin_login():
 
 # Endpoint per verificare se l'utente è un admin (usato da altri microservizi)
 @app.route('/admin_service/verify_admin', methods=['GET'])
+
 def verify_admin():
     token = request.headers.get('x-access-token')
     if not token:
         return jsonify({'message': 'Token is missing!'}), 401
     try:
         data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
-        current_admin = Admin.query.filter_by(id=data['admin_id']).first()
+        current_admin = Admin.query.filter_by(id=data['user_id']).first()
         if current_admin is None:
             return jsonify({'message': 'Unauthorized access'}), 403
         return jsonify({'message': 'Admin verified successfully'}), 200
@@ -132,13 +133,17 @@ def update_gacha(current_admin, gacha_id):
     data = request.json
     if not data:
         return make_response(jsonify({'message': 'Invalid input data'}), 400)
+    
+    # Ottieni il token JWT dall'header della richiesta
+    token = request.headers.get('x-access-token')
 
     # Effettua una richiesta al gacha_market_service per aggiornare il catalogo
     
     try:
-        response = requests.patch(f"{GACHA_MARKET_SERVICE_URL}/{gacha_id}", json=data)
+        response = requests.patch(f"{GACHA_MARKET_SERVICE_URL}/{gacha_id}",
+                                headers={'x-access-token': token}, json=data)
         if response.status_code != 200:
-            return make_response(jsonify({'message': 'Failed to update gacha in catalog'}), response.status_code)
+            return make_response(jsonify({'message': 'Failed to update gacha in catalog',}), response.status_code)
 
         # Effettua una richiesta al gacha_service per aggiornare la collezione degli utenti
         
