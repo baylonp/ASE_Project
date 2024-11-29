@@ -14,6 +14,8 @@ app = Flask(__name__)
 # Configurazione dell'URL del servizio di autenticazione
 AUTH_SERVICE_URL = 'http://authentication:5000' 
 GACHA_SERVICE_URL = 'http://gacha_service:5000'
+ADMIN_SERVICE_URL = 'http://admin_service:5000/admin_service/verify_admin'
+
  
 # Configurazione del database SQLite
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////data/gacha_market.db'
@@ -105,6 +107,44 @@ with app.app_context():
     db.session.commit()
  
 ### ADMIN ###
+
+@app.route('/market_service/admin/gachas/<gacha_id>', methods=['PATCH'])
+@token_required
+def update_gacha_catalog(current_user_id, token, gacha_id):
+    # Verifica che l'utente sia effettivamente un admin
+    try:
+        verify_response = requests.get(ADMIN_SERVICE_URL, headers={'x-access-token': token})
+        if verify_response.status_code != 200:
+            return jsonify({'message': 'Unauthorized access'}), 403
+    except requests.exceptions.RequestException as e:
+        return jsonify({'message': f'An error occurred while communicating with the admin service: {str(e)}'}), 500
+
+    # Aggiorna il gacha nel catalogo
+    data = request.json
+    if not data:
+        return make_response(jsonify({'message': 'Invalid input data'}), 400)
+
+    try:
+        gacha = Pilot.query.filter_by(id=gacha_id).first()
+        if not gacha:
+            return make_response(jsonify({'message': 'Gacha not found'}), 404)
+
+        # Aggiorna i campi forniti nel corpo della richiesta
+        if 'pilot_name' in data:
+            gacha.pilot_name = data['pilot_name']
+        if 'rarity' in data:
+            gacha.rarity = data['rarity']
+        if 'experience' in data:
+            gacha.experience = data['experience']
+        if 'ability' in data:
+            gacha.ability = data['ability']
+
+        db.session.commit()
+        return make_response(jsonify({'message': 'Gacha updated successfully'}), 200)
+
+    except Exception as e:
+        return make_response(jsonify({'message': f'An internal error occurred: {str(e)}'}), 500)
+
  
 @app.route('/market_service/players/<userId>/transactions', methods=['GET'])
 @token_required

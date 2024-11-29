@@ -46,6 +46,7 @@ with app.app_context():
     db.create_all()
  
 GACHA_MARKET_SERVICE_URL = 'http://gacha_market_service:5000/market_service/catalog'
+ADMIN_SERVICE_URL = 'http://admin_service:5000/admin_service/verify_admin'
  
 @app.route('/gacha_service/players/<userID>/gachas', methods=['GET', 'DELETE'])
 @token_required
@@ -199,6 +200,50 @@ def update_gacha_owner(current_user_id, token, userID, gachaID):
  
         return make_response(jsonify({'message': 'Gacha ownership updated successfully'}), 200)
  
+    except Exception as e:
+        return make_response(jsonify({'message': f'An internal error occurred: {str(e)}'}), 500)
+    
+
+    ##Admin
+
+  # Endpoint per aggiornare un gacha nella collezione di tutti gli utenti (nuovo endpoint nel gacha_service)
+@app.route('/gacha_service/admin/update_all/<gacha_id>', methods=['PATCH'])
+def update_gacha_for_all_users(gacha_id):
+    token = request.headers.get('x-access-token')
+    if not token:
+        return jsonify({'message': 'Token is missing!'}), 401
+    try:
+        # Effettua una richiesta all'admin_service per verificare che l'utente sia un admin
+       
+        verify_response = requests.get(ADMIN_SERVICE_URL, headers={'x-access-token': token})
+        if verify_response.status_code != 200:
+            return jsonify({'message': 'Unauthorized access'}), 403
+    except requests.exceptions.RequestException as e:
+        return jsonify({'message': f'An error occurred while communicating with the admin service: {str(e)}'}), 500
+
+    data = request.json
+    if not data:
+        return make_response(jsonify({'message': 'Invalid input data'}), 400)
+    
+    try:
+        # Recupera tutti i gacha degli utenti che corrispondono a gacha_id
+        gachas = GachaCollection.query.filter_by(gacha_id=gacha_id).all()
+        if not gachas:
+            return make_response(jsonify({'message': 'No gacha found for given gacha_id'}), 404)
+        
+        # Aggiorna i parametri specificati per tutti i gacha trovati
+        for gacha in gachas:
+            if 'pilot_name' in data:
+                gacha.pilot_name = data['pilot_name']
+            if 'rarity' in data:
+                gacha.rarity = data['rarity']
+            if 'experience' in data:
+                gacha.experience = data['experience']
+            if 'ability' in data:
+                gacha.ability = data['ability']
+        
+        db.session.commit()
+        return make_response(jsonify({'message': 'Gacha updated for all users successfully'}), 200)
     except Exception as e:
         return make_response(jsonify({'message': f'An internal error occurred: {str(e)}'}), 500)
  
