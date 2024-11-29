@@ -78,17 +78,17 @@ with app.app_context():
         {"pilot_name": "Oscar Piastri", "rarity": "Rara", "experience": 78, "ability": "Pilota emergente che mostra grande promessa e crescita nelle prestazioni"},
         {"pilot_name": "Lewis Hamilton", "rarity": "Leggendaria", "experience": 98, "ability": "Esperto in battaglie ruota a ruota e in situazioni di alta pressione, con abilità straordinarie nelle rimonte"},
         {"pilot_name": "George Russel", "rarity": "Epica", "experience": 85, "ability": "Pilota consistente, capace di estrarre grandi prestazioni anche dalle vetture meno competitive"},
-        {"pilot_name": "Sergio Perez", "rarity": "Rara", "experience": 84, "ability": "Specialista nella gestione delle gomme, ottimizza la durata degli stint"},
-        {"pilot_name": "Fernando Alonso", "rarity": "Leggendaria", "experience": 97, "ability": "Maestro delle strategie e delle difese, esperto nell'adattarsi alle situazioni di gara"},
-        {"pilot_name": "Nico Hulkenberg", "rarity": "Rara", "experience": 80, "ability": "Consolidato nel centro gruppo, ottiene punti preziosi in ogni occasione"},
-        {"pilot_name": "Lance Stroll Jr.", "rarity": "Rara", "experience": 77, "ability": "Abile nelle partenze, ottiene buone posizioni nelle prime fasi di gara"},
+        {"pilot_name": "Sergio Perez", "rarity": "Epica", "experience": 84, "ability": "Specialista nella gestione delle gomme, ottimizza la durata degli stint"},
+        {"pilot_name": "Fernando Alonso", "rarity": "Epica", "experience": 97, "ability": "Maestro delle strategie e delle difese, esperto nell'adattarsi alle situazioni di gara"},
+        {"pilot_name": "Nico Hulkenberg", "rarity": "Comune", "experience": 80, "ability": "Consolidato nel centro gruppo, ottiene punti preziosi in ogni occasione"},
+        {"pilot_name": "Lance Stroll Jr.", "rarity": "Comune", "experience": 77, "ability": "Abile nelle partenze, ottiene buone posizioni nelle prime fasi di gara"},
         {"pilot_name": "Yuki Tsunoda", "rarity": "Comune", "experience": 73, "ability": "Competitivo, ma ancora in cerca di consistenza nel lungo periodo"},
-        {"pilot_name": "Alex Albon", "rarity": "Rara", "experience": 79, "ability": "Abile nelle rimonte, riesce a ottenere buoni risultati anche con vetture meno competitive"},
-        {"pilot_name": "Daniel Ricciardo", "rarity": "Epica", "experience": 85, "ability": "Esperto nei sorpassi audaci, molto efficace in situazioni di duello ruota a ruota"},
+        {"pilot_name": "Alex Albon", "rarity": "Comune", "experience": 79, "ability": "Abile nelle rimonte, riesce a ottenere buoni risultati anche con vetture meno competitive"},
+        {"pilot_name": "Daniel Ricciardo", "rarity": "Rara", "experience": 85, "ability": "Esperto nei sorpassi audaci, molto efficace in situazioni di duello ruota a ruota"},
         {"pilot_name": "Kevin Magnussen", "rarity": "Comune", "experience": 74, "ability": "Aggressivo nelle prime fasi della gara, sempre pronto al combattimento"},
-        {"pilot_name": "Pierre Gasly", "rarity": "Epica", "experience": 82, "ability": "Capace di ottenere il massimo risultato quando la situazione lo richiede"},
-        {"pilot_name": "Esteban Ocon", "rarity": "Rara", "experience": 80, "ability": "Pilota consistente, sempre in grado di ottenere punti in condizioni stabili"},
-        {"pilot_name": "Valtteri Bottas", "rarity": "Epica", "experience": 86, "ability": "Capace di supportare strategie di squadra complesse, eccelle nei long run"},
+        {"pilot_name": "Pierre Gasly", "rarity": "Rara", "experience": 82, "ability": "Capace di ottenere il massimo risultato quando la situazione lo richiede"},
+        {"pilot_name": "Esteban Ocon", "rarity": "Comune", "experience": 80, "ability": "Pilota consistente, sempre in grado di ottenere punti in condizioni stabili"},
+        {"pilot_name": "Valtteri Bottas", "rarity": "Rara", "experience": 86, "ability": "Capace di supportare strategie di squadra complesse, eccelle nei long run"},
         {"pilot_name": "Zhou Guanyu", "rarity": "Comune", "experience": 72, "ability": "Pilota in crescita, sempre più consistente e sicuro nelle sue performance"},
         {"pilot_name": "Franco Colapinto", "rarity": "Comune", "experience": 70, "ability": "Promessa emergente, con grandi potenzialità per il futuro"}
     ]
@@ -293,10 +293,10 @@ def get_catalog(current_user_id, token):
 def get_random_pilot(pilots):
     # Example rarity weights (can be modified or made configurable)
     rarity_weights = {
-        'Leggendaria': 1,
-        'Epica': 5,
+        'Leggendaria': 5,
+        'Epica': 10,
         'Rara': 20,
-        'Comune': 74
+        'Comune': 65
     }
 
     # Extract unique rarities dynamically
