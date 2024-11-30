@@ -10,6 +10,9 @@ services:
       - sqldata1:/data  # Volume sqldata1 montato all'interno della cartella /data nel container
     environment:
       FLASK_ENV: development
+    secrets:
+      - secrets_cert
+      - secrets_key
     networks:
       - app-network
 
@@ -26,6 +29,9 @@ services:
       FLASK_ENV: development
     depends_on:
       - authentication
+    secrets:
+      - secrets_cert
+      - secrets_key  
     networks:
       - app-network
       #- admin-network
@@ -45,6 +51,9 @@ services:
     depends_on:
       - authentication
       - gacha_service
+    secrets:
+      - secrets_cert
+      - secrets_key
     networks:
       - app-network
 
@@ -63,6 +72,9 @@ services:
       - authentication
       - gacha_service
       - gacha_market_service
+    secrets:
+      - secrets_cert
+      - secrets_key
     networks:
       - app-network
 
@@ -86,8 +98,11 @@ services:
     depends_on:
       - authentication
       - gacha_service
-      #- gacha_market_service
+      - gacha_market_service
       - auction_service
+    secrets:
+      - secrets_cert
+      - secrets_key
     networks:
       - app-network
       - admin-network
@@ -99,10 +114,10 @@ services:
     container_name: user_nginx_gateway
     ports:
       - "443:443"
-      - "80:80"  # Porta esterna (host) 80 mappata sulla porta interna del container 80
+      - "80:80"  
     volumes:
-      - ./nginx/user:/etc/nginx/conf.d  # Associa il file di configurazione di Nginx
-      - ./nginx/user/ssl:/etc/nginx/ssl        
+      - ./nginx/user:/etc/nginx/conf.d  
+      - ./keys:/etc/nginx/ssl        
     depends_on:
       - authentication
       - gacha_service
@@ -117,10 +132,10 @@ services:
     container_name: admin_nginx_gateway
     ports:
       - "444:443"
-      - "81:80"  # Porta esterna (host) 80 mappata sulla porta interna del container 80
+      - "81:80"  
     volumes:
-      - ./nginx/admin:/etc/nginx/conf.d  # Associa il file di configurazione di Nginx
-      - ./nginx/admin/ssl:/etc/nginx/ssl        
+      - ./nginx/admin:/etc/nginx/conf.d  
+      - ./keys:/etc/nginx/ssl        
     depends_on:
       - authentication
       - gacha_service
@@ -153,3 +168,10 @@ networks:
     driver: bridge
   admin-network:
     driver: bridge
+
+
+secrets:
+    secrets_cert:
+      file: ./keys/cert.pem
+    secrets_key:
+      file: ./keys/key.pem
