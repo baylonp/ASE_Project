@@ -142,7 +142,7 @@ services:
       - gacha_market_service
       - auction_service
     networks:
-      - app-network
+      #- app-network
       - admin-network
 
 

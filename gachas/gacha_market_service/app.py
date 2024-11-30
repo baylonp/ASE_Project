@@ -179,6 +179,7 @@ def get_user_transactions(current_user_id, token, userId):
         return make_response(jsonify({'message': f'An internal error occurred: {str(e)}'}), 500)
  
 ### FINE ADMIN ###
+
  
 @app.route('/market_service/players/<playerId>/currency/buy', methods=['POST'])
 @token_required
