@@ -1,0 +1,61 @@
+newman
+
+Auction Service - Set Auction Tests
+
+→ Set Auction - All Scenarios
+  POST http://localhost:5004/auction_service/players/1/setAuction [201 CREATED, 228B, 20ms]
+  ✓  Response has a valid status code
+  ✓  Success - Auction Created
+  ┌
+  │ 'Response: {\n' +
+  │   '  "auction_id": 1,\n' +
+  │   '  "message": "Auction created successfully"\n' +
+  │   '}'
+  └
+
+→ Get Active Auctions
+  GET http://localhost:5004/auction_service/auctions/active [200 OK, 303B, 6ms]
+  ✓  Status code is valid
+  ✓  Success - Active Auctions Retrieved
+  ┌
+  │ 'Response: [\n' +
+  │   '  {\n' +
+  │   '    "auction_id": 1,\n' +
+  │   '    "current_bid": 100,\n' +
+  │   '    "current_user_winner_id": 1,\n' +
+  │   '    "gacha_id": 101,\n' +
+  │   '    "issuer_id": 1,\n' +
+  │   '    "start_time": "2024-12-01T11:37:25.307340"\n' +
+  │   '  }\n' +
+  │   ']'
+  └
+
+→ Place Bid - Unified Test
+  POST http://localhost:5004/auction_service/auctions/1/bid [200 OK, 203B, 5ms]
+  ✓  Status code validation
+  ✓  Success - Bid Placed Successfully
+  ┌
+  │ 'Response: {\n' +
+  │   '  "message": "Bid placed successfully"\n' +
+  │   '}'
+  └
+
+┌─────────────────────────┬──────────────────┬─────────────────┐
+│                         │         executed │          failed │
+├─────────────────────────┼──────────────────┼─────────────────┤
+│              iterations │                1 │               0 │
+├─────────────────────────┼──────────────────┼─────────────────┤
+│                requests │                3 │               0 │
+├─────────────────────────┼──────────────────┼─────────────────┤
+│            test-scripts │                3 │               0 │
+├─────────────────────────┼──────────────────┼─────────────────┤
+│      prerequest-scripts │                0 │               0 │
+├─────────────────────────┼──────────────────┼─────────────────┤
+│              assertions │                6 │               0 │
+├─────────────────────────┴──────────────────┴─────────────────┤
+│ total run duration: 71ms                                     │
+├──────────────────────────────────────────────────────────────┤
+│ total data received: 233B (approx)                           │
+├──────────────────────────────────────────────────────────────┤
+│ average response time: 10ms [min: 5ms, max: 20ms, s.d.: 6ms] │
+└──────────────────────────────────────────────────────────────┘
