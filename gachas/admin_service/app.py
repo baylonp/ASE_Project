@@ -199,7 +199,109 @@ def get_all_gacha_collections(current_admin):
         # Gestione di altre eccezioni durante la richiesta
         return make_response(jsonify({'message': f'An error occurred while communicating with the gacha service: {str(e)}'}), 500)
 
- 
+
+# Endpoint per aggiungere un nuovo gacha al catalogo tramite il gacha_market_service (solo per admin)
+@app.route('/admin_service/gachas', methods=['POST'])
+@token_required
+def add_gacha_to_catalog(current_admin):
+    """
+    Permette agli amministratori di aggiungere un nuovo gacha al catalogo tramite il gacha_market_service
+    """
+    # Ottieni il token JWT dall'header della richiesta
+    token = request.headers.get('x-access-token')
+    
+    # Ottieni i dati per il nuovo gacha
+    data = request.json
+    if not data or 'pilot_name' not in data or 'rarity' not in data or 'experience' not in data or 'ability' not in data:
+        return make_response(jsonify({'message': 'Invalid input data'}), 400)
+
+    try:
+        # Effettua una richiesta al gacha_market_service per aggiungere il nuovo gacha al catalogo
+        response = requests.post(
+            f"https://gacha_market_service:5000/market_service/admin/gachas",
+            headers={'x-access-token': token},
+            json=data,
+            verify=False,
+            timeout=5
+        )
+        
+        if response.status_code == 201:
+            return make_response(jsonify({'message': 'Gacha added successfully'}), 201)
+        else:
+            return make_response(jsonify({'message': 'Failed to add gacha', 'details': response.json()}), response.status_code)
+
+    except Timeout:
+        return make_response(jsonify({'message': 'The request to gacha_market_service timed out'}), 503)
+
+    except requests.exceptions.RequestException as e:
+        return make_response(jsonify({'message': f'An error occurred while communicating with the gacha_market_service: {str(e)}'}), 500)
+
+
+# Endpoint per rimuovere un gacha dal catalogo tramite il gacha_market_service (solo per admin)
+@app.route('/admin_service/gachas/<int:gacha_id>', methods=['DELETE'])
+@token_required
+def remove_gacha_from_catalog(current_admin, gacha_id):
+    """
+    Permette agli amministratori di rimuovere un gacha dal catalogo tramite il gacha_market_service
+    """
+    # Ottieni il token JWT dall'header della richiesta
+    token = request.headers.get('x-access-token')
+
+    try:
+        # Effettua una richiesta al gacha_market_service per rimuovere il gacha dal catalogo
+        response = requests.delete(
+            f"https://gacha_market_service:5000/market_service/admin/gachas/{gacha_id}",
+            headers={'x-access-token': token},
+            verify=False,
+            timeout=5
+        )
+        
+        if response.status_code == 200:
+            return make_response(jsonify({'message': 'Gacha removed successfully'}), 200)
+        elif response.status_code == 404:
+            return make_response(jsonify({'message': 'Gacha not found'}), 404)
+        else:
+            return make_response(jsonify({'message': 'Failed to remove gacha', 'details': response.json()}), response.status_code)
+
+    except Timeout:
+        return make_response(jsonify({'message': 'The request to gacha_market_service timed out'}), 503)
+
+    except requests.exceptions.RequestException as e:
+        return make_response(jsonify({'message': f'An error occurred while communicating with the gacha_market_service: {str(e)}'}), 500)
+
+
+@app.route('/admin_service/transactions/<userId>', methods=['GET'])
+@token_required
+def get_user_transactions_via_admin_service(current_admin, userId):
+    """
+    Permette all'amministratore di ottenere lo storico delle transazioni di un utente specifico tramite il gacha_market_service
+    """
+    # Ottieni il token JWT dall'header della richiesta
+    token = request.headers.get('x-access-token')
+
+    try:
+        # Effettua una richiesta al gacha_market_service per ottenere le transazioni dell'utente specifico
+        response = requests.get(
+            f"https://gacha_market_service:5000/market_service/admin/transactions/{userId}",
+            headers={'x-access-token': token},
+            verify=False,
+            timeout=5
+        )
+
+        if response.status_code == 200:
+            return make_response(jsonify(response.json()), 200)
+        elif response.status_code == 404:
+            return make_response(jsonify({'message': 'No transactions found for this user'}), 404)
+        elif response.status_code == 403:
+            return make_response(jsonify({'message': 'Unauthorized access'}), 403)
+        else:
+            return make_response(jsonify({'message': 'Failed to retrieve transactions from gacha_market_service'}), response.status_code)
+
+    except Timeout:
+        return make_response(jsonify({'message': 'The request to gacha_market_service timed out'}), 503)
+
+    except requests.exceptions.RequestException as e:
+        return make_response(jsonify({'message': f'An error occurred while communicating with the gacha_market_service: {str(e)}'}), 500)
 # Punto di ingresso dell'app
 if __name__ == '__main__':
     app.run(debug=True)
