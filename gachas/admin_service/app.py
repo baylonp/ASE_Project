@@ -6,7 +6,6 @@ import jwt
 import requests
 from functools import wraps
 from requests.exceptions import Timeout, RequestException
-
  
 # Configura l'app Flask
 app = Flask(__name__)
@@ -165,6 +164,41 @@ def update_gacha(current_admin, gacha_id):
             return make_response(jsonify({'message': 'Authentication service is temporarily unavailable'}), 503)  # Service Unavailable
     except requests.exceptions.RequestException as e:
         return make_response(jsonify({'message': f'An error occurred while communicating with the gacha market or gacha service: {str(e)}'}), 500)
+    
+    # Endpoint per ottenere l'intero database delle collezioni dal gacha_service (solo per admin)
+@app.route('/admin_service/all_collections', methods=['GET'])
+@token_required
+def get_all_gacha_collections(current_admin):
+    """
+    Permette all'admin di ottenere tutte le collezioni Gacha presenti nel database del gacha_service
+    """
+    # Ottieni il token JWT dall'header della richiesta
+    token = request.headers.get('x-access-token')
+    
+    try:
+        # Effettua una richiesta al gacha_service per ottenere tutte le collezioni, con un timeout di 5 secondi
+        response = requests.get(
+            f"https://gacha_service:5000/gacha_service/admin/collections",
+            headers={'x-access-token': token},
+            verify=False,
+            timeout=5  # Timeout in secondi
+        )
+        
+        if response.status_code == 200:
+            return make_response(jsonify(response.json()), 200)
+        elif response.status_code == 204:
+            return make_response(jsonify({'message': 'No Gacha collections found'}), 204)
+        else:
+            return make_response(jsonify({'message': 'Failed to retrieve collections from gacha_service'}), response.status_code)
+
+    except Timeout:
+        # Gestione del timeout
+        return make_response(jsonify({'message': 'The request to gacha_service timed out'}), 504)
+
+    except requests.exceptions.RequestException as e:
+        # Gestione di altre eccezioni durante la richiesta
+        return make_response(jsonify({'message': f'An error occurred while communicating with the gacha service: {str(e)}'}), 500)
+
  
 # Punto di ingresso dell'app
 if __name__ == '__main__':
