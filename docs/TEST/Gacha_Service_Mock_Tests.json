@@ -1,0 +1,1266 @@
+{
+	"info": {
+		"_postman_id": "2d2060e9-48b9-4bd0-aa83-669c21e681eb",
+		"name": "Gacha Service - User Gacha Collection Tests",
+		"description": "Postman collection for testing Gacha Service endpoints with mock responses.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39855974"
+	},
+	"item": [
+		{
+			"name": "Retrieve All Gachas for a Player (GET)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response is an array\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.be.an(\"array\");",
+							"});",
+							"",
+							"pm.test(\"Each gacha has necessary fields\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    jsonData.forEach(gacha => {",
+							"        pm.expect(gacha).to.have.property(\"id\");",
+							"        pm.expect(gacha).to.have.property(\"gacha_id\");",
+							"        pm.expect(gacha).to.have.property(\"pilot_name\");",
+							"        pm.expect(gacha).to.have.property(\"rarity\");",
+							"    });",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "jwt_token_example"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5002/gacha_service/players/1/gachas",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5002",
+					"path": [
+						"gacha_service",
+						"players",
+						"1",
+						"gachas"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success - Retrieved Player Gacha Collection",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5002/gacha_service/players/1/gachas",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"gacha_service",
+								"players",
+								"1",
+								"gachas"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "[\n    {\n        \"id\": 1,\n        \"gacha_id\": 101,\n        \"pilot_name\": \"Ace Pilot\",\n        \"rarity\": \"Rare\",\n        \"experience\": \"500\",\n        \"ability\": \"Speed Boost\"\n    }\n]"
+				},
+				{
+					"name": "Failure - No Gachas Found",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5002/gacha_service/players/1/gachas",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"gacha_service",
+								"players",
+								"1",
+								"gachas"
+							]
+						}
+					},
+					"status": "No Content",
+					"code": 204,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Player does not own any Gachas\"\n}"
+				},
+				{
+					"name": "Failure - Unauthorized Access",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "invalid_token"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5002/gacha_service/players/1/gachas",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"gacha_service",
+								"players",
+								"1",
+								"gachas"
+							]
+						}
+					},
+					"status": "Error",
+					"code": 403,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Unauthorized access\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Get Details of a Specific Gacha",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response contains gacha details\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property(\"id\");",
+							"    pm.expect(jsonData).to.have.property(\"gacha_id\");",
+							"    pm.expect(jsonData).to.have.property(\"pilot_name\");",
+							"    pm.expect(jsonData).to.have.property(\"rarity\");",
+							"    pm.expect(jsonData).to.have.property(\"experience\");",
+							"    pm.expect(jsonData).to.have.property(\"ability\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "jwt_token_example"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5002/gacha_service/players/1/gachas/101",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5002",
+					"path": [
+						"gacha_service",
+						"players",
+						"1",
+						"gachas",
+						"101"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success - Gacha Details Retrieved",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5002/gacha_service/players/1/gachas/101",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"gacha_service",
+								"players",
+								"1",
+								"gachas",
+								"101"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"id\": 1,\n    \"gacha_id\": 101,\n    \"pilot_name\": \"Ace Pilot\",\n    \"rarity\": \"Rare\",\n    \"experience\": \"500\",\n    \"ability\": \"Speed Boost\"\n}"
+				},
+				{
+					"name": "Failure - Gacha or Player Not Found",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5002/gacha_service/players/1/gachas/999",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"gacha_service",
+								"players",
+								"1",
+								"gachas",
+								"999"
+							]
+						}
+					},
+					"status": "Not Found",
+					"code": 404,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Gacha or player not found\"\n}"
+				},
+				{
+					"name": "Failure - Unauthorized Access Attempt",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "invalid_token"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5002/gacha_service/players/1/gachas/101",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"gacha_service",
+								"players",
+								"1",
+								"gachas",
+								"101"
+							]
+						}
+					},
+					"status": "Forbidden",
+					"code": 403,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Unauthorized access\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Add a Gacha to Player Collection",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test(\"Response contains success message\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property(\"message\", \"Gacha added successfully\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "jwt_token_example"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"gacha_id\": 104,\n    \"pilot_name\": \"Galaxy Pilot\",\n    \"rarity\": \"Epic\",\n    \"experience\": \"800\",\n    \"ability\": \"Warp Drive\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:5002/gacha_service/players/1/gachas",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5002",
+					"path": [
+						"gacha_service",
+						"players",
+						"1",
+						"gachas"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success - Gacha Added Successfully",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"gacha_id\": 104,\n    \"pilot_name\": \"Galaxy Pilot\",\n    \"rarity\": \"Epic\",\n    \"experience\": \"800\",\n    \"ability\": \"Warp Drive\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5002/gacha_service/players/1/gachas",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"gacha_service",
+								"players",
+								"1",
+								"gachas"
+							]
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Gacha added successfully\"\n}"
+				},
+				{
+					"name": "Failure - Invalid Input Data",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"gacha_id\": 104,\n    \"pilot_name\": \"Galaxy Pilot\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5002/gacha_service/players/1/gachas",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"gacha_service",
+								"players",
+								"1",
+								"gachas"
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Invalid input data\"\n}"
+				},
+				{
+					"name": "Failure - Unauthorized Access Attempt",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "invalid_token"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"gacha_id\": 104,\n    \"pilot_name\": \"Galaxy Pilot\",\n    \"rarity\": \"Epic\",\n    \"experience\": \"800\",\n    \"ability\": \"Warp Drive\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5002/gacha_service/players/1/gachas",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"gacha_service",
+								"players",
+								"1",
+								"gachas"
+							]
+						}
+					},
+					"status": "Forbidden",
+					"code": 403,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Unauthorized access\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Get Missing Gachas for a Player",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response contains an array\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.be.an(\"array\");",
+							"});",
+							"",
+							"pm.test(\"Each missing gacha has the required properties\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    jsonData.forEach(gacha => {",
+							"        pm.expect(gacha).to.have.property(\"gacha_id\");",
+							"        pm.expect(gacha).to.have.property(\"name\");",
+							"    });",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "jwt_token_example"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5002/gacha_service/players/1/gachas/missing",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5002",
+					"path": [
+						"gacha_service",
+						"players",
+						"1",
+						"gachas",
+						"missing"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success - Missing Gachas Retrieved",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5002/gacha_service/players/1/gachas/missing",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"gacha_service",
+								"players",
+								"1",
+								"gachas",
+								"missing"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "[\n    {\n        \"gacha_id\": 104,\n        \"name\": \"Galaxy Pilot\"\n    }\n]"
+				},
+				{
+					"name": "Success - Player Has All Gachas",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5002/gacha_service/players/1/gachas/missing",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"gacha_service",
+								"players",
+								"1",
+								"gachas",
+								"missing"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Player has all gachas\"\n}"
+				},
+				{
+					"name": "Failure - Unauthorized Access Attempt",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "invalid_token"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5002/gacha_service/players/1/gachas/missing",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"gacha_service",
+								"players",
+								"1",
+								"gachas",
+								"missing"
+							]
+						}
+					},
+					"status": "Forbidden",
+					"code": 403,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Unauthorized access\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Update Gacha Ownership",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response contains success message\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property(\"message\", \"Gacha ownership updated successfully\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "jwt_token_example2"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5002/gacha_service/players/2/gachas/103/update_owner",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5002",
+					"path": [
+						"gacha_service",
+						"players",
+						"2",
+						"gachas",
+						"103",
+						"update_owner"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success - Gacha Ownership Updated",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example2"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5002/gacha_service/players/2/gachas/103/update_owner",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"gacha_service",
+								"players",
+								"2",
+								"gachas",
+								"103",
+								"update_owner"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Gacha ownership updated successfully\"\n}"
+				},
+				{
+					"name": "Failure - Gacha Not Found",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example2"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5002/gacha_service/players/2/gachas/999/update_owner",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"gacha_service",
+								"players",
+								"2",
+								"gachas",
+								"999",
+								"update_owner"
+							]
+						}
+					},
+					"status": "Error",
+					"code": 404,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Gacha not found\"\n}"
+				},
+				{
+					"name": "Failure - Unauthorized Access",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "invalid_token"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5002/gacha_service/players/2/gachas/103/update_owner",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"gacha_service",
+								"players",
+								"2",
+								"gachas",
+								"103",
+								"update_owner"
+							]
+						}
+					},
+					"status": "Forbidden",
+					"code": 403,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Unauthorized access\"\n}"
+				},
+				{
+					"name": "Failure - Internal Server Error",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example2"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5002/gacha_service/players/2/gachas/103/update_owner",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"gacha_service",
+								"players",
+								"2",
+								"gachas",
+								"103",
+								"update_owner"
+							]
+						}
+					},
+					"status": "Error",
+					"code": 500,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"An internal error occurred: Unexpected error\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Update Gacha for All Users",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response contains success message\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property(\"message\", \"Gacha updated for all users successfully\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "admin_token_example"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"pilot_name\": \"Updated Pilot\",\n    \"rarity\": \"Epic\",\n    \"experience\": \"800\",\n    \"ability\": \"Updated Ability\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:5002/gacha_service/admin/update_all/103",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5002",
+					"path": [
+						"gacha_service",
+						"admin",
+						"update_all",
+						"103"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success - Gacha Updated for All Users",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "admin_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"pilot_name\": \"Updated Pilot\",\n    \"rarity\": \"Epic\",\n    \"experience\": \"800\",\n    \"ability\": \"Updated Ability\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5002/gacha_service/admin/update_all/103",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"gacha_service",
+								"admin",
+								"update_all",
+								"103"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Gacha updated for all users successfully\"\n}"
+				},
+				{
+					"name": "Failure - No Gacha Found",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "admin_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"pilot_name\": \"Updated Pilot\",\n    \"rarity\": \"Epic\",\n    \"experience\": \"800\",\n    \"ability\": \"Updated Ability\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5002/gacha_service/admin/update_all/999",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"gacha_service",
+								"admin",
+								"update_all",
+								"999"
+							]
+						}
+					},
+					"status": "Error",
+					"code": 404,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"No gacha found for given gacha_id\"\n}"
+				},
+				{
+					"name": "Failure - Unauthorized Access",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "invalid_admin_token"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"pilot_name\": \"Updated Pilot\",\n    \"rarity\": \"Epic\",\n    \"experience\": \"800\",\n    \"ability\": \"Updated Ability\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5002/gacha_service/admin/update_all/103",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"gacha_service",
+								"admin",
+								"update_all",
+								"103"
+							]
+						}
+					},
+					"status": "Forbidden",
+					"code": 403,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Unauthorized access\"\n}"
+				},
+				{
+					"name": "Failure - Missing Token",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"pilot_name\": \"Updated Pilot\",\n    \"rarity\": \"Epic\",\n    \"experience\": \"800\",\n    \"ability\": \"Updated Ability\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5002/gacha_service/admin/update_all/103",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"gacha_service",
+								"admin",
+								"update_all",
+								"103"
+							]
+						}
+					},
+					"status": "Unauthorized",
+					"code": 401,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Token is missing!\"\n}"
+				},
+				{
+					"name": "Failure - Invalid Input Data",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "admin_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "http://localhost:5002/gacha_service/admin/update_all/103",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"gacha_service",
+								"admin",
+								"update_all",
+								"103"
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Invalid input data\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Delete All Gachas for a Player (DELETE)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response contains success message\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property(\"message\", \"Gacha collection deleted successfully\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "jwt_token_example"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5002/gacha_service/players/1/gachas",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5002",
+					"path": [
+						"gacha_service",
+						"players",
+						"1",
+						"gachas"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success - Deleted Gacha Collection",
+					"originalRequest": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5002/gacha_service/players/1/gachas",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"gacha_service",
+								"players",
+								"1",
+								"gachas"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Gacha collection deleted successfully\"\n}"
+				},
+				{
+					"name": "Failure - Unauthorized Access",
+					"originalRequest": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "invalid_token"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5002/gacha_service/players/1/gachas",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"gacha_service",
+								"players",
+								"1",
+								"gachas"
+							]
+						}
+					},
+					"status": "Error",
+					"code": 403,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Unauthorized access\"\n}"
+				}
+			]
+		}
+	]
+}

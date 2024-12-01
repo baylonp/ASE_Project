@@ -1,0 +1,2751 @@
+{
+	"info": {
+		"_postman_id": "547b2735-c14b-402b-8e88-9f7d78eb89fa",
+		"name": "Authentication Service Tests",
+		"description": "Postman collection for testing Authentication Service endpoints with mock responses.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39855974"
+	},
+	"item": [
+		{
+			"name": "Create Test Account",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Verifica che lo status code sia 201 per la creazione di un account",
+							"pm.test(\"Status code is 201 for successful account creation\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"// Verifica che la risposta contenga il messaggio di successo",
+							"pm.test(\"Response contains success message\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.message).to.eql(\"Account created successfully\");",
+							"});",
+							"",
+							"// Verifica la gestione dell'errore per username duplicato",
+							"pm.test(\"Handles duplicate username error\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.message).to.eql(\"Username already exists\");",
+							"    }",
+							"});",
+							"",
+							"// Verifica la gestione dell'errore per email duplicata",
+							"pm.test(\"Handles duplicate email error\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.message).to.eql(\"Email already exists\");",
+							"    }",
+							"});",
+							"",
+							"// Verifica la gestione dei dati di input non validi",
+							"pm.test(\"Handles invalid input data\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.message).to.eql(\"Invalid input data\");",
+							"    }",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"test_user2\",\n    \"password\": \"secure_password2\",\n    \"email\": \"test_user2@example.com\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:5001/authentication/account",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"authentication",
+						"account"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success - Account Created",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"test_user\",\n    \"password\": \"secure_password\",\n    \"email\": \"test_user@example.com\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5001/authentication/account",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"authentication",
+								"account"
+							]
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Account created successfully\"\n}"
+				},
+				{
+					"name": "Failure - Username Exists",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"test_user\",\n    \"password\": \"secure_password\",\n    \"email\": \"test_user@example.com\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5001/authentication/account",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"authentication",
+								"account"
+							]
+						}
+					},
+					"status": "Error",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Username already exists\"\n}"
+				},
+				{
+					"name": "Failure - Email Exists",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"test_user\",\n    \"password\": \"secure_password\",\n    \"email\": \"test_user@example.com\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5001/authentication/account",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"authentication",
+								"account"
+							]
+						}
+					},
+					"status": "Error",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Email already exists\"\n}"
+				},
+				{
+					"name": "Failure - Invalid Input Data",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"test_user\",\n    \"password\": \"secure_password\",\n    \"email\": \"test_user@example.com\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5001/authentication/account",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"authentication",
+								"account"
+							]
+						}
+					},
+					"status": "Error",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Invalid input data\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Login 1st account",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200 for successful login\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response contains token and userId\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property(\"token\");",
+							"    pm.expect(jsonData).to.have.property(\"userId\");",
+							"    pm.expect(jsonData.message).to.eql(\"Login successful\");",
+							"});",
+							"",
+							"pm.test(\"Handles invalid input data\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.message).to.eql(\"Invalid input data\");",
+							"    }",
+							"});",
+							"",
+							"pm.test(\"Handles invalid credentials\", function () {",
+							"    if (pm.response.code === 401) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.message).to.eql(\"Invalid credentials\");",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"test_user\",\n    \"password\": \"secure_password\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:5001/authentication/auth",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"authentication",
+						"auth"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success - Login",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"test_user\",\n    \"password\": \"secure_password\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5001/authentication/auth",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"authentication",
+								"auth"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Login successful\",\n    \"token\": \"jwt_token_example\",\n    \"userId\": 1\n}"
+				},
+				{
+					"name": "Failure - Invalid Credentials",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"wrong_user\",\n    \"password\": \"wrong_password\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5001/authentication/auth",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"authentication",
+								"auth"
+							]
+						}
+					},
+					"status": "Unauthorized",
+					"code": 401,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Invalid credentials\"\n}"
+				},
+				{
+					"name": "Failure - Invalid Input Data",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"\",\n    \"password\": \"\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5001/authentication/auth",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"authentication",
+								"auth"
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Invalid input data\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Login 2nd account",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200 for successful login\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response contains token and userId\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property(\"token\");",
+							"    pm.expect(jsonData).to.have.property(\"userId\");",
+							"    pm.expect(jsonData.message).to.eql(\"Login successful\");",
+							"});",
+							"",
+							"pm.test(\"Handles invalid input data\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.message).to.eql(\"Invalid input data\");",
+							"    }",
+							"});",
+							"",
+							"pm.test(\"Handles invalid credentials\", function () {",
+							"    if (pm.response.code === 401) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.message).to.eql(\"Invalid credentials\");",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"existing_user\",\n    \"password\": \"password_123\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:5001/authentication/auth",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"authentication",
+						"auth"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success - Login",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"test_user\",\n    \"password\": \"secure_password\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5001/authentication/auth",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"authentication",
+								"auth"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Login successful\",\n    \"token\": \"jwt_token_example\",\n    \"userId\": 1\n}"
+				},
+				{
+					"name": "Failure - Invalid Credentials",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"wrong_user\",\n    \"password\": \"wrong_password\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5001/authentication/auth",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"authentication",
+								"auth"
+							]
+						}
+					},
+					"status": "Unauthorized",
+					"code": 401,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Invalid credentials\"\n}"
+				},
+				{
+					"name": "Failure - Invalid Input Data",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"\",\n    \"password\": \"\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5001/authentication/auth",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"authentication",
+								"auth"
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Invalid input data\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Update 2nd Account",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200 for successful update\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response contains success message for update\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.message).to.eql(\"Account updated successfully\");",
+							"});",
+							"",
+							"pm.test(\"Handles duplicate username or email errors\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.message).to.be.oneOf([\"Username already exists\", \"Email already exists\"]);",
+							"    }",
+							"});",
+							"",
+							"pm.test(\"Handles account not found error\", function () {",
+							"    if (pm.response.code === 404) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.message).to.eql(\"Account not found\");",
+							"    }",
+							"});",
+							"",
+							"pm.test(\"Handles unauthorized access error\", function () {",
+							"    if (pm.response.code === 403) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.message).to.eql(\"AccountID Invalid. You are not authorized.\");",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "x-access-token",
+						"value": "jwt_token_example2"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"updated_user\",\n    \"password\": \"new_secure_password\",\n    \"email\": \"updated_email@example.com\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:5001/authentication/account?accountId=2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"authentication",
+						"account"
+					],
+					"query": [
+						{
+							"key": "accountId",
+							"value": "2"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success - Update Account",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"updated_user\",\n    \"password\": \"new_secure_password\",\n    \"email\": \"updated_email@example.com\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5001/authentication/account?accountId=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"authentication",
+								"account"
+							],
+							"query": [
+								{
+									"key": "accountId",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "Text",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Account updated successfully\"\n}"
+				},
+				{
+					"name": "Failure - Username Exists",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"existing_user\",\n    \"password\": \"new_secure_password\",\n    \"email\": \"updated_email@example.com\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5001/authentication/account?accountId=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"authentication",
+								"account"
+							],
+							"query": [
+								{
+									"key": "accountId",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"status": "Error",
+					"code": 400,
+					"_postman_previewlanguage": "Text",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Username already exists\"\n}"
+				},
+				{
+					"name": "Failure - Email Exists",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"updated_user\",\n    \"password\": \"new_secure_password\",\n    \"email\": \"existing_email@example.com\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5001/authentication/account?accountId=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"authentication",
+								"account"
+							],
+							"query": [
+								{
+									"key": "accountId",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"status": "Error",
+					"code": 400,
+					"_postman_previewlanguage": "Text",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Email already exists\"\n}"
+				},
+				{
+					"name": "Failure - Account Not Found",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"updated_user\",\n    \"password\": \"new_secure_password\",\n    \"email\": \"updated_email@example.com\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5001/authentication/account?accountId=999",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"authentication",
+								"account"
+							],
+							"query": [
+								{
+									"key": "accountId",
+									"value": "999"
+								}
+							]
+						}
+					},
+					"status": "Error",
+					"code": 404,
+					"_postman_previewlanguage": "Text",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Account not found\"\n}"
+				},
+				{
+					"name": "Failure - Unauthorized Access",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"updated_user\",\n    \"password\": \"new_secure_password\",\n    \"email\": \"updated_email@example.com\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5001/authentication/account?accountId=2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"authentication",
+								"account"
+							],
+							"query": [
+								{
+									"key": "accountId",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"status": "Error",
+					"code": 403,
+					"_postman_previewlanguage": "Text",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"AccountID Invalid. You are not authorized.\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Delete Account (2nd)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200 for successful deletion\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response contains success message\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.message).to.eql(\"Account and associated Gacha collection deleted successfully\");",
+							"});",
+							"",
+							"pm.test(\"Handles missing account ID\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.message).to.eql(\"Account ID is required\");",
+							"    }",
+							"});",
+							"",
+							"pm.test(\"Handles unauthorized access\", function () {",
+							"    if (pm.response.code === 403) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.message).to.eql(\"PlayerID Invalid. You are not authorized.\");",
+							"    }",
+							"});",
+							"",
+							"pm.test(\"Handles account not found\", function () {",
+							"    if (pm.response.code === 404) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.message).to.eql(\"Account not found\");",
+							"    }",
+							"});",
+							"",
+							"pm.test(\"Handles Gacha service deletion failure\", function () {",
+							"    if (pm.response.code === 500) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.message).to.eql(\"Failed to delete Gacha collection from gacha_service\");",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "jwt_token_example2"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5001/authentication/account?accountId=2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"authentication",
+						"account"
+					],
+					"query": [
+						{
+							"key": "accountId",
+							"value": "2"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success - Account Deleted",
+					"originalRequest": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5001/authentication/account?accountId=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"authentication",
+								"account"
+							],
+							"query": [
+								{
+									"key": "accountId",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "Text",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Account and associated Gacha collection deleted successfully\"\n}"
+				},
+				{
+					"name": "Failure - Missing Account ID",
+					"originalRequest": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5001/authentication/account",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"authentication",
+								"account"
+							]
+						}
+					},
+					"status": "Error",
+					"code": 400,
+					"_postman_previewlanguage": "Text",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Account ID is required\"\n}"
+				},
+				{
+					"name": "Failure - Unauthorized Access",
+					"originalRequest": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5001/authentication/account?accountId=2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"authentication",
+								"account"
+							],
+							"query": [
+								{
+									"key": "accountId",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"status": "Error",
+					"code": 403,
+					"_postman_previewlanguage": "Text",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"PlayerID Invalid. You are not authorized.\",\n    \"accountID\": \"2\",\n    \"currUserID\": 1\n}"
+				},
+				{
+					"name": "Failure - Account Not Found",
+					"originalRequest": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5001/authentication/account?accountId=9999",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"authentication",
+								"account"
+							],
+							"query": [
+								{
+									"key": "accountId",
+									"value": "9999"
+								}
+							]
+						}
+					},
+					"status": "Error",
+					"code": 404,
+					"_postman_previewlanguage": "Text",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Account not found\"\n}"
+				},
+				{
+					"name": "Failure - Gacha Service Deletion Failure",
+					"originalRequest": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5001/authentication/account?accountId=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"authentication",
+								"account"
+							],
+							"query": [
+								{
+									"key": "accountId",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"status": "Error",
+					"code": 500,
+					"_postman_previewlanguage": "Text",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Failed to delete Gacha collection from gacha_service\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Get User ID (1st)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200 for valid user\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response contains userId\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property(\"userId\");",
+							"});",
+							"",
+							"pm.test(\"Handles username missing or user not found errors\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.message).to.eql(\"Username is required\");",
+							"    } else if (pm.response.code === 404) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.message).to.eql(\"User not found\");",
+							"    }",
+							"});",
+							"",
+							"pm.test(\"Handles unauthorized access error\", function () {",
+							"    if (pm.response.code === 403) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.message).to.eql(\"UserID Invalid. You are not authorized.\");",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "x-access-token",
+						"value": "jwt_token_example"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5001/authentication/userId?username=test_user",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"authentication",
+						"userId"
+					],
+					"query": [
+						{
+							"key": "username",
+							"value": "test_user"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success - Get User ID",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5001/authentication/userId?username=test_user",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"authentication",
+								"userId"
+							],
+							"query": [
+								{
+									"key": "username",
+									"value": "test_user"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "Text",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"userId\": 1\n}"
+				},
+				{
+					"name": "Failure - User Not Found",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5001/authentication/userId?username=nonexistent_user",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"authentication",
+								"userId"
+							],
+							"query": [
+								{
+									"key": "username",
+									"value": "nonexistent_user"
+								}
+							]
+						}
+					},
+					"status": "Error",
+					"code": 404,
+					"_postman_previewlanguage": "Text",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"User not found\"\n}"
+				},
+				{
+					"name": "Failure - Username Missing",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5001/authentication/userId",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"authentication",
+								"userId"
+							]
+						}
+					},
+					"status": "Error",
+					"code": 400,
+					"_postman_previewlanguage": "Text",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Username is required\"\n}"
+				},
+				{
+					"name": "Failure - Unauthorized Access",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5001/authentication/userId?username=test_user",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"authentication",
+								"userId"
+							],
+							"query": [
+								{
+									"key": "username",
+									"value": "test_user"
+								}
+							]
+						}
+					},
+					"status": "Error",
+					"code": 403,
+					"_postman_previewlanguage": "Text",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"UserID Invalid. You are not authorized.\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Get Player Info (1st)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200 for valid player\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response contains player information\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property(\"id\");",
+							"    pm.expect(jsonData).to.have.property(\"username\");",
+							"    pm.expect(jsonData).to.have.property(\"email\");",
+							"    pm.expect(jsonData).to.have.property(\"wallet\");",
+							"});",
+							"",
+							"pm.test(\"Handles player not found error\", function () {",
+							"    if (pm.response.code === 404) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.message).to.eql(\"Player not found\");",
+							"    }",
+							"});",
+							"",
+							"pm.test(\"Handles unauthorized access error\", function () {",
+							"    if (pm.response.code === 403) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.message).to.eql(\"PlayerID Invalid. You are not authorized.\");",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "x-access-token",
+						"value": "jwt_token_example"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5001/authentication/players/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"authentication",
+						"players",
+						"1"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success - Get Player Info",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5001/authentication/players/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"authentication",
+								"players",
+								"1"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "Text",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"id\": 1,\n    \"username\": \"player1\",\n    \"email\": \"player1@example.com\",\n    \"wallet\": 1000\n}"
+				},
+				{
+					"name": "Failure - Player Not Found",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5001/authentication/players/9999",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"authentication",
+								"players",
+								"9999"
+							]
+						}
+					},
+					"status": "Error",
+					"code": 404,
+					"_postman_previewlanguage": "Text",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Player not found\"\n}"
+				},
+				{
+					"name": "Failure - Unauthorized Access",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5001/authentication/players/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"authentication",
+								"players",
+								"2"
+							]
+						}
+					},
+					"status": "Error",
+					"code": 403,
+					"_postman_previewlanguage": "Text",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"PlayerID Invalid. You are not authorized.\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Add Currency to Player (1st)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200 for successful addition\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response contains updated wallet balance\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property(\"new_wallet_balance\");",
+							"});",
+							"",
+							"pm.test(\"Handles invalid amount error\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.message).to.eql(\"Invalid input data: amount must be greater than zero\");",
+							"    }",
+							"});",
+							"",
+							"pm.test(\"Handles unauthorized access error\", function () {",
+							"    if (pm.response.code === 403) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.message).to.eql(\"PlayerID Invalid. You are not authorized.\");",
+							"    }",
+							"});",
+							"",
+							"pm.test(\"Handles player not found error\", function () {",
+							"    if (pm.response.code === 404) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.message).to.eql(\"Player not found\");",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "jwt_token_example"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5001/authentication/players/1/currency/add?amount=100",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"authentication",
+						"players",
+						"1",
+						"currency",
+						"add"
+					],
+					"query": [
+						{
+							"key": "amount",
+							"value": "100"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success - Add Currency",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5001/authentication/players/1/currency/add?amount=100",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"authentication",
+								"players",
+								"1",
+								"currency",
+								"add"
+							],
+							"query": [
+								{
+									"key": "amount",
+									"value": "100"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "Text",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Currency added successfully\",\n    \"new_wallet_balance\": 600\n}"
+				},
+				{
+					"name": "Failure - Invalid Amount",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5001/authentication/players/1/currency/add?amount=-50",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"authentication",
+								"players",
+								"1",
+								"currency",
+								"add"
+							],
+							"query": [
+								{
+									"key": "amount",
+									"value": "-50"
+								}
+							]
+						}
+					},
+					"status": "Error",
+					"code": 400,
+					"_postman_previewlanguage": "Text",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Invalid input data: amount must be greater than zero\"\n}"
+				},
+				{
+					"name": "Failure - Unauthorized Access",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5001/authentication/players/2/currency/add?amount=100",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"authentication",
+								"players",
+								"2",
+								"currency",
+								"add"
+							],
+							"query": [
+								{
+									"key": "amount",
+									"value": "100"
+								}
+							]
+						}
+					},
+					"status": "Error",
+					"code": 403,
+					"_postman_previewlanguage": "Text",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"PlayerID Invalid. You are not authorized.\"\n}"
+				},
+				{
+					"name": "Failure - Player Not Found",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5001/authentication/players/9999/currency/add?amount=100",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"authentication",
+								"players",
+								"9999",
+								"currency",
+								"add"
+							],
+							"query": [
+								{
+									"key": "amount",
+									"value": "100"
+								}
+							]
+						}
+					},
+					"status": "Error",
+					"code": 404,
+					"_postman_previewlanguage": "Text",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Player not found\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Subtract Currency from Player (1st)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200 for successful subtraction\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response contains updated wallet balance\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property(\"new_wallet_balance\");",
+							"});",
+							"",
+							"pm.test(\"Handles invalid amount error\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.message).to.eql(\"Invalid input data: \\\"amount\\\" field is required\");",
+							"    }",
+							"});",
+							"",
+							"pm.test(\"Handles unauthorized access error\", function () {",
+							"    if (pm.response.code === 403) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.message).to.eql(\"PlayerID Invalid. You are not authorized.\");",
+							"    }",
+							"});",
+							"",
+							"pm.test(\"Handles player not found error\", function () {",
+							"    if (pm.response.code === 404) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.message).to.eql(\"Player not found\");",
+							"    }",
+							"});",
+							"",
+							"pm.test(\"Handles insufficient funds error\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.message).to.eql(\"Insufficient funds\");",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "jwt_token_example"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"amount\": 50\n}"
+				},
+				"url": {
+					"raw": "http://localhost:5001/authentication/players/1/currency/subtract",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"authentication",
+						"players",
+						"1",
+						"currency",
+						"subtract"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success - Subtract Currency",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 50\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5001/authentication/players/1/currency/subtract",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"authentication",
+								"players",
+								"1",
+								"currency",
+								"subtract"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "Text",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Wallet updated successfully\",\n    \"new_wallet_balance\": 950\n}"
+				},
+				{
+					"name": "Failure - Invalid Amount",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": -10\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5001/authentication/players/1/currency/subtract",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"authentication",
+								"players",
+								"1",
+								"currency",
+								"subtract"
+							]
+						}
+					},
+					"status": "Error",
+					"code": 400,
+					"_postman_previewlanguage": "Text",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Invalid input data: \\\"amount\\\" field is required\"\n}"
+				},
+				{
+					"name": "Failure - Unauthorized Access",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 50\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5001/authentication/players/2/currency/subtract",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"authentication",
+								"players",
+								"2",
+								"currency",
+								"subtract"
+							]
+						}
+					},
+					"status": "Error",
+					"code": 403,
+					"_postman_previewlanguage": "Text",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"PlayerID Invalid. You are not authorized.\"\n}"
+				},
+				{
+					"name": "Failure - Player Not Found",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 50\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5001/authentication/players/9999/currency/subtract",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"authentication",
+								"players",
+								"9999",
+								"currency",
+								"subtract"
+							]
+						}
+					},
+					"status": "Error",
+					"code": 404,
+					"_postman_previewlanguage": "Text",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Player not found\"\n}"
+				},
+				{
+					"name": "Failure - Insufficient Funds",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 10000\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5001/authentication/players/1/currency/subtract",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"authentication",
+								"players",
+								"1",
+								"currency",
+								"subtract"
+							]
+						}
+					},
+					"status": "Error",
+					"code": 400,
+					"_postman_previewlanguage": "Text",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Insufficient funds\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Update Player's Currency (1st)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200 for successful update\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response contains updated wallet balance\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property(\"new_wallet_balance\");",
+							"});",
+							"",
+							"pm.test(\"Handles invalid input data error\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.message).to.eql(\"Invalid input data: \\\"amount\\\" field is required\");",
+							"    }",
+							"});",
+							"",
+							"pm.test(\"Handles unauthorized access error\", function () {",
+							"    if (pm.response.code === 403) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.message).to.eql(\"PlayerID Invalid. You are not authorized.\");",
+							"    }",
+							"});",
+							"",
+							"pm.test(\"Handles player not found error\", function () {",
+							"    if (pm.response.code === 404) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.message).to.eql(\"Player not found\");",
+							"    }",
+							"});",
+							"",
+							"pm.test(\"Handles insufficient funds error\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.message).to.eql(\"Insufficient funds\");",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "jwt_token_example"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"amount\": 100\n}"
+				},
+				"url": {
+					"raw": "http://localhost:5001/authentication/players/1/currency/update",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"authentication",
+						"players",
+						"1",
+						"currency",
+						"update"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success - Update Currency",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 100\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5001/authentication/players/1/currency/update",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"authentication",
+								"players",
+								"1",
+								"currency",
+								"update"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "Text",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Wallet updated successfully\",\n    \"new_wallet_balance\": 1100\n}"
+				},
+				{
+					"name": "Failure - Invalid Input Data",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": null\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5001/authentication/players/1/currency/update",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"authentication",
+								"players",
+								"1",
+								"currency",
+								"update"
+							]
+						}
+					},
+					"status": "Error",
+					"code": 400,
+					"_postman_previewlanguage": "Text",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Invalid input data: \\\"amount\\\" field is required\"\n}"
+				},
+				{
+					"name": "Failure - Unauthorized Access",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 50\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5001/authentication/players/2/currency/update",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"authentication",
+								"players",
+								"2",
+								"currency",
+								"update"
+							]
+						}
+					},
+					"status": "Error",
+					"code": 403,
+					"_postman_previewlanguage": "Text",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"PlayerID Invalid. You are not authorized.\"\n}"
+				},
+				{
+					"name": "Failure - Player Not Found",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 50\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5001/authentication/players/9999/currency/update",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"authentication",
+								"players",
+								"9999",
+								"currency",
+								"update"
+							]
+						}
+					},
+					"status": "Error",
+					"code": 404,
+					"_postman_previewlanguage": "Text",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Player not found\"\n}"
+				},
+				{
+					"name": "Failure - Insufficient Funds",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": -5000\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5001/authentication/players/1/currency/update",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"authentication",
+								"players",
+								"1",
+								"currency",
+								"update"
+							]
+						}
+					},
+					"status": "Error",
+					"code": 400,
+					"_postman_previewlanguage": "Text",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Insufficient founds\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Logout 1st User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200 for successful logout\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response contains success message\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.message).to.eql(\"Logout successful\");",
+							"    pm.expect(jsonData).to.have.property(\"userId\");",
+							"});",
+							"",
+							"pm.test(\"Handles missing account ID\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.message).to.eql(\"Account ID is required\");",
+							"    }",
+							"});",
+							"",
+							"pm.test(\"Handles unauthorized access\", function () {",
+							"    if (pm.response.code === 403) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.message).to.eql(\"AccountID Invalid. You are not authorized.\");",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "jwt_token_example"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5001/authentication/logout?accountId=1",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "5001",
+					"path": ["authentication", "logout"],
+					"query": [
+						{
+							"key": "accountId",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success - Logout User",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5001/authentication/logout?accountId=1",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5001",
+							"path": ["authentication", "logout"],
+							"query": [
+								{
+									"key": "accountId",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"body": "{\n    \"message\": \"Logout successful\",\n    \"userId\": 1\n}"
+				},
+				{
+					"name": "Failure - Missing Account ID",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5001/authentication/logout",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5001",
+							"path": ["authentication", "logout"]
+						}
+					},
+					"status": "Error",
+					"code": 400,
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"body": "{\n    \"message\": \"Account ID is required\"\n}"
+				},
+				{
+					"name": "Failure - Unauthorized Access",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5001/authentication/logout?accountId=2",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5001",
+							"path": ["authentication", "logout"],
+							"query": [
+								{
+									"key": "accountId",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"status": "Error",
+					"code": 403,
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"body": "{\n    \"message\": \"AccountID Invalid. You are not authorized.\"\n}"
+				}
+			]
+		}		
+	]
+}

@@ -1,0 +1,658 @@
+{
+	"info": {
+		"_postman_id": "072b3ac1-0123-4630-ad9d-3e1725ff1661",
+		"name": "Auction Service - Set Auction Tests",
+		"description": "Postman collection for testing Auction Service endpoints with mock responses.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39855974"
+	},
+	"item": [
+		{
+			"name": "Set Auction - All Scenarios",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "jwt_token_example"  
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"gacha_id\": 101,\n    \"base_price\": 100.0\n}"
+				},
+				"url": {
+					"raw": "http://localhost:5004/auction_service/players/1/setAuction",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "5004",
+					"path": ["auction_service", "players", "1", "setAuction"]
+				}
+			},
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let responseJson = pm.response.json();",
+							"",
+							"// General response validation",
+							"pm.test(\"Response has a valid status code\", function () {",
+							"    pm.expect([201, 400, 403, 404, 500]).to.include(pm.response.code);",
+							"});",
+							"",
+							"if (pm.response.code === 201) {",
+							"    pm.test(\"Success - Auction Created\", function () {",
+							"        pm.expect(responseJson).to.have.property(\"message\", \"Auction created successfully\");",
+							"        pm.expect(responseJson).to.have.property(\"auction_id\");",
+							"    });",
+							"} else if (pm.response.code === 403) {",
+							"    pm.test(\"Unauthorized Access\", function () {",
+							"        pm.expect(responseJson).to.have.property(\"message\", \"Unauthorized access\");",
+							"    });",
+							"} else if (pm.response.code === 400) {",
+							"    pm.test(\"Invalid Input Data\", function () {",
+							"        pm.expect(responseJson).to.have.property(\"message\", \"Invalid input data\");",
+							"    });",
+							"} else if (pm.response.code === 404) {",
+							"    pm.test(\"Gacha Not Found\", function () {",
+							"        pm.expect(responseJson).to.have.property(\"message\", \"Gacha not found or not owned by user\");",
+							"    });",
+							"} else if (pm.response.code === 500) {",
+							"    pm.test(\"Internal Server Error\", function () {",
+							"        pm.expect(responseJson).to.have.property(\"message\", \"An internal error occurred\");",
+							"    });",
+							"}",
+							"",
+							"// Log the response for debugging",
+							"console.log(`Response: ${JSON.stringify(responseJson, null, 2)}`);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"response": [
+				{
+					"name": "Success - Auction Created",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"gacha_id\": 101,\n    \"base_price\": 100.0\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5004/auction_service/players/1/setAuction",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5004",
+							"path": ["auction_service", "players", "1", "setAuction"]
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"body": "{\n    \"message\": \"Auction created successfully\",\n    \"auction_id\": 1\n}"
+				},
+				{
+					"name": "Failure - Unauthorized Access",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "invalid_token"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"gacha_id\": 101,\n    \"base_price\": 100.0\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5004/auction_service/players/1/setAuction",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5004",
+							"path": ["auction_service", "players", "1", "setAuction"]
+						}
+					},
+					"status": "Forbidden",
+					"code": 403,
+					"_postman_previewlanguage": "json",
+					"body": "{\n    \"message\": \"Unauthorized access\"\n}"
+				},
+				{
+					"name": "Failure - Invalid Input Data",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"gacha_id\": 101\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5004/auction_service/players/1/setAuction",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5004",
+							"path": ["auction_service", "players", "1", "setAuction"]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"body": "{\n    \"message\": \"Invalid input data\"\n}"
+				},
+				{
+					"name": "Failure - Gacha Not Found",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"gacha_id\": 999,\n    \"base_price\": 100.0\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5004/auction_service/players/1/setAuction",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5004",
+							"path": ["auction_service", "players", "1", "setAuction"]
+						}
+					},
+					"status": "Not Found",
+					"code": 404,
+					"_postman_previewlanguage": "json",
+					"body": "{\n    \"message\": \"Gacha not found or not owned by user\"\n}"
+				},
+				{
+					"name": "Failure - Internal Server Error",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"gacha_id\": 101,\n    \"base_price\": 100.0\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5004/auction_service/players/1/setAuction",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5004",
+							"path": ["auction_service", "players", "1", "setAuction"]
+						}
+					},
+					"status": "Internal Server Error",
+					"code": 500,
+					"_postman_previewlanguage": "json",
+					"body": "{\n    \"message\": \"An internal error occurred\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Get Active Auctions",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5004/auction_service/auctions/active",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "5004",
+					"path": ["auction_service", "auctions", "active"]
+				}
+			},
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Parse the response",
+							"let responseJson = pm.response.json();",
+							"",
+							"// Status code checks",
+							"pm.test(\"Status code is valid\", function () {",
+							"    pm.expect([200, 404, 500]).to.include(pm.response.code);",
+							"});",
+							"",
+							"if (pm.response.code === 200) {",
+							"    pm.test(\"Success - Active Auctions Retrieved\", function () {",
+							"        pm.expect(responseJson).to.be.an(\"array\");",
+							"        responseJson.forEach(auction => {",
+							"            pm.expect(auction).to.have.property(\"auction_id\");",
+							"            pm.expect(auction).to.have.property(\"gacha_id\");",
+							"            pm.expect(auction).to.have.property(\"issuer_id\");",
+							"            pm.expect(auction).to.have.property(\"current_user_winner_id\");",
+							"            pm.expect(auction).to.have.property(\"current_bid\");",
+							"            pm.expect(auction).to.have.property(\"start_time\");",
+							"        });",
+							"    });",
+							"} else if (pm.response.code === 404) {",
+							"    pm.test(\"No Active Auctions Found\", function () {",
+							"        pm.expect(responseJson).to.have.property(\"message\", \"No active auctions found\");",
+							"    });",
+							"} else if (pm.response.code === 500) {",
+							"    pm.test(\"Internal Server Error\", function () {",
+							"        pm.expect(responseJson).to.have.property(\"message\");",
+							"    });",
+							"}",
+							"",
+							"// Log the response for debugging",
+							"console.log(`Response: ${JSON.stringify(responseJson, null, 2)}`);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"response": [
+				{
+					"name": "Success - Active Auctions Retrieved",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5004/auction_service/auctions/active",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5004",
+							"path": ["auction_service", "auctions", "active"]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "[\n    {\n        \"auction_id\": 1,\n        \"gacha_id\": 101,\n        \"issuer_id\": 1,\n        \"current_user_winner_id\": 2,\n        \"current_bid\": 150.0,\n        \"start_time\": \"2024-11-28T10:30:00Z\"\n    }\n]"
+				},
+				{
+					"name": "Failure - No Active Auctions Found",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5004/auction_service/auctions/active",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5004",
+							"path": ["auction_service", "auctions", "active"]
+						}
+					},
+					"status": "Not Found",
+					"code": 404,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"No active auctions found\"\n}"
+				},
+				{
+					"name": "Failure - Internal Server Error",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5004/auction_service/auctions/active",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5004",
+							"path": ["auction_service", "auctions", "active"]
+						}
+					},
+					"status": "Internal Server Error",
+					"code": 500,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"An internal error occurred\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Place Bid - Unified Test",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "jwt_token_example"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"bid_amount\": 250.0\n}"
+				},
+				"url": {
+					"raw": "http://localhost:5004/auction_service/auctions/1/bid",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "5004",
+					"path": ["auction_service", "auctions", "1", "bid"]
+				}
+			},
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let responseJson = pm.response.json();",
+							"",
+							"// Validate status codes",
+							"pm.test(\"Status code validation\", function () {",
+							"    pm.expect([200, 400, 403, 404, 500]).to.include(pm.response.code);",
+							"});",
+							"",
+							"// Validate success response",
+							"if (pm.response.code === 200) {",
+							"    pm.test(\"Success - Bid Placed Successfully\", function () {",
+							"        pm.expect(responseJson).to.have.property(\"message\", \"Bid placed successfully\");",
+							"    });",
+							"}",
+							"",
+							"// Validate 400 errors",
+							"if (pm.response.code === 400) {",
+							"    pm.test(\"Bad Request - Specific Message\", function () {",
+							"        pm.expect(responseJson).to.have.property(\"message\").that.is.oneOf([",
+							"            \"Invalid input data\",",
+							"            \"Bid amount must be higher than the current bid\",",
+							"            \"Auction is no longer active\",",
+							"            \"Insufficient funds\"",
+							"        ]);",
+							"    });",
+							"}",
+							"",
+							"// Validate 403 errors",
+							"if (pm.response.code === 403) {",
+							"    pm.test(\"Forbidden - Unauthorized Access\", function () {",
+							"        pm.expect(responseJson).to.have.property(\"message\", \"Unauthorized access\");",
+							"    });",
+							"}",
+							"",
+							"// Validate 404 errors",
+							"if (pm.response.code === 404) {",
+							"    pm.test(\"Not Found - Auction Not Found\", function () {",
+							"        pm.expect(responseJson).to.have.property(\"message\", \"Auction not found\");",
+							"    });",
+							"}",
+							"",
+							"// Validate 500 errors",
+							"if (pm.response.code === 500) {",
+							"    pm.test(\"Internal Server Error\", function () {",
+							"        pm.expect(responseJson).to.have.property(\"message\").that.includes(\"An internal error occurred\");",
+							"    });",
+							"}",
+							"",
+							"// Log the response for debugging",
+							"console.log(`Response: ${JSON.stringify(responseJson, null, 2)}`);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"response": [
+				{
+					"name": "Success - Bid Placed Successfully",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"bid_amount\": 250.0\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5004/auction_service/auctions/1/bid",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5004",
+							"path": ["auction_service", "auctions", "1", "bid"]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"body": "{\n    \"message\": \"Bid placed successfully\"\n}"
+				},
+				{
+					"name": "Failure - Invalid Input Data",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"bid_amount\": \"\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5004/auction_service/auctions/1/bid",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5004",
+							"path": ["auction_service", "auctions", "1", "bid"]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"body": "{\n    \"message\": \"Invalid input data\"\n}"
+				},
+				{
+					"name": "Failure - Auction Not Found",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"bid_amount\": 250.0\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5004/auction_service/auctions/999/bid",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5004",
+							"path": ["auction_service", "auctions", "999", "bid"]
+						}
+					},
+					"status": "Not Found",
+					"code": 404,
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"body": "{\n    \"message\": \"Auction not found\"\n}"
+				},
+				{
+					"name": "Failure - Insufficient Funds",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"bid_amount\": 1000.0\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5004/auction_service/auctions/1/bid",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5004",
+							"path": ["auction_service", "auctions", "1", "bid"]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"body": "{\n    \"message\": \"Insufficient funds\"\n}"
+				},
+				{
+					"name": "Failure - Auction No Longer Active",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"bid_amount\": 300.0\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5004/auction_service/auctions/2/bid",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5004",
+							"path": ["auction_service", "auctions", "2", "bid"]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"body": "{\n    \"message\": \"Auction is no longer active\"\n}"
+				}
+			]
+		}
+	]
+}

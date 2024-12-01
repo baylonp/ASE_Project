@@ -1,0 +1,1184 @@
+{
+	"info": {
+		"_postman_id": "176d417a-a4b0-4f81-b520-61fe0c9ed0ab",
+		"name": "Market Service - Buy In-Game Currency Tests",
+		"description": "Postman collection for testing Gacha Market Service endpoints with mock responses.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39855974"
+	},
+	"item": [
+		{
+			"name": "Update Gacha Catalog",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Verifica il codice di stato per il successo",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Verifica il messaggio di successo",
+							"pm.test(\"Gacha updated successfully\", function () {",
+							"    pm.expect(pm.response.json().message).to.eql(\"Gacha updated successfully\");",
+							"});",
+							"",
+							"// Gestione errori",
+							"if (pm.response.code === 403) {",
+							"    pm.test(\"Unauthorized access\", function () {",
+							"        pm.expect(pm.response.json().message).to.eql(\"Unauthorized access\");",
+							"    });",
+							"} else if (pm.response.code === 400) {",
+							"    pm.test(\"Invalid input data\", function () {",
+							"        pm.expect(pm.response.json().message).to.include(\"Invalid input data\");",
+							"    });",
+							"} else if (pm.response.code === 404) {",
+							"    pm.test(\"Gacha not found\", function () {",
+							"        pm.expect(pm.response.json().message).to.eql(\"Gacha not found\");",
+							"    });",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "admin_token_example"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"pilot_name\": \"Updated Pilot\",\n    \"rarity\": \"Leggendaria\",\n    \"experience\": 99,\n    \"ability\": \"Updated Ability\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:5003/market_service/admin/gachas/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5003",
+					"path": [
+						"market_service",
+						"admin",
+						"gachas",
+						"1"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success - Gacha Updated",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "admin_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"pilot_name\": \"Updated Pilot\",\n    \"rarity\": \"Leggendaria\",\n    \"experience\": 99,\n    \"ability\": \"Updated Ability\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5003/market_service/admin/gachas/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5003",
+							"path": [
+								"market_service",
+								"admin",
+								"gachas",
+								"1"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"body": "{\n    \"message\": \"Gacha updated successfully\"\n}"
+				},
+				{
+					"name": "Failure - Unauthorized Access",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "invalid_token"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5003/market_service/admin/gachas/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5003",
+							"path": [
+								"market_service",
+								"admin",
+								"gachas",
+								"1"
+							]
+						}
+					},
+					"status": "Error",
+					"code": 403,
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"body": "{\n    \"message\": \"Unauthorized access\"\n}"
+				},
+				{
+					"name": "Failure - Gacha Not Found",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "admin_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5003/market_service/admin/gachas/999",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5003",
+							"path": [
+								"market_service",
+								"admin",
+								"gachas",
+								"999"
+							]
+						}
+					},
+					"status": "Error",
+					"code": 404,
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"body": "{\n    \"message\": \"Gacha not found\"\n}"
+				},
+				{
+					"name": "Failure - Invalid Input Data",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "admin_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "http://localhost:5003/market_service/admin/gachas/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5003",
+							"path": [
+								"market_service",
+								"admin",
+								"gachas",
+								"1"
+							]
+						}
+					},
+					"status": "Error",
+					"code": 400,
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"body": "{\n    \"message\": \"Invalid input data\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Get User Transactions",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Verifica il codice di stato per il successo",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Verifica che le transazioni siano un array",
+							"pm.test(\"Transactions are returned\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.be.an('array');",
+							"    pm.expect(jsonData.length).to.be.above(0);",
+							"});",
+							"",
+							"// Gestione errori",
+							"if (pm.response.code === 401) {",
+							"    pm.test(\"Token is missing\", function () {",
+							"        pm.expect(pm.response.json().message).to.eql(\"Token is missing!\");",
+							"    });",
+							"} else if (pm.response.code === 403) {",
+							"    pm.test(\"Unauthorized access\", function () {",
+							"        pm.expect(pm.response.json().message).to.eql(\"Unauthorized access\");",
+							"    });",
+							"} else if (pm.response.code === 404) {",
+							"    pm.test(\"No transactions found\", function () {",
+							"        pm.expect(pm.response.json().message).to.eql(\"No transactions found for this user\");",
+							"    });",
+							"} else if (pm.response.code === 500) {",
+							"    pm.test(\"Internal server error\", function () {",
+							"        pm.expect(pm.response.json().message).to.include(\"internal error\");",
+							"    });",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "jwt_token_example"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5003/market_service/players/1/transactions",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5003",
+					"path": [
+						"market_service",
+						"players",
+						"1",
+						"transactions"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success - Transactions Retrieved",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5003/market_service/players/1/transactions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5003",
+							"path": [
+								"market_service",
+								"players",
+								"1",
+								"transactions"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"body": "[\n    {\n        \"id\": 1,\n        \"user_id\": \"1\",\n        \"amount_spent\": 50.0,\n        \"timestamp\": \"2024-11-28T10:00:00+00:00\"\n    },\n    {\n        \"id\": 2,\n        \"user_id\": \"1\",\n        \"amount_spent\": 20.0,\n        \"timestamp\": \"2024-11-29T12:30:00+00:00\"\n    }\n]"
+				},
+				{
+					"name": "Failure - No Transactions Found",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5003/market_service/players/999/transactions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5003",
+							"path": [
+								"market_service",
+								"players",
+								"999",
+								"transactions"
+							]
+						}
+					},
+					"status": "Error",
+					"code": 404,
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"body": "{\n    \"message\": \"No transactions found for this user\"\n}"
+				},
+				{
+					"name": "Failure - Token Missing",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5003/market_service/players/1/transactions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5003",
+							"path": [
+								"market_service",
+								"players",
+								"1",
+								"transactions"
+							]
+						}
+					},
+					"status": "Error",
+					"code": 401,
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"body": "{\n    \"message\": \"Token is missing!\"\n}"
+				},
+				{
+					"name": "Failure - Unauthorized Access",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "invalid_token"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5003/market_service/players/1/transactions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5003",
+							"path": [
+								"market_service",
+								"players",
+								"1",
+								"transactions"
+							]
+						}
+					},
+					"status": "Error",
+					"code": 403,
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"body": "{\n    \"message\": \"Unauthorized access\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Buy In-Game Currency",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Verifica il codice di stato per il successo",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Verifica il messaggio di successo",
+							"pm.test(\"Currency purchased successfully\", function () {",
+							"    pm.expect(pm.response.json().message).to.eql(\"In-game currency purchased successfully\");",
+							"});",
+							"",
+							"// Gestione errori",
+							"if (pm.response.code === 401) {",
+							"    pm.test(\"Token is missing\", function () {",
+							"        pm.expect(pm.response.json().message).to.eql(\"Token is missing!\");",
+							"    });",
+							"} else if (pm.response.code === 403) {",
+							"    pm.test(\"Unauthorized access\", function () {",
+							"        pm.expect(pm.response.json().message).to.eql(\"Unauthorized access\");",
+							"    });",
+							"} else if (pm.response.code === 404) {",
+							"    pm.test(\"Player not found\", function () {",
+							"        pm.expect(pm.response.json().message).to.eql(\"Player not found\");",
+							"    });",
+							"} else if (pm.response.code === 400) {",
+							"    pm.test(\"Invalid input data\", function () {",
+							"        pm.expect(pm.response.json().message).to.include(\"Invalid input data\");",
+							"    });",
+							"} else if (pm.response.code === 500) {",
+							"    pm.test(\"Internal server error\", function () {",
+							"        pm.expect(pm.response.json().message).to.include(\"internal error\");",
+							"    });",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "jwt_token_example"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5003/market_service/players/1/currency/buy?amount=100",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5003",
+					"path": [
+						"market_service",
+						"players",
+						"1",
+						"currency",
+						"buy"
+					],
+					"query": [
+						{
+							"key": "amount",
+							"value": "100"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success - Currency Purchased",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5003/market_service/players/1/currency/buy?amount=100",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5003",
+							"path": [
+								"market_service",
+								"players",
+								"1",
+								"currency",
+								"buy"
+							],
+							"query": [
+								{
+									"key": "amount",
+									"value": "100"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"body": "{\n    \"message\": \"In-game currency purchased successfully\"\n}"
+				},
+				{
+					"name": "Failure - Token Missing",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5003/market_service/players/1/currency/buy?amount=100",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5003",
+							"path": [
+								"market_service",
+								"players",
+								"1",
+								"currency",
+								"buy"
+							],
+							"query": [
+								{
+									"key": "amount",
+									"value": "100"
+								}
+							]
+						}
+					},
+					"status": "Error",
+					"code": 401,
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"body": "{\n    \"message\": \"Token is missing!\"\n}"
+				},
+				{
+					"name": "Failure - Unauthorized Access",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "invalid_token"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5003/market_service/players/1/currency/buy?amount=100",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5003",
+							"path": [
+								"market_service",
+								"players",
+								"1",
+								"currency",
+								"buy"
+							],
+							"query": [
+								{
+									"key": "amount",
+									"value": "100"
+								}
+							]
+						}
+					},
+					"status": "Error",
+					"code": 403,
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"body": "{\n    \"message\": \"Unauthorized access\"\n}"
+				},
+				{
+					"name": "Failure - Player Not Found",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5003/market_service/players/999/currency/buy?amount=100",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5003",
+							"path": [
+								"market_service",
+								"players",
+								"999",
+								"currency",
+								"buy"
+							],
+							"query": [
+								{
+									"key": "amount",
+									"value": "100"
+								}
+							]
+						}
+					},
+					"status": "Error",
+					"code": 404,
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"body": "{\n    \"message\": \"Player not found\"\n}"
+				},
+				{
+					"name": "Failure - Invalid Input Data",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5003/market_service/players/1/currency/buy?amount=-50",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+								"port": "5003",
+							"path": [
+								"market_service",
+								"players",
+								"1",
+								"currency",
+								"buy"
+							],
+							"query": [
+								{
+									"key": "amount",
+									"value": "-50"
+								}
+							]
+						}
+					},
+					"status": "Error",
+					"code": 400,
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"body": "{\n    \"message\": \"Invalid input data: amount must be greater than zero\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Retrieve Pilot Catalog",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Verifica il codice di stato per il successo",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Verifica che il catalogo contenga piloti",
+							"pm.test(\"Catalog contains pilots\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.be.an('array');",
+							"    pm.expect(jsonData.length).to.be.above(0);",
+							"    jsonData.forEach(pilot => {",
+							"        pm.expect(pilot).to.have.keys(\"id\", \"pilot_name\", \"rarity\", \"experience\", \"ability\");",
+							"    });",
+							"});",
+							"",
+							"// Gestione errori",
+							"if (pm.response.code === 404) {",
+							"    pm.test(\"No pilots available in the catalog\", function () {",
+							"        pm.expect(pm.response.json().message).to.eql(\"No pilots available in the catalog\");",
+							"    });",
+							"} else if (pm.response.code === 403) {",
+							"    pm.test(\"Unauthorized access\", function () {",
+							"        pm.expect(pm.response.json().message).to.eql(\"Unauthorized access\");",
+							"    });",
+							"} else if (pm.response.code === 500) {",
+							"    pm.test(\"Internal server error\", function () {",
+							"        pm.expect(pm.response.json().message).to.include(\"internal error\");",
+							"    });",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "jwt_token_example"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5003/market_service/catalog",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5003",
+					"path": [
+						"market_service",
+						"catalog"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success - Catalog Retrieved",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5003/market_service/catalog",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5003",
+							"path": [
+								"market_service",
+								"catalog"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"body": "[\n    {\n        \"id\": 1,\n        \"pilot_name\": \"Max Verstappen\",\n        \"rarity\": \"Leggendaria\",\n        \"experience\": 95,\n        \"ability\": \"Dominatore assoluto\"\n    },\n    {\n        \"id\": 2,\n        \"pilot_name\": \"Charles Leclerc\",\n        \"rarity\": \"Leggendaria\",\n        \"experience\": 92,\n        \"ability\": \"Eccellente nelle qualifiche\"\n    }\n]"
+				},
+				{
+					"name": "Failure - No Pilots in Catalog",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5003/market_service/catalog",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5003",
+							"path": [
+								"market_service",
+								"catalog"
+							]
+						}
+					},
+					"status": "Error",
+					"code": 404,
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"body": "{\n    \"message\": \"No pilots available in the catalog\"\n}"
+				},
+				{
+					"name": "Failure - Unauthorized Access",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "invalid_token"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5003/market_service/catalog",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5003",
+							"path": [
+								"market_service",
+								"catalog"
+							]
+						}
+					},
+					"status": "Error",
+					"code": 403,
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"body": "{\n    \"message\": \"Unauthorized access\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Purchase Gacha Roll",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Verifica il codice di stato per il successo",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Verifica che la risposta contenga il pilota",
+							"pm.test(\"Roll purchased successfully\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.message).to.eql(\"Roll purchased successfully\");",
+							"    pm.expect(jsonData.pilot).to.be.an('object');",
+							"    pm.expect(jsonData.pilot).to.have.all.keys(\"gacha_id\", \"pilot_name\", \"rarity\", \"experience\", \"ability\");",
+							"});",
+							"",
+							"// Gestione errori",
+							"if (pm.response.code === 404) {",
+							"    pm.test(\"Player or pilot not found\", function () {",
+							"        pm.expect(pm.response.json().message).to.include(\"not found\");",
+							"    });",
+							"} else if (pm.response.code === 400) {",
+							"    pm.test(\"Not enough in-game currency\", function () {",
+							"        pm.expect(pm.response.json().message).to.eql(\"Not enough in-game currency to purchase a roll\");",
+							"    });",
+							"} else if (pm.response.code === 403) {",
+							"    pm.test(\"Unauthorized access\", function () {",
+							"        pm.expect(pm.response.json().message).to.eql(\"Unauthorized access\");",
+							"    });",
+							"} else if (pm.response.code === 401) {",
+							"    pm.test(\"Token is missing\", function () {",
+							"        pm.expect(pm.response.json().message).to.eql(\"Token is missing!\");",
+							"    });",
+							"} else if (pm.response.code === 500) {",
+							"    pm.test(\"Internal server error\", function () {",
+							"        pm.expect(pm.response.json().message).to.include(\"internal error\");",
+							"    });",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "jwt_token_example"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5003/market_service/players/1/gacha/roll",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5003",
+					"path": [
+						"market_service",
+						"players",
+						"1",
+						"gacha",
+						"roll"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success - Roll Purchased",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5003/market_service/players/1/gacha/roll",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5003",
+							"path": [
+								"market_service",
+								"players",
+								"1",
+								"gacha",
+								"roll"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"body": "{\n    \"message\": \"Roll purchased successfully\",\n    \"pilot\": {\n        \"gacha_id\": 1,\n        \"pilot_name\": \"Max Verstappen\",\n        \"rarity\": \"Leggendaria\",\n        \"experience\": 95,\n        \"ability\": \"Dominatore assoluto\"\n    }\n}"
+				},
+				{
+					"name": "Failure - Player Not Found",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5003/market_service/players/99/gacha/roll",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5003",
+							"path": [
+								"market_service",
+								"players",
+								"99",
+								"gacha",
+								"roll"
+							]
+						}
+					},
+					"status": "Error",
+					"code": 404,
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"body": "{\n    \"message\": \"Player not found\"\n}"
+				},
+				{
+					"name": "Failure - Not Enough Currency",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5003/market_service/players/2/gacha/roll",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5003",
+							"path": [
+								"market_service",
+								"players",
+								"2",
+								"gacha",
+								"roll"
+							]
+						}
+					},
+					"status": "Error",
+					"code": 400,
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"body": "{\n    \"message\": \"Not enough in-game currency to purchase a roll\"\n}"
+				},
+				{
+					"name": "Failure - No Pilots Available",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "jwt_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5003/market_service/players/1/gacha/roll",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5003",
+							"path": [
+								"market_service",
+								"players",
+								"1",
+								"gacha",
+								"roll"
+							]
+						}
+					},
+					"status": "Error",
+					"code": 404,
+					"header": [
+						{
+							"key": "Content-Type",
+							 "value": "application/json"
+						}
+					],
+					"body": "{\n    \"message\": \"No pilots available in the catalog\"\n}"
+				}
+			]
+		}
+	]
+}
