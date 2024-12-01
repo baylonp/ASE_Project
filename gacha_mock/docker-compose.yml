@@ -1,0 +1,41 @@
+services:
+  authentication:
+    build:
+      context: ./authentication
+      dockerfile: Dockerfile
+    container_name: auth_mock_service
+    ports:
+      - "5001:5001"  
+    environment:
+      FLASK_APP: mock_app.py
+      FLASK_ENV: development
+  gacha_service:
+    build:
+      context: ./gacha_service
+      dockerfile: Dockerfile
+    container_name: gacha_mock_service
+    ports:
+      - "5002:5002"  
+    environment:
+      FLASK_APP: mock_app.py
+      FLASK_ENV: development
+  gacha_market_service:
+    build:
+      context: ./gacha_market_service
+      dockerfile: Dockerfile
+    container_name: gacha_market_mock_service
+    ports:
+      - "5003:5003"  
+    environment:
+      FLASK_APP: mock_app.py
+      FLASK_ENV: development
+  auction_service:
+    build:
+      context: ./auction_service
+      dockerfile: Dockerfile
+    container_name: auction_mock_service
+    ports:
+      - "5004:5004"  
+    environment:
+      FLASK_APP: mock_app.py
+      FLASK_ENV: development
