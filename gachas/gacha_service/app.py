@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 import requests
 import jwt
 from functools import wraps
+from requests.exceptions import Timeout, RequestException
  
 app = Flask(__name__)
  
@@ -247,6 +248,55 @@ def update_gacha_for_all_users(gacha_id):
         return make_response(jsonify({'message': 'Gacha updated for all users successfully'}), 200)
     except Exception as e:
         return make_response(jsonify({'message': f'An internal error occurred: {str(e)}'}), 500)
+    
+@app.route('/gacha_service/admin/collections', methods=['GET'])
+@token_required
+def get_all_collections():
+    """
+    Permette ad un admin di vedere tutto il database di Gacha Collection
+    """
+    # Recupera il token dalla richiesta
+    token = request.headers.get('x-access-token')
+    if not token:
+        return jsonify({'message': 'Token is missing!'}), 401
+
+    try:
+        # Effettua una richiesta all'admin_service per verificare che l'utente sia un admin
+        verify_response = requests.get(ADMIN_SERVICE_URL, headers={'x-access-token': token},verify=False,timeout=5)
+        if verify_response.status_code != 200:
+            return jsonify({'message': 'Unauthorized access'}), 403
+
+        # Se l'utente è un admin, recupera tutte le collezioni di Gacha
+        gachas = GachaCollection.query.all()
+        if not gachas:
+            return make_response(jsonify({'message': 'No Gacha collections found'}), 204)
+
+        # Prepara la risposta contenente tutte le collezioni di Gacha
+        result = []
+        for gacha in gachas:
+            result.append({
+                'id': gacha.id,
+                'user_id': gacha.user_id,
+                'gacha_id': gacha.gacha_id,
+                'pilot_name': gacha.pilot_name,
+                'rarity': gacha.rarity,
+                'experience': gacha.experience,
+                'ability': gacha.ability
+            })
+
+        return jsonify(result), 200
+    except Timeout:
+        return make_response(jsonify({'message': 'Authentication service is temporarily unavailable'}), 503)  # Service Unavailable
+
+
+    except requests.exceptions.RequestException as e:
+        # Gestione di eventuali errori di comunicazione con il servizio admin_service
+        return make_response(jsonify({'message': f'An error occurred while communicating with the admin service: {str(e)}'}), 500)
+
+    except Exception as e:
+        # Gestione di eventuali errori interni
+        return make_response(jsonify({'message': f'An internal error occurred: {str(e)}'}), 500)
+
  
 if __name__ == '__main__':
     app.run(debug=True)
