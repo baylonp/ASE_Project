@@ -3,6 +3,8 @@ from flask_sqlalchemy import SQLAlchemy
 import requests
 import jwt
 from functools import wraps
+from requests.exceptions import Timeout, RequestException
+
  
 app = Flask(__name__)
  
@@ -45,8 +47,8 @@ class GachaCollection(db.Model):
 with app.app_context():
     db.create_all()
  
-GACHA_MARKET_SERVICE_URL = 'http://gacha_market_service:5000/market_service/catalog'
-ADMIN_SERVICE_URL = 'http://admin_service:5000/admin_service/verify_admin'
+GACHA_MARKET_SERVICE_URL = 'https://gacha_market_service:5000/market_service/catalog'
+ADMIN_SERVICE_URL = 'https://admin_service:5000/admin_service/verify_admin'
  
 @app.route('/gacha_service/players/<userID>/gachas', methods=['GET', 'DELETE'])
 @token_required
@@ -155,11 +157,15 @@ def get_missing_gachas(current_user_id, token, userID):
  
         # Effettuare una richiesta al servizio gacha_market_service per ottenere il catalogo completo dei gachas
         headers = {'x-access-token': token}  # Aggiungi il token all'header
-        response = requests.get(f"{GACHA_MARKET_SERVICE_URL}", headers=headers)
- 
-        if response.status_code != 200:
-            return make_response(jsonify({'message': 'Failed to retrieve the gacha catalog from gacha_market_service'}), 500)
- 
+        try:
+            response = requests.get(f"{GACHA_MARKET_SERVICE_URL}", headers=headers, verify=False, timeout=5)
+    
+            if response.status_code != 200:
+                return make_response(jsonify({'message': 'Failed to retrieve the gacha catalog from gacha_market_service'}), 500)
+        except Timeout:
+                return make_response(jsonify({'message': 'Authentication service is temporarily unavailable'}), 503)  # Service Unavailable
+
+            
         # Catalogo completo dei gachas
         catalog = response.json()
  
@@ -214,11 +220,16 @@ def update_gacha_for_all_users(gacha_id):
     if not token:
         return jsonify({'message': 'Token is missing!'}), 401
     try:
-        # Effettua una richiesta all'admin_service per verificare che l'utente sia un admin
-       
-        verify_response = requests.get(ADMIN_SERVICE_URL, headers={'x-access-token': token})
-        if verify_response.status_code != 200:
-            return jsonify({'message': 'Unauthorized access'}), 403
+        try:
+            # Effettua una richiesta all'admin_service per verificare che l'utente sia un admin
+            verify_response = requests.get(ADMIN_SERVICE_URL, headers={'x-access-token': token}, verify=False, timeout=5)
+            if verify_response.status_code != 200:
+                return jsonify({'message': 'Unauthorized access'}), 403
+            
+        except Timeout:
+                return make_response(jsonify({'message': 'Authentication service is temporarily unavailable'}), 503)  # Service Unavailable
+
+    
     except requests.exceptions.RequestException as e:
         return jsonify({'message': f'An error occurred while communicating with the admin service: {str(e)}'}), 500
 

@@ -7,6 +7,8 @@ import jwt
 from functools import wraps
 import base64
 import json
+from requests.exceptions import Timeout, RequestException
+
  
 # Configura l'app Flask
 app = Flask(__name__)
@@ -215,11 +217,18 @@ def delete_account(current_user, token):
     try:
         # Effettuare una richiesta DELETE al servizio gacha_service per eliminare la gacha collection dell'utente
         headers = {'x-access-token': token}  # Aggiungi il token all'header
-        gacha_response = requests.delete(f"{GACHA_SERVICE_URL}/gacha_service/players/{account_id}/gachas", headers=headers, verify= False)
+        try:
+            gacha_response = requests.delete(f"{GACHA_SERVICE_URL}/gacha_service/players/{account_id}/gachas", headers=headers,verify= False,timeout=5)
  
-        # Controlla la risposta del gacha_service
-        if gacha_response.status_code != 200 and gacha_response.status_code != 404:
-            return make_response(jsonify({'message': 'Failed to delete Gacha collection from gacha_service'}), 500)
+            # Controlla la risposta del gacha_service
+            if gacha_response.status_code != 200 and gacha_response.status_code != 404:
+                return make_response(jsonify({'message': 'Failed to delete Gacha collection from gacha_service'}), 500)
+            
+        except Timeout:
+            return make_response(jsonify({'message': 'Failed to retrieve user information from authentication service'}), 500)
+    
+            
+        
  
         # Cancellare l'account utente
         db.session.delete(user)

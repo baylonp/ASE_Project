@@ -5,6 +5,8 @@ from datetime import datetime, timezone, timedelta
 import jwt
 import requests
 from functools import wraps
+from requests.exceptions import Timeout, RequestException
+
  
 # Configura l'app Flask
 app = Flask(__name__)
@@ -17,9 +19,9 @@ app.config['SECRET_KEY'] = 'your_secret_key'
 # Inizializza il database
 db = SQLAlchemy(app)
 
-GACHA_MARKET_SERVICE_URL = 'http://gacha_market_service:5000/market_service/admin/gachas'
-AUTH_SERVICE_URL = 'http://authentication_service:5000'
-GACHA_SERVICE_URL = 'http://gacha_service:5000/gacha_service/admin/update_all'
+GACHA_MARKET_SERVICE_URL = 'https://gacha_market_service:5000/market_service/admin/gachas'
+AUTH_SERVICE_URL = 'https://authentication_service:5000'
+GACHA_SERVICE_URL = 'https://gacha_service:5000/gacha_service/admin/update_all'
  
 # Definizione del modello Admin
 class Admin(db.Model):
@@ -114,13 +116,18 @@ def get_user_info(current_admin, playerId):
     # Effettua una richiesta al servizio di autenticazione per ottenere le informazioni sull'utente
     try:
         response = requests.get(f"{AUTH_SERVICE_URL}/authentication/players/{playerId}",
-                                headers={'x-access-token': token})
+                                headers={'x-access-token': token}, verify=False, timeout=5)
         if response.status_code == 200:
             return make_response(jsonify(response.json()), 200)
         elif response.status_code == 404:
             return make_response(jsonify({'message': 'Player not found'}), 404)
         else:
             return make_response(jsonify({'message': 'Failed to retrieve user information'}), response.status_code)
+       
+    except Timeout:
+        return make_response(jsonify({'message': 'Authentication service is temporarily unavailable'}), 503)  # Service Unavailable
+
+    
     except requests.exceptions.RequestException as e:
         return make_response(jsonify({'message': f'An error occurred while communicating with the authentication service: {str(e)}'}), 500)
     
@@ -140,18 +147,22 @@ def update_gacha(current_admin, gacha_id):
     # Effettua una richiesta al gacha_market_service per aggiornare il catalogo
     
     try:
+        
         response = requests.patch(f"{GACHA_MARKET_SERVICE_URL}/{gacha_id}",
-                                headers={'x-access-token': token}, json=data)
+                                headers={'x-access-token': token}, json=data, verify=False, timeout=5)
         if response.status_code != 200:
             return make_response(jsonify({'message': 'Failed to update gacha in catalog',}), response.status_code)
 
         # Effettua una richiesta al gacha_service per aggiornare la collezione degli utenti
         
-        update_response = requests.patch(f"{GACHA_SERVICE_URL}/{gacha_id}", json=data, headers={'x-access-token': request.headers.get('x-access-token')})
+        update_response = requests.patch(f"{GACHA_SERVICE_URL}/{gacha_id}", json=data, headers={'x-access-token': request.headers.get('x-access-token')},verify=False, timeout=5)
         if update_response.status_code != 200:
             return make_response(jsonify({'message': 'Failed to update gacha in user collections'}), update_response.status_code)
+        
 
         return make_response(jsonify({'message': 'Gacha updated successfully'}), 200)
+    except Timeout:
+            return make_response(jsonify({'message': 'Authentication service is temporarily unavailable'}), 503)  # Service Unavailable
     except requests.exceptions.RequestException as e:
         return make_response(jsonify({'message': f'An error occurred while communicating with the gacha market or gacha service: {str(e)}'}), 500)
  

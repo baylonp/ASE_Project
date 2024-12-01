@@ -8,13 +8,15 @@ import jwt
 import os
 import base64
 from werkzeug.utils import secure_filename
+from requests.exceptions import Timeout, RequestException
+
  
 app = Flask(__name__)
  
 # Configurazione dell'URL del servizio di autenticazione
-AUTH_SERVICE_URL = 'http://authentication:5000' 
-GACHA_SERVICE_URL = 'http://gacha_service:5000'
-ADMIN_SERVICE_URL = 'http://admin_service:5000/admin_service/verify_admin'
+AUTH_SERVICE_URL = 'https://authentication:5000' 
+GACHA_SERVICE_URL = 'https://gacha_service:5000'
+ADMIN_SERVICE_URL = 'https://admin_service:5000/admin_service/verify_admin'
 
  
 # Configurazione del database SQLite
@@ -113,9 +115,14 @@ with app.app_context():
 def update_gacha_catalog(current_user_id, token, gacha_id):
     # Verifica che l'utente sia effettivamente un admin
     try:
-        verify_response = requests.get(ADMIN_SERVICE_URL, headers={'x-access-token': token})
-        if verify_response.status_code != 200:
-            return jsonify({'message': 'Unauthorized access'}), 403
+        try:
+            verify_response = requests.get(ADMIN_SERVICE_URL, headers={'x-access-token': token}, verify=False, timeout=5)
+            if verify_response.status_code != 200:
+                return jsonify({'message': 'Unauthorized access'}), 403
+        except Timeout:
+            return make_response(jsonify({'message': 'Authentication service is temporarily unavailable'}), 503)  # Service Unavailable
+
+
     except requests.exceptions.RequestException as e:
         return jsonify({'message': f'An error occurred while communicating with the admin service: {str(e)}'}), 500
 
@@ -197,11 +204,17 @@ def buy_in_game_currency(current_user_id, token, playerId):
             return make_response(jsonify({'message': 'Invalid input data: amount must be greater than zero'}), 400)
  
         headers = {'x-access-token': token}  # Aggiungi il token all'header
-        response = requests.patch(
-            f"{AUTH_SERVICE_URL}/authentication/players/{playerId}/currency/update",
-            json={'amount': amount},
-            headers=headers
-        )
+        try:
+            response = requests.patch(
+                f"{AUTH_SERVICE_URL}/authentication/players/{playerId}/currency/update",
+                json={'amount': amount},
+                headers=headers,
+                verify=False,
+                timeout=5
+            )
+        except Timeout:
+            return make_response(jsonify({'message': 'Authentication service is temporarily unavailable'}), 503)  # Service Unavailable
+
  
         if response.status_code == 200:
             new_transaction = Transaction(
@@ -331,10 +344,15 @@ def buy_gacha_roll(current_user_id, token, playerId):
         ROLL_COST = 100
  
         headers = {'x-access-token': token}  # Aggiungi il token all'header
-        response = requests.get(f"{AUTH_SERVICE_URL}/authentication/players/{playerId}", headers=headers)
- 
-        if response.status_code == 404:
-            return make_response(jsonify({'message': 'Player not found'}), 404)
+        try:
+            response = requests.get(f"{AUTH_SERVICE_URL}/authentication/players/{playerId}", headers=headers,verify=False, timeout=5)
+    
+            if response.status_code == 404:
+                return make_response(jsonify({'message': 'Player not found'}), 404)
+        except Timeout:
+            return make_response(jsonify({'message': 'Authentication service is temporarily unavailable'}), 503)  # Service Unavailable
+
+            
  
         user_data = response.json()
         user_wallet = user_data.get('wallet', 0)
@@ -350,11 +368,17 @@ def buy_gacha_roll(current_user_id, token, playerId):
         # selected_pilot = random.choice(pilots)
         selected_pilot = get_random_pilot(pilots)
  
-        update_response = requests.patch(
-            f"{AUTH_SERVICE_URL}/authentication/players/{playerId}/currency/update",
-            json={'amount': -ROLL_COST},
-            headers=headers
-        )
+        try:
+            update_response = requests.patch(
+                f"{AUTH_SERVICE_URL}/authentication/players/{playerId}/currency/update",
+                json={'amount': -ROLL_COST},
+                headers=headers,
+                verify=False,
+                timeout=5
+            )
+        except Timeout:
+            return make_response(jsonify({'message': 'Authentication service is temporarily unavailable'}), 503)  # Service Unavailable
+
  
         if update_response.status_code != 200:
             return make_response(jsonify({'message': 'Failed to update user wallet'}), 500)
@@ -367,14 +391,22 @@ def buy_gacha_roll(current_user_id, token, playerId):
             "ability": selected_pilot.ability
         }
  
-        add_gacha_response = requests.post(
-            f"{GACHA_SERVICE_URL}/gacha_service/players/{playerId}/gachas",
-            json=gacha_data,
-            headers=headers
-        )
+        try:
+            add_gacha_response = requests.post(
+                f"{GACHA_SERVICE_URL}/gacha_service/players/{playerId}/gachas",
+                json=gacha_data,
+                headers=headers,
+                verify=False,
+                timeout=5
+            )
  
-        if add_gacha_response.status_code != 201:
-            return make_response(jsonify({'message': 'Failed to add gacha to user collection'}), 500)
+            if add_gacha_response.status_code != 201:
+                return make_response(jsonify({'message': 'Failed to add gacha to user collection'}), 500)
+            
+        except Timeout:
+
+            return make_response(jsonify({'message': 'Authentication service is temporarily unavailable'}), 503)  # Service Unavailable
+
  
         return make_response(jsonify({
             'message': 'Roll purchased successfully',

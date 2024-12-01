@@ -5,6 +5,7 @@ from datetime import datetime, timezone, timedelta
 import requests
 import jwt
 from functools import wraps
+from requests.exceptions import Timeout, RequestException
  
 app = Flask(__name__)
  
@@ -33,8 +34,8 @@ class Auction(db.Model):
 with app.app_context():
     db.create_all()
  
-GACHA_SERVICE_URL = 'http://gacha_service:5000'
-AUTH_SERVICE_URL = 'http://authentication_service:5000'
+GACHA_SERVICE_URL = 'https://gacha_service:5000'
+AUTH_SERVICE_URL = 'https://authentication_service:5000'
  
 # Decoratore per proteggere gli endpoint con autenticazione JWT
 def token_required(f):
@@ -72,9 +73,14 @@ def set_auction(current_user, token, userId):
         gacha_id = data['gacha_id']
         base_price = data['base_price']
  
-        # Effettuare una richiesta GET al gacha_service per verificare se l'utente possiede il gacha
-        headers = {'x-access-token': token}  # Aggiungi il token all'header
-        response = requests.get(f"{GACHA_SERVICE_URL}/gacha_service/players/{userId}/gachas/{gacha_id}", headers=headers)
+        try:
+            # Effettuare una richiesta GET al gacha_service per verificare se l'utente possiede il gacha
+            headers = {'x-access-token': token}  # Aggiungi il token all'header
+            response = requests.get(f"{GACHA_SERVICE_URL}/gacha_service/players/{userId}/gachas/{gacha_id}", headers=headers, verify= False, timeout=5 )
+
+        except Timeout:
+            return make_response(jsonify({'message': 'Gacha service is temporarily unavailable'}), 503)  # Service unavailable
+    
  
         if response.status_code == 404:
             return make_response(jsonify({'message': 'Gacha not found or not owned by user'}), 404)
@@ -161,11 +167,18 @@ def place_bid(current_user, token, auctionID):
         if not auction.is_active:
             return make_response(jsonify({'message': 'Auction is no longer active'}), 400)
 
-        # Verificare che l'utente abbia fondi sufficienti
-        headers = {'x-access-token': token}  # Aggiungi il token all'header
-        response = requests.get(f"{AUTH_SERVICE_URL}/authentication/players/{user_id}", headers=headers)
-        if response.status_code != 200:
-            return make_response(jsonify({'message': 'Failed to retrieve user information from authentication service'}), 500)
+
+        try:
+            # Verificare che l'utente abbia fondi sufficienti
+            headers = {'x-access-token': token}  # Aggiungi il token all'header
+            response = requests.get(f"{AUTH_SERVICE_URL}/authentication/players/{user_id}", headers=headers,verify=False, timeout=5)
+            
+            if response.status_code != 200:
+                return make_response(jsonify({'message': 'Failed to retrieve user information from authentication service'}), 500)
+        except Timeout:
+            # If the request times out, return an appropriate message
+            return make_response(jsonify({'message': 'Authentication service is temporarily unavailable'}), 503)  # Service Unavailable
+
 
         user_data = response.json()
         wallet_balance = user_data.get('wallet', 0)
@@ -179,22 +192,34 @@ def place_bid(current_user, token, auctionID):
 
         # Restituire i fondi al precedente vincitore (se esiste e non è l'emittente dell'asta)
         if auction.current_user_winner_id and auction.current_user_winner_id != auction.issuer_id:
-            refund_response = requests.patch(
-                f"{AUTH_SERVICE_URL}/authentication/players/{auction.current_user_winner_id}/currency/update",
-                json={'amount': auction.current_bid},
-                headers=headers
-            )
-            if refund_response.status_code != 200:
-                return make_response(jsonify({'message': 'Failed to refund previous bidder'}), 500)
+            try:
+                refund_response = requests.patch(
+                    f"{AUTH_SERVICE_URL}/authentication/players/{auction.current_user_winner_id}/currency/update",
+                    json={'amount': auction.current_bid},
+                    headers=headers,
+                    timeout=5
+                )
+                if refund_response.status_code != 200:
+                    return make_response(jsonify({'message': 'Failed to refund previous bidder'}), 500)
+            except Timeout:
+                return make_response(jsonify({'message': 'Authentication service is temporarily unavailable'}), 503)  # Service Unavailable
 
-        # Decrementare l'importo dal wallet del nuovo offerente
-        debit_response = requests.patch(
-            f"{AUTH_SERVICE_URL}/authentication/players/{user_id}/currency/update",
-            json={'amount': -bid_amount},  # L'importo deve essere sottratto
-            headers=headers
-        )
-        if debit_response.status_code != 200:
-            return make_response(jsonify({'message': 'Failed to debit user funds'}), 500)
+        try:
+            # Decrementare l'importo dal wallet del nuovo offerente
+            debit_response = requests.patch(
+                f"{AUTH_SERVICE_URL}/authentication/players/{user_id}/currency/update",
+                json={'amount': -bid_amount},  # L'importo deve essere sottratto
+                headers=headers,
+                timeout=5
+            )
+            if debit_response.status_code != 200:
+                return make_response(jsonify({'message': 'Failed to debit user funds'}), 500)
+        
+        except Timeout:
+            return make_response(jsonify({'message': 'Authentication service is temporarily unavailable'}), 503)  # Service Unavailable
+
+
+        
 
         # Aggiornare l'asta con il nuovo vincitore e la nuova puntata
         auction.current_user_winner_id = user_id
@@ -223,11 +248,20 @@ def end_auction(auction_id, token):
  
             # Se il vincitore è diverso dall'emittente, aggiungi i soldi della puntata all'issuer dell'asta
             if auction.current_user_winner_id and auction.current_user_winner_id != auction.issuer_id:
-                add_funds_response = requests.patch(
-                    f"{AUTH_SERVICE_URL}/authentication/players/{auction.issuer_id}/currency/update",
-                    json={'amount': auction.current_bid},
-                    headers=headers  # Aggiungi il token all'header
-                )
+                try:
+                    add_funds_response = requests.patch(
+                        f"{AUTH_SERVICE_URL}/authentication/players/{auction.issuer_id}/currency/update",
+                        json={'amount': auction.current_bid},
+                        headers=headers,  # Aggiungi il token all'header
+                        timeout=5
+                    )
+                    if add_funds_response.status_code != 200:
+                        print(f"Failed to add funds to the issuer {auction.issuer_id} for auction {auction_id}")  
+
+                except Timeout:
+                    return make_response(jsonify({'message': 'Authentication service is temporarily unavailable'}), 503)  # Service Unavailable
+
+                    
                 if add_funds_response.status_code != 200:
                     print(f"Failed to add funds to the issuer {auction.issuer_id} for auction {auction_id}")
                 else:
@@ -235,10 +269,18 @@ def end_auction(auction_id, token):
  
             # Assegnare il gacha all'utente vincitore usando l'endpoint update_owner in gacha_service
             if auction.current_user_winner_id:
-                update_owner_response = requests.patch(
-                    f"{GACHA_SERVICE_URL}/gacha_service/players/{auction.current_user_winner_id}/gachas/{auction.gacha_id}/update_owner",
-                    headers=headers  # Aggiungi il token all'header
-                )
+                try:
+                    update_owner_response = requests.patch(
+                        f"{GACHA_SERVICE_URL}/gacha_service/players/{auction.current_user_winner_id}/gachas/{auction.gacha_id}/update_owner",
+                        headers=headers,  # Aggiungi il token all'header
+                        verify= False,
+                        timeout=5
+                        
+                    )
+                except Timeout:
+                    return make_response(jsonify({'message': 'Gacha service is temporarily unavailable'}), 503)  # Service unavailable
+    
+ 
  
                 if update_owner_response.status_code != 200:
                     print(f"Failed to transfer ownership of gacha {auction.gacha_id} to the winner of auction {auction_id}")
