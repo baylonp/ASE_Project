@@ -31,13 +31,6 @@ class Admin(db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)
     jwt_token = db.Column(db.String(500), nullable=True)
-
-    # Method to convert the Admin object to a dictionary
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'username': self.username
-        }
  
 # Creazione del database e aggiunta dell'account admin hardcoded
 with app.app_context():
@@ -123,7 +116,7 @@ def token_required(f):
             return jsonify({'message': 'Token has expired!'}), 401
         except jwt.InvalidTokenError:
             return jsonify({'message': 'Token is invalid!'}), 401
-        return f(current_admin, tokenAdmin,  *args, **kwargs)
+        return f(current_admin, token,  *args, **kwargs)
     return decorated
  
 # Endpoint per il login dell'admin
@@ -172,11 +165,6 @@ def get_admin_id(current_admin, token):
     if not admin:
         return make_response(jsonify({'message': 'Admin not found'}), 404)
  
-    # Check if the Token AdminId matches (admin.id)
-    # 403: Forbidden
-    if (current_admin.id != admin.id): 
-        return make_response(jsonify({'message': 'AdminID Invalid. You are not authorized.'}), 403)
- 
     return jsonify({'adminId': admin.id}), 200
 
 # Endpoint per verificare se l'utente è un admin (usato da altri microservizi)
@@ -209,10 +197,7 @@ def verify_admin(curr_admin, admin_token):
 # Endpoint per ottenere informazioni su un utente (richiede token)
 @app.route('/admin_service/user_info/<playerId>', methods=['GET'])
 @token_required
-def get_user_info(current_admin, admin_token, playerId):
-    # Ottieni il token JWT dall'header della richiesta
-    token = request.headers.get('x-access-token')
- 
+def get_user_info(current_admin, token, playerId):
     # Effettua una richiesta al servizio di autenticazione per ottenere le informazioni sull'utente
     try:
         response = requests.get(f"{AUTH_SERVICE_URL}/authentication/players/{playerId}",
@@ -233,13 +218,10 @@ def get_user_info(current_admin, admin_token, playerId):
 # Endpoint per modificare un Gacha nel catalogo e aggiornare la collezione degli utenti
 @app.route('/admin_service/gachas/<gacha_id>', methods=['PATCH'])
 @token_required
-def update_gacha(current_admin, admin_token, gacha_id):
+def update_gacha(current_admin, token, gacha_id):
     data = request.json
     if not data:
         return make_response(jsonify({'message': 'Invalid input data'}), 400)
-    
-    # Ottieni il token JWT dall'header della richiesta
-    token = request.headers.get('x-access-token')
 
     # Effettua una richiesta al gacha_market_service per aggiornare il catalogo
     
@@ -267,13 +249,10 @@ def update_gacha(current_admin, admin_token, gacha_id):
 
 @app.route('/admin_service/all_collections', methods=['GET'])
 @token_required
-def get_all_gacha_collections(current_admin, admin_token):
+def get_all_gacha_collections(current_admin, token):
     """
     Permette all'admin di ottenere tutte le collezioni Gacha presenti nel database del gacha_service
-    """
-    # Ottieni il token JWT dall'header della richiesta
-    token = request.headers.get('x-access-token')
-    
+    """  
     try:
         # Effettua una richiesta al gacha_service per ottenere tutte le collezioni, con un timeout di 5 secondi
         response = requests.get(
@@ -302,13 +281,10 @@ def get_all_gacha_collections(current_admin, admin_token):
 # Endpoint per aggiungere un nuovo gacha al catalogo tramite il gacha_market_service (solo per admin)
 @app.route('/admin_service/gachas', methods=['POST'])
 @token_required
-def add_gacha_to_catalog(current_admin):
+def add_gacha_to_catalog(current_admin, token):
     """
     Permette agli amministratori di aggiungere un nuovo gacha al catalogo tramite il gacha_market_service
     """
-    # Ottieni il token JWT dall'header della richiesta
-    token = request.headers.get('x-access-token')
-    
     # Ottieni i dati per il nuovo gacha
     data = request.json
     if not data or 'pilot_name' not in data or 'rarity' not in data or 'experience' not in data or 'ability' not in data:
@@ -339,13 +315,10 @@ def add_gacha_to_catalog(current_admin):
 # Endpoint per rimuovere un gacha dal catalogo tramite il gacha_market_service (solo per admin)
 @app.route('/admin_service/gachas/<int:gacha_id>', methods=['DELETE'])
 @token_required
-def remove_gacha_from_catalog(current_admin, gacha_id):
+def remove_gacha_from_catalog(current_admin, token, gacha_id):
     """
     Permette agli amministratori di rimuovere un gacha dal catalogo tramite il gacha_market_service
     """
-    # Ottieni il token JWT dall'header della richiesta
-    token = request.headers.get('x-access-token')
-
     try:
         # Effettua una richiesta al gacha_market_service per rimuovere il gacha dal catalogo
         response = requests.delete(
@@ -371,13 +344,10 @@ def remove_gacha_from_catalog(current_admin, gacha_id):
 
 @app.route('/admin_service/transactions/<userId>', methods=['GET'])
 @token_required
-def get_user_transactions_via_admin_service(current_admin, userId):
+def get_user_transactions_via_admin_service(current_admin, token, userId):
     """
     Permette all'amministratore di ottenere lo storico delle transazioni di un utente specifico tramite il gacha_market_service
     """
-    # Ottieni il token JWT dall'header della richiesta
-    token = request.headers.get('x-access-token')
-
     try:
         # Effettua una richiesta al gacha_market_service per ottenere le transazioni dell'utente specifico
         response = requests.get(
@@ -401,6 +371,8 @@ def get_user_transactions_via_admin_service(current_admin, userId):
 
     except requests.exceptions.RequestException as e:
         return make_response(jsonify({'message': f'An error occurred while communicating with the gacha_market_service: {str(e)}'}), 500)
+
+
 # Punto di ingresso dell'app
 if __name__ == '__main__':
     app.run(debug=True)
