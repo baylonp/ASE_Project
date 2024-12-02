@@ -74,4 +74,4 @@ jobs:
           pwd
           cd docs/TEST/
           pwd
-          newman run F1_Drivers_Gacha.postman_collection.json --insecure --verbose
+          newman run F1_Drivers_Gacha_2.json --insecure --verbose

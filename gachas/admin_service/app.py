@@ -150,11 +150,6 @@ def logout(current_admin, token):
     if not admin_id:
         return make_response(jsonify({'message': 'Admin ID is required'}), 400)
  
-    # Check if the Token UserId matches (AccountID)
-    # 403: Forbidden
-    if (current_admin.id != int(admin_id)): 
-        return make_response(jsonify({'message': 'AccountID Invalid. You are not authorized.'}), 403)
- 
     # Find the user by ID and clear the jwt_token field
     admin = Admin.query.get(admin_id)
     if not admin:

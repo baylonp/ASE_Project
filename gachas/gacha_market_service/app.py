@@ -26,7 +26,8 @@ app.config['SECRET_KEY'] = 'your_secret_key'
  
 # Inizializza SQLAlchemy
 db = SQLAlchemy(app)
- 
+
+'''
 # Decoratore per proteggere gli endpoint con autenticazione JWT
 def token_required(f):
     @wraps(f)
@@ -43,7 +44,83 @@ def token_required(f):
             return jsonify({'message': 'Token is invalid!'}), 401
         return f(current_user_id, token, *args, **kwargs)  # Passiamo l'ID utente e il token come parametro
     return decorated
+'''
+
+# Decoratore per proteggere gli endpoint con autenticazione JWT
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = request.headers.get('x-access-token')  # Il token deve essere inviato nell'header della richiesta
+        if not token:
+            return jsonify({'message': 'Token is missing!'}), 401
+        try:
+            # Decode HTTP Received Token
+            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
+            
+            # Verifica se è un token utente o admin
+            if 'user_id' in data:
+                # send a request to the auth service to verify the token.
+                # Logica per token user
+                username = data['username']
+                id = data['user_id']
+                
+                # Effettua una richiesta HTTP al servizio esterno
+                user_service_url = "https://authentication_service:5000/authentication/validate"
+                payload = {'user_username': username}
+                try:
+                    response = requests.get(user_service_url, headers={'x-access-token': token}, verify=False)
+                    # Ensure status code is 200
+                    if response.status_code != 200:
+                        return jsonify(response.json()), 403
+                    
+                    if 'application/json' not in response.headers.get('Content-Type', ''):
+                        return jsonify({'message': 'Invalid response format from admin service!', 'details': response.text}), 500
+                    
+                    # Parse the JSON body
+                    user_data = {
+                        'username': username,
+                        'user_id': id
+                    }
+                    
+                    return f(user_data, token, *args, **kwargs)
+                except requests.exceptions.RequestException as e:
+                    # Gestisci errori durante la richiesta HTTP
+                    return jsonify({'message': 'Error validating admin token!', 'error': str(e)}), 500
+            
+            elif 'admin_id' in data:
+                # send a request to the admin service to verify the token.
+                # Logica per token admin
+                username = data['username']
+                
+                # Effettua una richiesta HTTP al servizio esterno
+                admin_service_url = "https://admin_service:5000/admin_service/verify_admin"
+                payload = {'admin_username': username}
+                try:
+                    response = requests.get(admin_service_url, headers={'x-access-token': token}, verify=False)
+                    # Ensure status code is 200
+                    if response.status_code != 200:
+                        return jsonify(response.json()), 403
+                    
+                    if 'application/json' not in response.headers.get('Content-Type', ''):
+                        return jsonify({'message': 'Invalid response format from admin service!', 'details': response.text}), 500
+                    
+                    # Parse the JSON body
+                    admin_data = {
+                        'username': username
+                    }
+                    
+                    return f(admin_data, token, *args, **kwargs)
+                except requests.exceptions.RequestException as e:
+                    # Gestisci errori durante la richiesta HTTP
+                    return jsonify({'message': 'Error validating admin token!', 'error': str(e)}), 500
+        except jwt.ExpiredSignatureError:
+            return jsonify({'message': 'Token has expired!'}), 401
+        except jwt.InvalidTokenError:
+            return jsonify({'message': 'Token is invalid!'}), 401
+    return decorated
  
+
+
 # Definizione del modello Pilot
 class Pilot(db.Model):
     tablename = 'pilots'
@@ -263,6 +340,36 @@ def remove_gacha(current_user_id, token, gacha_id):
  
 ### FINE ADMIN ###
 
+@app.route('/market_service/players/<userId>/transactions', methods=['GET'])
+@token_required
+def get_user_transactions(current_user, token, userId):
+    """
+    Restituisce lo storico delle transazioni per un utente specifico.
+    """
+    try:
+        # Recupera tutte le transazioni per l'utente specificato
+        transactions = Transaction.query.filter_by(user_id=userId).all()
+
+        # Controlla se ci sono transazioni per questo utente
+        if not transactions:
+            return make_response(jsonify({'message': 'No transactions found for this user'}), 404)
+
+        # Prepara i risultati da restituire
+        result = [
+            {
+                'id': transaction.id,
+                'user_id': transaction.user_id,
+                'amount_spent': transaction.amount_spent,
+                'timestamp': transaction.timestamp.isoformat()
+            } for transaction in transactions
+        ]
+
+        return make_response(jsonify(result), 200)
+
+    except Exception as e:
+        return make_response(jsonify({'message': f'An internal error occurred: {str(e)}'}), 500)
+
+
  
 @app.route('/market_service/players/<playerId>/currency/buy', methods=['POST'])
 @token_required
@@ -271,8 +378,8 @@ def buy_in_game_currency(current_user_id, token, playerId):
     Compra la valuta di gioco per il wallet del giocatore specificato.
     """
     try:
-        if str(current_user_id) != playerId:
-            return jsonify({'message': 'Unauthorized access'}), 403
+        #if str(current_user_id) != playerId:
+        #    return jsonify({'message': 'Unauthorized access'}), 403
  
         amount = request.args.get('amount', type=float)
  
@@ -414,8 +521,8 @@ def buy_gacha_roll(current_user_id, token, playerId):
     Consente all'utente di acquistare una roll (gacha) per ottenere un pilota casuale.
     """
     try:
-        if str(current_user_id) != playerId:
-            return jsonify({'message': 'Unauthorized access'}), 403
+        #if str(current_user_id) != playerId:
+        #    return jsonify({'message': 'Unauthorized access'}), 403
  
         ROLL_COST = 100
  

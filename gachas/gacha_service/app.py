@@ -13,7 +13,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'your_secret_key'
  
 db = SQLAlchemy(app)
- 
+
+'''
 # Decoratore per proteggere gli endpoint con autenticazione JWT
 def token_required(f):
     @wraps(f)
@@ -30,7 +31,80 @@ def token_required(f):
             return jsonify({'message': 'Token is invalid!'}), 401
         return f(current_user_id, token, *args, **kwargs)  # Passiamo l'ID utente e il token come parametro
     return decorated
- 
+'''
+# Decoratore per proteggere gli endpoint con autenticazione JWT
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = request.headers.get('x-access-token')  # Il token deve essere inviato nell'header della richiesta
+        if not token:
+            return jsonify({'message': 'Token is missing!'}), 401
+        try:
+            # Decode HTTP Received Token
+            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
+            
+            # Verifica se è un token utente o admin
+            if 'user_id' in data:
+                # send a request to the auth service to verify the token.
+                # Logica per token user
+                username = data['username']
+                id = data['user_id']
+                
+                # Effettua una richiesta HTTP al servizio esterno
+                user_service_url = "https://authentication_service:5000/authentication/validate"
+                payload = {'user_username': username}
+                try:
+                    response = requests.get(user_service_url, headers={'x-access-token': token}, verify=False)
+                    # Ensure status code is 200
+                    if response.status_code != 200:
+                        return jsonify(response.json()), 403
+                    
+                    if 'application/json' not in response.headers.get('Content-Type', ''):
+                        return jsonify({'message': 'Invalid response format from admin service!', 'details': response.text}), 500
+                    
+                    # Parse the JSON body
+                    user_data = {
+                        'username': username,
+                        'user_id': id
+                    }
+                    
+                    return f(user_data, token, *args, **kwargs)
+                except requests.exceptions.RequestException as e:
+                    # Gestisci errori durante la richiesta HTTP
+                    return jsonify({'message': 'Error validating admin token!', 'error': str(e)}), 500
+            
+            elif 'admin_id' in data:
+                # send a request to the admin service to verify the token.
+                # Logica per token admin
+                username = data['username']
+                
+                # Effettua una richiesta HTTP al servizio esterno
+                admin_service_url = "https://admin_service:5000/admin_service/verify_admin"
+                payload = {'admin_username': username}
+                try:
+                    response = requests.get(admin_service_url, headers={'x-access-token': token}, verify=False)
+                    # Ensure status code is 200
+                    if response.status_code != 200:
+                        return jsonify(response.json()), 403
+                    
+                    if 'application/json' not in response.headers.get('Content-Type', ''):
+                        return jsonify({'message': 'Invalid response format from admin service!', 'details': response.text}), 500
+                    
+                    # Parse the JSON body
+                    admin_data = {
+                        'username': username
+                    }
+                    
+                    return f(admin_data, token, *args, **kwargs)
+                except requests.exceptions.RequestException as e:
+                    # Gestisci errori durante la richiesta HTTP
+                    return jsonify({'message': 'Error validating admin token!', 'error': str(e)}), 500
+        except jwt.ExpiredSignatureError:
+            return jsonify({'message': 'Token has expired!'}), 401
+        except jwt.InvalidTokenError:
+            return jsonify({'message': 'Token is invalid!'}), 401
+    return decorated
+
 # Definizione del modello GachaCollection
 class GachaCollection(db.Model):
     tablename = 'gacha_collection'
@@ -52,9 +126,6 @@ ADMIN_SERVICE_URL = 'https://admin_service:5000/admin_service/verify_admin'
 @app.route('/gacha_service/players/<userID>/gachas', methods=['GET', 'DELETE'])
 @token_required
 def handle_user_gachas(current_user_id, token, userID):
-    if str(current_user_id) != userID:
-        return jsonify({'message': 'Unauthorized access'}), 403
- 
     if request.method == 'GET':
         # Esistente: restituisce la collezione di gachas di un giocatore specifico
         gachas = GachaCollection.query.filter_by(user_id=userID).all()
@@ -95,9 +166,6 @@ def get_specific_gacha(current_user_id, token, userID, gachaId):
     """
     Restituisce i dettagli di un gacha specifico della collezione di un giocatore
     """
-    if str(current_user_id) != userID:
-        return jsonify({'message': 'Unauthorized access'}), 403
- 
     gacha = GachaCollection.query.filter_by(user_id=userID, gacha_id=gachaId).first()
     if not gacha:
         return make_response(jsonify({'message':'Gacha or player not found'}), 404)
@@ -118,9 +186,6 @@ def add_gacha_to_player(current_user_id, token, userID):
     """
     Aggiunge un nuovo gacha alla collezione di un utente specifico
     """
-    if str(current_user_id) != userID:
-        return jsonify({'message': 'Unauthorized access'}), 403
- 
     data = request.json
     if not data or 'gacha_id' not in data or 'pilot_name' not in data or 'rarity' not in data or 'experience' not in data or 'ability' not in data:
         return make_response(jsonify({'message': 'Invalid input data'}), 400)
@@ -146,9 +211,6 @@ def get_missing_gachas(current_user_id, token, userID):
     """
     Restituisce i gachas mancanti dalla collezione di un giocatore rispetto al catalogo completo
     """
-    if str(current_user_id) != userID:
-        return jsonify({'message': 'Unauthorized access'}), 403
- 
     try:
         # Recuperare la collezione di gachas dell'utente
         user_gachas = GachaCollection.query.filter_by(user_id=userID).all()
@@ -187,12 +249,7 @@ def update_gacha_owner(current_user_id, token, userID, gachaID):
     """
     Aggiorna l'user_id del gacha specificato nella collezione dell'utente
     """
-    '''    
-    if str(current_user_id) != userID:
-        return jsonify({'message': 'Unauthorized access'}), 403
-    '''
     try:
- 
         # Recuperare il gacha specifico dalla collezione in base al gachaID
         gacha = GachaCollection.query.filter_by(gacha_id=gachaID).first()
  
@@ -212,12 +269,10 @@ def update_gacha_owner(current_user_id, token, userID, gachaID):
 
     ##Admin
 
-  # Endpoint per aggiornare un gacha nella collezione di tutti gli utenti (nuovo endpoint nel gacha_service)
+# Endpoint per aggiornare un gacha nella collezione di tutti gli utenti (nuovo endpoint nel gacha_service)
 @app.route('/gacha_service/admin/update_all/<gacha_id>', methods=['PATCH'])
-def update_gacha_for_all_users(gacha_id):
-    token = request.headers.get('x-access-token')
-    if not token:
-        return jsonify({'message': 'Token is missing!'}), 401
+@token_required
+def update_gacha_for_all_users(cuurent_user, token, gacha_id):
     try:
         try:
             # Effettua una richiesta all'admin_service per verificare che l'utente sia un admin
@@ -260,15 +315,10 @@ def update_gacha_for_all_users(gacha_id):
     
 @app.route('/gacha_service/admin/collections', methods=['GET'])
 @token_required
-def get_all_collections():
+def get_all_collections(curr_user, token):
     """
     Permette ad un admin di vedere tutto il database di Gacha Collection
     """
-    # Recupera il token dalla richiesta
-    token = request.headers.get('x-access-token')
-    if not token:
-        return jsonify({'message': 'Token is missing!'}), 401
-
     try:
         # Effettua una richiesta all'admin_service per verificare che l'utente sia un admin
         verify_response = requests.get(ADMIN_SERVICE_URL, headers={'x-access-token': token},verify=False,timeout=5)
