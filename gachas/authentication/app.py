@@ -167,6 +167,7 @@ with app.app_context():
     db.create_all()
  
 GACHA_SERVICE_URL = 'https://gacha_service:5000'
+ADMIN_SERVICE_URL = 'https://admin_service:5000/admin_service/verify_admin'
  
 # Definizione degli endpoint
 @app.route('/authentication/account', methods=['POST'])
@@ -313,13 +314,24 @@ def get_user_id(current_user, token):
 @app.route('/authentication/players/<playerId>', methods=['GET'])
 @token_required
 def get_user_info(current_user, token, playerId):
+<<<<<<< HEAD
+=======
+    # Check if the Token UserId matches (PlayerID)
+    # 403: Forbidden
+  
+    #verify_response = requests.get(ADMIN_SERVICE_URL, headers={'x-access-token': token}, verify=False, timeout=5)
+    
+
+
+    #if (current_user.id == int(playerId) or (verify_response.status_code == 200)): 
+>>>>>>> add_remove_gacha_admin
     try:
         # Recuperare l'utente dal database in base al playerId
         user = User.query.filter_by(id=playerId).first()
- 
+
         if not user:
             return make_response(jsonify({'message': 'Player not found'}), 404)
- 
+
         # Restituire tutte le informazioni dell'utente
         user_info = {
             'id': user.id,
@@ -327,12 +339,18 @@ def get_user_info(current_user, token, playerId):
             'email': user.email,
             'wallet': user.wallet
         }
- 
+
         return make_response(jsonify(user_info), 200)
- 
+
     except Exception as e:
         return make_response(jsonify({'message': f'An error occurred: {str(e)}'}), 500)
+<<<<<<< HEAD
 
+=======
+    #else:
+    #    return make_response(jsonify({'message': 'Invalid. You are not authorized.'}), 403)
+ 
+>>>>>>> add_remove_gacha_admin
 @app.route('/authentication/players/<playerId>/currency/add', methods=['POST'])
 @token_required
 def add_currency_to_player(current_user, token, playerId):

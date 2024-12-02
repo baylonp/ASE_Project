@@ -152,25 +152,30 @@ def update_gacha_catalog(current_user_id, token, gacha_id):
     except Exception as e:
         return make_response(jsonify({'message': f'An internal error occurred: {str(e)}'}), 500)
 
- 
-@app.route('/market_service/players/<userId>/transactions', methods=['GET'])
+
+@app.route('/market_service/admin/transactions/<userId>', methods=['GET'])
 @token_required
-def get_user_transactions(current_user_id, token, userId):
+def get_user_transactions_admin(current_user_id, token, userId):
     """
-    Restituisce lo storico delle transazioni per un utente specifico.
+    Permette agli amministratori di vedere lo storico delle transazioni per un utente specifico.
     """
-    # Check if the Token UserId matches (AccountID)
-    # 403: Forbidden
-    if (str(current_user_id) != userId): 
-        return make_response(jsonify({'message': 'Unauthorized access'}), 403)
-    
+    # Verifica che l'utente sia effettivamente un admin
+    try:
+        verify_response = requests.get(ADMIN_SERVICE_URL, headers={'x-access-token': token}, verify=False, timeout=5)
+        if verify_response.status_code != 200:
+            return jsonify({'message': 'Unauthorized access'}), 403
+    except Timeout:
+        return make_response(jsonify({'message': 'Authentication service is temporarily unavailable'}), 503)  # Service Unavailable
+    except requests.exceptions.RequestException as e:
+        return jsonify({'message': f'An error occurred while communicating with the admin service: {str(e)}'}), 500
+
     try:
         # Recupera tutte le transazioni per l'utente specificato
         transactions = Transaction.query.filter_by(user_id=userId).all()
- 
+
         if not transactions:
             return make_response(jsonify({'message': 'No transactions found for this user'}), 404)
- 
+
         result = [
             {
                 'id': transaction.id,
@@ -179,9 +184,80 @@ def get_user_transactions(current_user_id, token, userId):
                 'timestamp': transaction.timestamp.isoformat()
             } for transaction in transactions
         ]
- 
+
         return make_response(jsonify(result), 200)
+
+    except Exception as e:
+        return make_response(jsonify({'message': f'An internal error occurred: {str(e)}'}), 500)
+
+
  
+# Endpoint per aggiungere un nuovo gacha al catalogo (solo per admin)
+@app.route('/market_service/admin/gachas', methods=['POST'])
+@token_required
+def add_gacha(current_user_id, token):
+    """
+    Permette all'amministratore di aggiungere un nuovo gacha al catalogo
+    """
+    # Verifica che l'utente sia effettivamente un admin
+    try:
+        verify_response = requests.get(ADMIN_SERVICE_URL, headers={'x-access-token': token}, verify=False, timeout=5)
+        if verify_response.status_code != 200:
+            return jsonify({'message': 'Unauthorized access'}), 403
+    except Timeout:
+        return make_response(jsonify({'message': 'Authentication service is temporarily unavailable'}), 503)  # Service Unavailable
+    except requests.exceptions.RequestException as e:
+        return jsonify({'message': f'An error occurred while communicating with the admin service: {str(e)}'}), 500
+
+    # Ottieni i dati per il nuovo gacha
+    data = request.json
+    if not data or 'pilot_name' not in data or 'rarity' not in data or 'experience' not in data or 'ability' not in data:
+        return make_response(jsonify({'message': 'Invalid input data'}), 400)
+
+    try:
+        # Crea un nuovo gacha nel catalogo
+        new_pilot = Pilot(
+            pilot_name=data['pilot_name'],
+            rarity=data['rarity'],
+            experience=data['experience'],
+            ability=data['ability']
+        )
+        db.session.add(new_pilot)
+        db.session.commit()
+        return make_response(jsonify({'message': 'Gacha added successfully', 'gacha_id': new_pilot.id}), 201)
+
+    except Exception as e:
+        return make_response(jsonify({'message': f'An internal error occurred: {str(e)}'}), 500)
+
+
+# Endpoint per rimuovere un gacha dal catalogo (solo per admin)
+@app.route('/market_service/admin/gachas/<int:gacha_id>', methods=['DELETE'])
+@token_required
+def remove_gacha(current_user_id, token, gacha_id):
+    """
+    Permette all'amministratore di rimuovere un gacha dal catalogo
+    """
+    # Verifica che l'utente sia effettivamente un admin
+    try:
+        verify_response = requests.get(ADMIN_SERVICE_URL, headers={'x-access-token': token}, verify=False, timeout=5)
+        if verify_response.status_code != 200:
+            return jsonify({'message': 'Unauthorized access'}), 403
+    except Timeout:
+        return make_response(jsonify({'message': 'Authentication service is temporarily unavailable'}), 503)  # Service Unavailable
+    except requests.exceptions.RequestException as e:
+        return jsonify({'message': f'An error occurred while communicating with the admin service: {str(e)}'}), 500
+
+    try:
+        # Recupera il gacha dal catalogo e lo rimuove
+        gacha = Pilot.query.filter_by(id=gacha_id).first()
+        if not gacha:
+            return make_response(jsonify({'message': 'Gacha not found'}), 404)
+
+        db.session.delete(gacha)
+        db.session.commit()
+
+        return make_response(jsonify({'message': 'Gacha removed successfully'}), 200)
+
     except Exception as e:
         return make_response(jsonify({'message': f'An internal error occurred: {str(e)}'}), 500)
  
