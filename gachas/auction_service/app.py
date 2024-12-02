@@ -45,13 +45,69 @@ def token_required(f):
         if not token:
             return jsonify({'message': 'Token is missing!'}), 401
         try:
+            # Decode HTTP Received Token
             data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
-            current_user = data['user_id']  # Ricaviamo l'ID utente dal token
+            
+            # Verifica se è un token utente o admin
+            if 'user_id' in data:
+                # send a request to the auth service to verify the token.
+                # Logica per token user
+                username = data['username']
+                id = data['user_id']
+                
+                # Effettua una richiesta HTTP al servizio esterno
+                user_service_url = "https://authentication_service:5000/authentication/validate"
+                payload = {'user_username': username}
+                try:
+                    response = requests.get(user_service_url, headers={'x-access-token': token}, verify=False)
+                    # Ensure status code is 200
+                    if response.status_code != 200:
+                        return jsonify(response.json()), 403
+                    
+                    if 'application/json' not in response.headers.get('Content-Type', ''):
+                        return jsonify({'message': 'Invalid response format from admin service!', 'details': response.text}), 500
+                    
+                    # Parse the JSON body
+                    user_data = {
+                        'username': username,
+                        'user_id': id
+                    }
+                    
+                    return f(user_data, token, *args, **kwargs)
+                except requests.exceptions.RequestException as e:
+                    # Gestisci errori durante la richiesta HTTP
+                    return jsonify({'message': 'Error validating admin token!', 'error': str(e)}), 500
+            
+            elif 'admin_id' in data:
+                # send a request to the admin service to verify the token.
+                # Logica per token admin
+                username = data['username']
+                
+                # Effettua una richiesta HTTP al servizio esterno
+                admin_service_url = "https://admin_service:5000/admin_service/verify_admin"
+                payload = {'admin_username': username}
+                try:
+                    response = requests.get(admin_service_url, headers={'x-access-token': token}, verify=False)
+                    # Ensure status code is 200
+                    if response.status_code != 200:
+                        return jsonify(response.json()), 403
+                    
+                    if 'application/json' not in response.headers.get('Content-Type', ''):
+                        return jsonify({'message': 'Invalid response format from admin service!', 'details': response.text}), 500
+                    
+                    # Parse the JSON body
+                    admin_data = {
+                        'username': username
+                    }
+                    
+                    return f(admin_data, token, *args, **kwargs)
+                except requests.exceptions.RequestException as e:
+                    # Gestisci errori durante la richiesta HTTP
+                    return jsonify({'message': 'Error validating admin token!', 'error': str(e)}), 500
         except jwt.ExpiredSignatureError:
             return jsonify({'message': 'Token has expired!'}), 401
         except jwt.InvalidTokenError:
             return jsonify({'message': 'Token is invalid!'}), 401
-        return f(current_user, token, *args, **kwargs)  # Passiamo anche il token come parametro
     return decorated
  
 @app.route('/auction_service/players/<userId>/setAuction', methods=['POST'])
@@ -61,8 +117,6 @@ def set_auction(current_user, token, userId):
     Permette a un utente di mettere all'asta uno dei suoi gacha
     ---
     """
-    if current_user != int(userId):
-        return jsonify({'message': 'Unauthorized action!'}), 403  # Impedisce agli utenti di fare operazioni a nome di altri
  
     try:
         # Recuperare i dati dall'input JSON
@@ -102,7 +156,7 @@ def set_auction(current_user, token, userId):
  
         # Attivare un timer per disattivare l'asta dopo 1 minuto, passando il token come argomento
         auction_id = new_auction.auction_id
-        timer = threading.Timer(9.0, end_auction, [auction_id, token])
+        timer = threading.Timer(10.0, end_auction, [auction_id, token])
         timer.start()
  
         return make_response(jsonify({'message': 'Auction created successfully', 'auction_id': auction_id}), 201)
@@ -152,10 +206,10 @@ def place_bid(current_user, token, auctionID):
     try:
         # Ottenere i dati dall'input JSON
         data = request.json
-        if not data or 'bid_amount' not in data:
+        if not data or 'bid_amount' not in data or 'user_id' not in data:
             return make_response(jsonify({'message': 'Invalid input data'}), 400)
 
-        user_id = current_user  # Utilizziamo l'ID utente dal token
+        user_id = data['user_id']  # Utilizziamo l'ID utente dal token
         bid_amount = data['bid_amount']
 
         # Recuperare l'asta dal database
@@ -171,7 +225,7 @@ def place_bid(current_user, token, auctionID):
         try:
             # Verificare che l'utente abbia fondi sufficienti
             headers = {'x-access-token': token}  # Aggiungi il token all'header
-            response = requests.get(f"{AUTH_SERVICE_URL}/authentication/players/{user_id}", headers=headers,verify=False, timeout=5)
+            response = requests.get(f"{AUTH_SERVICE_URL}/authentication/players/{user_id}", headers=headers, verify=False, timeout=5)
             
             if response.status_code != 200:
                 return make_response(jsonify({'message': 'Failed to retrieve user information from authentication service'}), 500)
@@ -197,6 +251,7 @@ def place_bid(current_user, token, auctionID):
                     f"{AUTH_SERVICE_URL}/authentication/players/{auction.current_user_winner_id}/currency/update",
                     json={'amount': auction.current_bid},
                     headers=headers,
+                    verify=False,
                     timeout=5
                 )
                 if refund_response.status_code != 200:
@@ -210,6 +265,7 @@ def place_bid(current_user, token, auctionID):
                 f"{AUTH_SERVICE_URL}/authentication/players/{user_id}/currency/update",
                 json={'amount': -bid_amount},  # L'importo deve essere sottratto
                 headers=headers,
+                verify=False,
                 timeout=5
             )
             if debit_response.status_code != 200:
@@ -233,7 +289,6 @@ def place_bid(current_user, token, auctionID):
     except Exception as e:
         return make_response(jsonify({'message': f'An internal error occurred: {str(e)}'}), 500)
 
-
 def end_auction(auction_id, token):
     """
     Funzione per disattivare l'asta dopo 1 minuto e assegnare il gacha all'utente vincitore
@@ -252,7 +307,8 @@ def end_auction(auction_id, token):
                     add_funds_response = requests.patch(
                         f"{AUTH_SERVICE_URL}/authentication/players/{auction.issuer_id}/currency/update",
                         json={'amount': auction.current_bid},
-                        headers=headers,  # Aggiungi il token all'header
+                        headers=headers, 
+                        verify=False, # Aggiungi il token all'header
                         timeout=5
                     )
                     if add_funds_response.status_code != 200:
@@ -286,7 +342,6 @@ def end_auction(auction_id, token):
                     print(f"Failed to transfer ownership of gacha {auction.gacha_id} to the winner of auction {auction_id}")
                 else:
                     print(f"Gacha {auction.gacha_id} successfully transferred to user {auction.current_user_winner_id}")
- 
  
 if __name__ == '__main__':
     app.run(debug=True)

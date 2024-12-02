@@ -6,6 +6,8 @@ import jwt
 import requests
 from functools import wraps
 from requests.exceptions import Timeout, RequestException
+import base64
+import json
  
 # Configura l'app Flask
 app = Flask(__name__)
@@ -28,6 +30,14 @@ class Admin(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)
+    jwt_token = db.Column(db.String(500), nullable=True)
+
+    # Method to convert the Admin object to a dictionary
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'username': self.username
+        }
  
 # Creazione del database e aggiunta dell'account admin hardcoded
 with app.app_context():
@@ -36,20 +46,57 @@ with app.app_context():
     existing_admin = Admin.query.filter_by(username='admin').first()
     if not existing_admin:
         hashed_password = hashpw('admin'.encode('utf-8'), gensalt())
-        admin = Admin(username='admin', password=hashed_password.decode('utf-8'))
+        admin = Admin(username='admin', password=hashed_password.decode('utf-8'), jwt_token=None)
         db.session.add(admin)
         db.session.commit()
  
 # Funzione per creare un token JWT per l'admin
+# Admin Token has admin_id field
 def generate_jwt(admin):
     payload = {
-        'user_id': admin.id,
+        'admin_id': admin.id,
         'username': admin.username,
         'exp': datetime.now(timezone.utc) + timedelta(hours=2)  # Scadenza del token in 2 ore
     }
     token = jwt.encode(payload, app.config['SECRET_KEY'], algorithm='HS256')
     return token
+
+# Compare if two datetime objects are close enough (tolerance of 1 second)
+def compare_datetimes(dt1, dt2, tolerance_seconds=1):
+    return abs((dt1 - dt2).total_seconds()) <= tolerance_seconds
  
+def compare_two_jwt(token1, token2, payload1, payload2):
+    # Split the JWTs into header, payload, and signature
+    if len(token1.split(".")) != 3 or len(token2.split(".")) != 3:
+        return False  # Invalid token format
+ 
+    # Extract the signature (third part of the JWT)
+    signature1 = token1.split(".")[2]
+    signature2 = token2.split(".")[2]
+ 
+    # Compare Signatures
+    checkSign = (signature1 == signature2)
+ 
+    # Compare Payloads
+    if payload1 is None or payload2 is None:
+        return False
+ 
+    # Normalize 'exp' field (if it's a datetime)
+    if 'exp' in payload1 and 'exp' in payload2:
+        payload1['exp'] = datetime.fromtimestamp(payload1['exp'], tz=timezone.utc).replace(microsecond=0)
+        payload2['exp'] = datetime.fromtimestamp(payload2['exp'], tz=timezone.utc).replace(microsecond=0)
+ 
+    # Check if the payloads are identical
+    checkPayloadsQuality = (payload1 == payload2)
+ 
+    # Compare specific fields with tolerance (like 'admin_id', 'username', 'exp')
+    checkPayloadsTolerance = (payload1.get('admin_id') == payload2.get('admin_id') and
+                              payload1.get('username') == payload2.get('username') and
+                              compare_datetimes(payload1['exp'], payload2['exp']))
+ 
+    # Return True if all checks pass
+    return (checkSign and checkPayloadsQuality and checkPayloadsTolerance)
+
 # Decoratore per proteggere gli endpoint (solo admin)
 def token_required(f):
     @wraps(f)
@@ -58,15 +105,25 @@ def token_required(f):
         if not token:
             return jsonify({'message': 'Token is missing!'}), 401
         try:
+            # Decode HTTP Received Token
             data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
-            current_admin = Admin.query.filter_by(id=data['user_id']).first()
+            current_admin = Admin.query.filter_by(id=data['admin_id']).first()
             if current_admin is None:
                 raise jwt.InvalidTokenError
+            # Extract User JWT Token From the AdminDB
+            if (current_admin.jwt_token is None):
+                return jsonify({'message': 'Forbidden Token for Logged OUT Admin!'}), 403
+            # Decode User JWT to check for Errors
+            tokenAdmin = jwt.decode(current_admin.jwt_token, app.config['SECRET_KEY'], algorithms=['HS256'])
+            # Check The Two Tokens Signatures
+            if not compare_two_jwt(token, current_admin.jwt_token, data, tokenAdmin):
+                return jsonify({'message': 'Forbidden Token for Logged IN Admin!'}), 403
+            # We are OK.
         except jwt.ExpiredSignatureError:
             return jsonify({'message': 'Token has expired!'}), 401
         except jwt.InvalidTokenError:
             return jsonify({'message': 'Token is invalid!'}), 401
-        return f(current_admin, *args, **kwargs)
+        return f(current_admin, tokenAdmin,  *args, **kwargs)
     return decorated
  
 # Endpoint per il login dell'admin
@@ -79,21 +136,72 @@ def admin_login():
     admin = Admin.query.filter_by(username=data['username']).first()
     if admin and checkpw(data['password'].encode('utf-8'), admin.password.encode('utf-8')):
         token = generate_jwt(admin)
+        # Add Token to Admin
+        admin.jwt_token = token
+        db.session.commit()
         return make_response(jsonify({'message': 'Login successful', 'token': token}), 200)
  
     return make_response(jsonify({'message': 'Invalid credentials'}), 401)
 
+@app.route('/admin_service/logout', methods=['PATCH'])
+@token_required
+def logout(current_admin, token):
+    admin_id = request.args.get('adminId')
+    if not admin_id:
+        return make_response(jsonify({'message': 'Admin ID is required'}), 400)
+ 
+    # Check if the Token UserId matches (AccountID)
+    # 403: Forbidden
+    if (current_admin.id != int(admin_id)): 
+        return make_response(jsonify({'message': 'AccountID Invalid. You are not authorized.'}), 403)
+ 
+    # Find the user by ID and clear the jwt_token field
+    admin = Admin.query.get(admin_id)
+    if not admin:
+        return make_response(jsonify({'message': 'Admin not found'}), 404)
+ 
+    # Remove the Session JWT Token
+    admin.jwt_token = None 
+    db.session.commit()
+    return make_response(jsonify({'message': 'Logout successful', 'adminId': admin.id}), 200)
+
+@app.route('/admin_service/adminId', methods=['GET'])
+@token_required
+def get_admin_id(current_admin, token):
+    username = request.args.get('username')
+ 
+    if not username:
+        return make_response(jsonify({'message': 'Username is required'}), 400)
+ 
+    admin = Admin.query.filter_by(username=username).first()
+    if not admin:
+        return make_response(jsonify({'message': 'Admin not found'}), 404)
+ 
+    # Check if the Token AdminId matches (admin.id)
+    # 403: Forbidden
+    if (current_admin.id != admin.id): 
+        return make_response(jsonify({'message': 'AdminID Invalid. You are not authorized.'}), 403)
+ 
+    return jsonify({'adminId': admin.id}), 200
 
 # Endpoint per verificare se l'utente è un admin (usato da altri microservizi)
 @app.route('/admin_service/verify_admin', methods=['GET'])
-
-def verify_admin():
+@token_required
+def verify_admin(curr_admin, admin_token):
+    # check for @token_required unseen errors
+    if admin_token is None or curr_admin is None: 
+        return make_response(jsonify({'message': 'Bad Request. Something happened on Admin Token Vaerification.'}), 400) # Bad Request
+    
+    # @token_required has verified that we have received a valid token.
+    return make_response(jsonify({'message': 'Ok.'}), 200) # OK
+    '''
+    --- (If the @token_required passes, then we have a good Admin token.) ---
     token = request.headers.get('x-access-token')
     if not token:
         return jsonify({'message': 'Token is missing!'}), 401
     try:
         data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
-        current_admin = Admin.query.filter_by(id=data['user_id']).first()
+        current_admin = Admin.query.filter_by(id=data['admin_id']).first()
         if current_admin is None:
             return jsonify({'message': 'Unauthorized access'}), 403
         return jsonify({'message': 'Admin verified successfully'}), 200
@@ -101,14 +209,12 @@ def verify_admin():
         return jsonify({'message': 'Token has expired!'}), 401
     except jwt.InvalidTokenError:
         return jsonify({'message': 'Token is invalid!'}), 401
- 
+    '''
 
-
- 
 # Endpoint per ottenere informazioni su un utente (richiede token)
 @app.route('/admin_service/user_info/<playerId>', methods=['GET'])
 @token_required
-def get_user_info(current_admin, playerId):
+def get_user_info(current_admin, admin_token, playerId):
     # Ottieni il token JWT dall'header della richiesta
     token = request.headers.get('x-access-token')
  
@@ -121,21 +227,18 @@ def get_user_info(current_admin, playerId):
         elif response.status_code == 404:
             return make_response(jsonify({'message': 'Player not found'}), 404)
         else:
-            return make_response(jsonify({'message': 'Failed to retrieve user information'}), response.status_code)
-       
+            return make_response(jsonify(response.json()), response.status_code)
     except Timeout:
         return make_response(jsonify({'message': 'Authentication service is temporarily unavailable'}), 503)  # Service Unavailable
-
-    
     except requests.exceptions.RequestException as e:
         return make_response(jsonify({'message': f'An error occurred while communicating with the authentication service: {str(e)}'}), 500)
     
 
 
-    # Endpoint per modificare un Gacha nel catalogo e aggiornare la collezione degli utenti
+# Endpoint per modificare un Gacha nel catalogo e aggiornare la collezione degli utenti
 @app.route('/admin_service/gachas/<gacha_id>', methods=['PATCH'])
 @token_required
-def update_gacha(current_admin, gacha_id):
+def update_gacha(current_admin, admin_token, gacha_id):
     data = request.json
     if not data:
         return make_response(jsonify({'message': 'Invalid input data'}), 400)
@@ -166,9 +269,10 @@ def update_gacha(current_admin, gacha_id):
         return make_response(jsonify({'message': f'An error occurred while communicating with the gacha market or gacha service: {str(e)}'}), 500)
     
     # Endpoint per ottenere l'intero database delle collezioni dal gacha_service (solo per admin)
+
 @app.route('/admin_service/all_collections', methods=['GET'])
 @token_required
-def get_all_gacha_collections(current_admin):
+def get_all_gacha_collections(current_admin, admin_token):
     """
     Permette all'admin di ottenere tutte le collezioni Gacha presenti nel database del gacha_service
     """
@@ -199,7 +303,6 @@ def get_all_gacha_collections(current_admin):
         # Gestione di altre eccezioni durante la richiesta
         return make_response(jsonify({'message': f'An error occurred while communicating with the gacha service: {str(e)}'}), 500)
 
- 
 # Punto di ingresso dell'app
 if __name__ == '__main__':
     app.run(debug=True)
