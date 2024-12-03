@@ -1,0 +1,133 @@
+newman
+
+Admin Service Mock Tests
+
+→ Admin Login
+  POST http://localhost:5005/admin_service/auth [200 OK, 235B, 17ms]
+  ✓  Status code is 200 for successful login
+  ✓  Response contains message and token on success
+  ✓  Status code is 401 for invalid credentials
+  ✓  Response contains error message for invalid credentials
+  ✓  Status code is 400 for invalid input data
+  ✓  Response contains error message for invalid input
+
+→ Get Admin ID by Username
+  GET http://localhost:5005/admin_service/adminId?username=admin [200 OK, 179B, 5ms]
+  ✓  Status code is 200 for valid username
+  ✓  Response contains adminId for valid username
+  ✓  Status code is 400 for missing username
+  ✓  Response contains error message for missing username
+  ✓  Status code is 404 for username not found
+  ✓  Response contains error message for username not found
+  ✓  Status code is 403 for unauthorized token
+  ✓  Response contains error message for unauthorized token
+
+→ Verify Admin Token
+  GET http://localhost:5005/admin_service/verify_admin [200 OK, 183B, 4ms]
+  ✓  Status code is 200 for valid token
+  ✓  Response contains success message 'Ok.'
+  ✓  Status code is 400 for missing token
+  ✓  Response contains error message for missing token
+  ✓  Status code is 403 for unauthorized or invalid token
+  ✓  Response contains error message for invalid token
+
+→ Get User Info
+  GET http://localhost:5005/admin_service/user_info/1 [200 OK, 266B, 5ms]
+  ✓  Status code is 200 for valid request
+  ✓  Response contains valid user info
+  ✓  Status code is 404 if player not found
+  ✓  Response contains error message for player not found
+  ✓  Status code is 403 for unauthorized or invalid token
+  ✓  Response contains error message for invalid token
+  ✓  Status code is 500 for internal server error
+  ✓  Response contains error message for internal server error
+
+→ Update Gacha in Catalog
+  PATCH http://localhost:5005/admin_service/gachas/101 [404 NOT FOUND, 213B, 5ms]
+  ✓  Status code is 200 for successful update
+  ✓  Response contains success message for update
+  ✓  Status code is 400 for invalid input data
+  ✓  Response contains error message for invalid input
+  ✓  Status code is 404 if Gacha not found
+  ✓  Response contains error message for Gacha not found
+  ✓  Status code is 403 for unauthorized or invalid token
+  ✓  Response contains error message for invalid token
+  ✓  Status code is 500 for internal server error
+  ✓  Response contains error message for internal server error
+
+→ Get All Gacha Collections
+  GET http://localhost:5005/admin_service/all_collections [200 OK, 252B, 5ms]
+  ✓  Status code is 200 for successful retrieval
+  ✓  Response contains an array of collections
+  ✓  Each collection contains required fields
+  ✓  Status code is 204 if no collections are found
+  ✓  Response contains message for no collections
+  ✓  Status code is 403 for unauthorized or invalid token
+  ✓  Response contains error message for invalid token
+  ✓  Status code is 500 for internal server error
+  ✓  Response contains error message for internal server error
+
+→ Add New Gacha to Catalog
+  POST http://localhost:5005/admin_service/gachas [201 CREATED, 224B, 6ms]
+  ✓  Status code is 201 for successful addition
+  ✓  Response contains success message and gacha_id
+  ✓  Status code is 400 for invalid input data
+  ✓  Response contains error message for invalid input data
+  ✓  Status code is 403 for unauthorized or invalid token
+  ✓  Response contains error message for invalid token
+  ✓  Status code is 500 for internal server error
+  ✓  Response contains error message for internal server error
+
+→ Remove Gacha from Catalog
+  DELETE http://localhost:5005/admin_service/gachas/101 [404 NOT FOUND, 202B, 4ms]
+  ✓  Status code is 200 for successful removal
+  ✓  Response contains success message and gacha_id
+  ✓  Status code is 404 for non-existent gacha
+  ✓  Response contains error message for non-existent gacha
+  ✓  Status code is 403 for unauthorized or invalid token
+  ✓  Response contains error message for invalid token
+  ✓  Status code is 500 for internal server error
+  ✓  Response contains error message for internal server error
+
+→ Get User Transactions
+  GET http://localhost:5005/admin_service/transactions/1 [200 OK, 368B, 5ms]
+  ✓  Status code is 200 for successful retrieval
+  ✓  Response contains userId and transactions array
+  ✓  Each transaction contains required fields
+  ✓  Status code is 404 for no transactions found
+  ✓  Response contains error message for no transactions
+  ✓  Status code is 403 for unauthorized or invalid token
+  ✓  Response contains error message for invalid token
+  ✓  Status code is 500 for internal server error
+  ✓  Response contains error message for internal server error
+
+→ Admin Logout
+  PATCH http://localhost:5005/admin_service/logout?adminId=1 [200 OK, 209B, 4ms]
+  ✓  Status code is 200 for successful logout
+  ✓  Response contains success message on logout
+  ✓  Status code is 400 for missing or invalid adminId
+  ✓  Response contains error message for missing or invalid adminId
+  ✓  Status code is 404 for admin not found
+  ✓  Response contains error message for admin not found
+  ✓  Status code is 403 for unauthorized token
+  ✓  Response contains error message for unauthorized token
+
+┌─────────────────────────┬─────────────────┬─────────────────┐
+│                         │        executed │          failed │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│              iterations │               1 │               0 │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│                requests │              10 │               0 │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│            test-scripts │              10 │               0 │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│      prerequest-scripts │               0 │               0 │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│              assertions │              80 │               0 │
+├─────────────────────────┴─────────────────┴─────────────────┤
+│ total run duration: 177ms                                   │
+├─────────────────────────────────────────────────────────────┤
+│ total data received: 660B (approx)                          │
+├─────────────────────────────────────────────────────────────┤
+│ average response time: 6ms [min: 4ms, max: 17ms, s.d.: 3ms] │
+└─────────────────────────────────────────────────────────────┘

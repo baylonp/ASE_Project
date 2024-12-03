@@ -3,27 +3,42 @@ newman
 Market Service - Buy In-Game Currency Tests
 
 → Update Gacha Catalog
-  PATCH http://localhost:5003/market_service/admin/gachas/1 [200 OK, 206B, 19ms]
+  PATCH http://localhost:5003/market_service/admin/gachas/1 [200 OK, 206B, 20ms]
   ✓  Status code is 200
   ✓  Gacha updated successfully
 
+→ Remove Gacha by ID
+  DELETE http://localhost:5003/market_service/admin/gachas/1 [200 OK, 206B, 6ms]
+  ✓  Status code is 200
+  ✓  Response message confirms successful deletion
+
+→ Get User Transactions (Admin)
+  GET http://localhost:5003/market_service/admin/transactions/1 [200 OK, 334B, 4ms]
+  ✓  Status code is 200
+  ✓  Response contains transactions
+
+→ Add Gacha (Admin)
+  POST http://localhost:5003/market_service/admin/gachas [201 CREATED, 222B, 5ms]
+  ✓  Status code is 201
+  ✓  Response contains success message and gacha_id
+
 → Get User Transactions
-  GET http://localhost:5003/market_service/players/1/transactions [200 OK, 334B, 7ms]
+  GET http://localhost:5003/market_service/players/1/transactions [200 OK, 334B, 4ms]
   ✓  Status code is 200
   ✓  Transactions are returned
 
 → Buy In-Game Currency
-  POST http://localhost:5003/market_service/players/1/currency/buy?amount=100 [200 OK, 219B, 4ms]
+  POST http://localhost:5003/market_service/players/1/currency/buy?amount=100 [200 OK, 219B, 5ms]
   ✓  Status code is 200
   ✓  Currency purchased successfully
 
 → Retrieve Pilot Catalog
-  GET http://localhost:5003/market_service/catalog [200 OK, 597B, 4ms]
+  GET http://localhost:5003/market_service/catalog [200 OK, 686B, 6ms]
   ✓  Status code is 200
   ✓  Catalog contains pilots
 
 → Purchase Gacha Roll
-  POST http://localhost:5003/market_service/players/1/gacha/roll [200 OK, 323B, 6ms]
+  POST http://localhost:5003/market_service/players/1/gacha/roll [200 OK, 323B, 4ms]
   ✓  Status code is 200
   ✓  Roll purchased successfully
 
@@ -32,17 +47,17 @@ Market Service - Buy In-Game Currency Tests
 ├─────────────────────────┼─────────────────┼─────────────────┤
 │              iterations │               1 │               0 │
 ├─────────────────────────┼─────────────────┼─────────────────┤
-│                requests │               5 │               0 │
+│                requests │               8 │               0 │
 ├─────────────────────────┼─────────────────┼─────────────────┤
-│            test-scripts │               5 │               0 │
+│            test-scripts │               8 │               0 │
 ├─────────────────────────┼─────────────────┼─────────────────┤
 │      prerequest-scripts │               0 │               0 │
 ├─────────────────────────┼─────────────────┼─────────────────┤
-│              assertions │              10 │               0 │
+│              assertions │              16 │               0 │
 ├─────────────────────────┴─────────────────┴─────────────────┤
-│ total run duration: 106ms                                   │
+│ total run duration: 145ms                                   │
 ├─────────────────────────────────────────────────────────────┤
-│ total data received: 851B (approx)                          │
+│ total data received: 1.2kB (approx)                         │
 ├─────────────────────────────────────────────────────────────┤
-│ average response time: 8ms [min: 4ms, max: 19ms, s.d.: 5ms] │
+│ average response time: 6ms [min: 4ms, max: 20ms, s.d.: 5ms] │
 └─────────────────────────────────────────────────────────────┘

@@ -2,8 +2,13 @@ newman
 
 Authentication Service Tests
 
+→ Validate Token
+  GET http://localhost:5001/authentication/validate [200 OK, 183B, 20ms]
+  ✓  Status code is 200
+  ✓  Response contains message 'Ok.'
+
 → Create Test Account
-  POST http://localhost:5001/authentication/account [201 CREATED, 213B, 21ms]
+  POST http://localhost:5001/authentication/account [201 CREATED, 213B, 5ms]
   ✓  Status code is 201 for successful account creation
   ✓  Response contains success message
   ✓  Handles duplicate username error
@@ -11,21 +16,21 @@ Authentication Service Tests
   ✓  Handles invalid input data
 
 → Login 1st account
-  POST http://localhost:5001/authentication/auth [200 OK, 235B, 4ms]
+  POST http://localhost:5001/authentication/auth [200 OK, 235B, 5ms]
   ✓  Status code is 200 for successful login
   ✓  Response contains token and userId
   ✓  Handles invalid input data
   ✓  Handles invalid credentials
 
 → Login 2nd account
-  POST http://localhost:5001/authentication/auth [200 OK, 236B, 5ms]
+  POST http://localhost:5001/authentication/auth [200 OK, 236B, 6ms]
   ✓  Status code is 200 for successful login
   ✓  Response contains token and userId
   ✓  Handles invalid input data
   ✓  Handles invalid credentials
 
 → Update 2nd Account
-  PATCH http://localhost:5001/authentication/account?accountId=2 [200 OK, 208B, 233ms]
+  PATCH http://localhost:5001/authentication/account?accountId=2 [200 OK, 208B, 214ms]
   ✓  Status code is 200 for successful update
   ✓  Response contains success message for update
   ✓  Handles duplicate username or email errors
@@ -42,21 +47,21 @@ Authentication Service Tests
   ✓  Handles Gacha service deletion failure
 
 → Get User ID (1st)
-  GET http://localhost:5001/authentication/userId?username=test_user [200 OK, 178B, 3ms]
+  GET http://localhost:5001/authentication/userId?username=test_user [200 OK, 178B, 5ms]
   ✓  Status code is 200 for valid user
   ✓  Response contains userId
   ✓  Handles username missing or user not found errors
   ✓  Handles unauthorized access error
 
 → Get Player Info (1st)
-  GET http://localhost:5001/authentication/players/1 [200 OK, 242B, 2ms]
+  GET http://localhost:5001/authentication/players/1 [200 OK, 242B, 3ms]
   ✓  Status code is 200 for valid player
   ✓  Response contains player information
   ✓  Handles player not found error
   ✓  Handles unauthorized access error
 
 → Add Currency to Player (1st)
-  POST http://localhost:5001/authentication/players/1/currency/add?amount=100 [200 OK, 232B, 4ms]
+  POST http://localhost:5001/authentication/players/1/currency/add?amount=100 [200 OK, 232B, 3ms]
   ✓  Status code is 200 for successful addition
   ✓  Response contains updated wallet balance
   ✓  Handles invalid amount error
@@ -64,7 +69,7 @@ Authentication Service Tests
   ✓  Handles player not found error
 
 → Subtract Currency from Player (1st)
-  PATCH http://localhost:5001/authentication/players/1/currency/subtract [200 OK, 232B, 4ms]
+  PATCH http://localhost:5001/authentication/players/1/currency/subtract [200 OK, 232B, 2ms]
   ✓  Status code is 200 for successful subtraction
   ✓  Response contains updated wallet balance
   ✓  Handles invalid amount error
@@ -73,7 +78,7 @@ Authentication Service Tests
   ✓  Handles insufficient funds error
 
 → Update Player's Currency (1st)
-  PATCH http://localhost:5001/authentication/players/1/currency/update [200 OK, 232B, 3ms]
+  PATCH http://localhost:5001/authentication/players/1/currency/update [200 OK, 232B, 2ms]
   ✓  Status code is 200 for successful update
   ✓  Response contains updated wallet balance
   ✓  Handles invalid input data error
@@ -82,7 +87,7 @@ Authentication Service Tests
   ✓  Handles insufficient funds error
 
 → Logout 1st User
-  PATCH http://localhost:5001/authentication/logout?accountId=1 [200 OK, 208B, 2ms]
+  PATCH http://localhost:5001/authentication/logout?accountId=1 [200 OK, 208B, 3ms]
   ✓  Status code is 200 for successful logout
   ✓  Response contains success message
   ✓  Handles missing account ID
@@ -93,17 +98,17 @@ Authentication Service Tests
 ├─────────────────────────┼───────────────────┼──────────────────┤
 │              iterations │                 1 │                0 │
 ├─────────────────────────┼───────────────────┼──────────────────┤
-│                requests │                11 │                0 │
+│                requests │                12 │                0 │
 ├─────────────────────────┼───────────────────┼──────────────────┤
-│            test-scripts │                11 │                0 │
+│            test-scripts │                12 │                0 │
 ├─────────────────────────┼───────────────────┼──────────────────┤
 │      prerequest-scripts │                 1 │                0 │
 ├─────────────────────────┼───────────────────┼──────────────────┤
-│              assertions │                53 │                0 │
+│              assertions │                55 │                0 │
 ├─────────────────────────┴───────────────────┴──────────────────┤
-│ total run duration: 426ms                                      │
+│ total run duration: 423ms                                      │
 ├────────────────────────────────────────────────────────────────┤
-│ total data received: 636B (approx)                             │
+│ total data received: 654B (approx)                             │
 ├────────────────────────────────────────────────────────────────┤
-│ average response time: 25ms [min: 2ms, max: 233ms, s.d.: 65ms] │
+│ average response time: 22ms [min: 2ms, max: 214ms, s.d.: 57ms] │
 └────────────────────────────────────────────────────────────────┘
