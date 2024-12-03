@@ -11,19 +11,18 @@
   },
   "servers": [
     {
-      "url": "http://127.0.0.1:5001"
-    },
-    {
-      "url": "http://127.0.0.1:5002"
-    },
-    {
-      "url": "http://127.0.0.1:5003"
-    },
-    {
-      "url": "http://127.0.0.1:5004"
+      "url": "https://localhost"
     }
   ],
   "tags": [
+    {
+      "name": "Admin Service",
+      "description": "Admin management",
+      "externalDocs": {
+        "description": "GitHub repo",
+        "url": "https://github.com/baylonp/ASE_Project/tree/test/gachas/admin_service"
+      }
+    },
     {
       "name": "Authentication Service",
       "description": "Account management",
@@ -58,6 +57,1101 @@
     }
   ],
   "paths": {
+    "/admin_service/auth": {
+      "post": {
+        "tags": [
+          "Admin Service"
+        ],
+        "summary": "Login Admin",
+        "description": "Authenticates an admin and generate a token JWT.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "username",
+                  "password"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "token": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": {
+                        "invalidInput": {
+                          "value": "Invalid input data"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Invalid credentials"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_service/logout": {
+      "patch": {
+        "tags": [
+          "Admin Service"
+        ],
+        "summary": "Admin Logout",
+        "description": "Logs out an admin by clearing the associated JWT token.",
+        "parameters": [
+          {
+            "name": "adminId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The ID of the admin to log out."
+          },
+          {
+            "name": "x-access-token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The JWT token for authentication."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Admin successfully logged out.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Logout successful"
+                    },
+                    "adminId": {
+                      "type": "string",
+                      "description": "The ID of the admin who has been logged out."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Admin ID is missing in the request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Admin ID is required"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token is missing or invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Token is missing or invalid"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Admin not found in the database.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Admin not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_service/adminId": {
+      "get": {
+        "tags": [
+          "Admin Service"
+        ],
+        "summary": "Get Admin ID",
+        "description": "Retrieves the ID of an admin by their username.",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The username of the admin whose ID is being retrieved."
+          },
+          {
+            "name": "x-access-token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The JWT token for authentication."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Admin ID retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "adminId": {
+                      "type": "string",
+                      "description": "The unique ID of the admin."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Username is missing in the request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Username is required"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized access. Token is missing or invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Token is missing or invalid"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Admin not found in the database.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Admin not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_service/verify_admin": {
+      "get": {
+        "tags": [
+          "Admin Service"
+        ],
+        "summary": "Verify Admin",
+        "description": "Verify if the user is an admin",
+        "parameters": [
+          {
+            "name": "x-access-token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Admin verified successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "token": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request. Something happened on Admin Token Vaerification.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Bad Request. Something happened on Admin Token Vaerification."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token is invalid/expired",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Token is invlaid/expired"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized access",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized access"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_service/user_info/{playerId}": {
+      "get": {
+        "tags": [
+          "Admin Service"
+        ],
+        "summary": "User Info",
+        "description": "Retrieve user info.",
+        "parameters": [
+          {
+            "name": "playerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-access-token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User info retrieved succesfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "token": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token is invalid/expired",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Token is invlaid/expired"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Player not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Player not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An error occurred while communicating with the authentication service",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "An error occurred while communicating with the authentication service"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Authentication service is temporarily unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Authentication service is temporarily unavailable"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_service/gachas/{gacha_id}": {
+      "patch": {
+        "tags": [
+          "Admin Service"
+        ],
+        "summary": "Update gacha",
+        "description": "Update a gacha in the catalog & in the collection of all the users.",
+        "parameters": [
+          {
+            "name": "gacha_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-access-token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Gacha uploaded succesfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "token": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": {
+                        "invalidInput": {
+                          "value": "Invalid input data"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token is invalid/expired",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Token is invlaid/expired"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An error occurred while communicating with the gacha market or gacha service",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "An error occurred while communicating with the gacha market or gacha service"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Authentication service is temporarily unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Authentication service is temporarily unavailable"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_service/all_collections": {
+      "get": {
+        "tags": [
+          "Admin Service"
+        ],
+        "summary": "Retrieve All Gacha Collections",
+        "description": "Allows the admin to retrieve all Gacha collections stored in the gacha_service database.",
+        "parameters": [
+          {
+            "name": "x-access-token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The JWT token used for authentication and authorization."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved Gacha collections.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "collectionId": {
+                        "type": "string",
+                        "description": "The unique identifier for the Gacha collection."
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "The name of the Gacha collection."
+                      },
+                      "description": {
+                        "type": "string",
+                        "description": "A brief description of the collection."
+                      },
+                      "items": {
+                        "type": "array",
+                        "description": "A list of items in the collection.",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "itemId": {
+                              "type": "string",
+                              "description": "The unique identifier of the item."
+                            },
+                            "itemName": {
+                              "type": "string",
+                              "description": "The name of the item."
+                            },
+                            "rarity": {
+                              "type": "string",
+                              "description": "The rarity level of the item."
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "No Gacha collections found in the gacha_service database.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "No Gacha collections found."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. The provided JWT token is invalid or missing.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Token is missing or invalid."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An error occurred while communicating with the gacha_service.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "An error occurred while communicating with the gacha service [error details]."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "The request to gacha_service timed out.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "The request to gacha_service timed out."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_service/gachas": {
+      "post": {
+        "tags": [
+          "Admin Service"
+        ],
+        "summary": "Add New Gacha to Catalog",
+        "description": "Allows administrators to add a new Gacha to the catalog through the gacha_market_service.",
+        "parameters": [
+          {
+            "name": "x-access-token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The JWT token used for authentication and authorization."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "pilot_name": {
+                    "type": "string",
+                    "description": "The name of the pilot associated with the Gacha."
+                  },
+                  "rarity": {
+                    "type": "string",
+                    "description": "The rarity level of the Gacha."
+                  },
+                  "experience": {
+                    "type": "integer",
+                    "description": "The experience points required or associated with the Gacha."
+                  },
+                  "ability": {
+                    "type": "string",
+                    "description": "The special ability or feature of the Gacha."
+                  }
+                },
+                "required": [
+                  "pilot_name",
+                  "rarity",
+                  "experience",
+                  "ability"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Gacha added successfully to the catalog.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Gacha added successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input data provided in the request body.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Invalid input data"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Token is missing or invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Token is missing or invalid"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An error occurred while communicating with the gacha_market_service.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "An error occurred while communicating with the gacha_market_service [error details]"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The request to the gacha_market_service timed out.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "The request to gacha_market_service timed out"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_service/transactions/{userId}": {
+      "get": {
+        "tags": [
+          "Admin Service"
+        ],
+        "summary": "Get User Transactions",
+        "description": "Allows administrators to retrieve the transaction history of a specific user through the gacha_market_service.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The unique ID of the user whose transaction history is being retrieved."
+          },
+          {
+            "name": "x-access-token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The JWT token for authentication."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User transactions retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "transactionId": {
+                        "type": "string",
+                        "description": "The unique ID of the transaction."
+                      },
+                      "userId": {
+                        "type": "string",
+                        "description": "The ID of the user associated with the transaction."
+                      },
+                      "amount": {
+                        "type": "number",
+                        "description": "The amount involved in the transaction."
+                      },
+                      "currency": {
+                        "type": "string",
+                        "description": "The currency used in the transaction."
+                      },
+                      "date": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "The date and time of the transaction."
+                      },
+                      "status": {
+                        "type": "string",
+                        "description": "The status of the transaction (e.g., completed, pending)."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized access. Token is missing or invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Token is missing or invalid"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized access to the requested resource.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized access"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No transactions found for the specified user.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "No transactions found for this user"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An error occurred while communicating with the gacha_market_service.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "An error occurred while communicating with the gacha_market_service [error details]"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The request to gacha_market_service timed out.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "The request to gacha_market_service timed out"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/authentication/validate": {
+      "get": {
+        "tags": [
+          "Authentication Service"
+        ],
+        "summary": "Validate JWT Token",
+        "description": "Validates the JWT token provided in the request headers. Confirms whether the token is valid and usable.",
+        "parameters": [
+          {
+            "name": "x-access-token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The JWT token to be validated."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Token is valid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Ok."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request. Something went wrong during token verification.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Bad Request. Something happened on Token Verification."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Token is missing or invalid. Token has expired / Invalid token format or content.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Authentication Service has received an Invalid token / Token has expired / Invalid token"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/authentication/account": {
       "post": {
         "tags": [
@@ -158,6 +1252,15 @@
               "type": "integer",
               "example": 1
             }
+          },
+          {
+            "name": "x-access-token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The JWT token used for authentication."
           }
         ],
         "responses": {
@@ -170,7 +1273,39 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "Account deleted successfully"
+                      "example": "Account deleted"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Account ID is missing in the request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Account ID is required"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized access. Token is missing or invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Token is missing or invalid"
                     }
                   }
                 }
@@ -187,6 +1322,38 @@
                     "message": {
                       "type": "string",
                       "example": "Account not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An internal error occurred during the operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "An internal error occurred [error details]"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Failed to delete Gacha collection from gacha_service due to a timeout.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Failed to retrieve user information from authentication service"
                     }
                   }
                 }
@@ -209,8 +1376,17 @@
             "description": "The unique ID of the account to be updated.",
             "schema": {
               "type": "integer",
-              "example": 1
+              "example": null
             }
+          },
+          {
+            "name": "x-access-token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The JWT token used for authentication."
           }
         ],
         "requestBody": {
@@ -286,6 +1462,22 @@
               }
             }
           },
+          "401": {
+            "description": "Unauthorized access. Token is missing or invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Token is missing or invalid"
+                    }
+                  }
+                }
+              }
+            }
+          },
           "404": {
             "description": "Account not found",
             "content": {
@@ -296,6 +1488,22 @@
                     "message": {
                       "type": "string",
                       "example": "Account not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An internal error occurred during the operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "An internal error occurred [error details]"
                     }
                   }
                 }
@@ -393,26 +1601,38 @@
             }
           }
         }
-      },
-      "delete": {
+      }
+    },
+    "/authentication/logout": {
+      "patch": {
         "tags": [
           "Authentication Service"
         ],
-        "summary": "User logout",
-        "description": "Logout from the Gacha System using the sessionId",
+        "summary": "User Logout",
+        "description": "Logs out a user by clearing the associated JWT token in the database.",
         "parameters": [
           {
-            "name": "sessionId",
+            "name": "accountId",
             "in": "query",
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "The ID of the account to log out."
+          },
+          {
+            "name": "x-access-token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The JWT token used for authentication."
           }
         ],
         "responses": {
           "200": {
-            "description": "Logout successful",
+            "description": "User successfully logged out.",
             "content": {
               "application/json": {
                 "schema": {
@@ -421,6 +1641,10 @@
                     "message": {
                       "type": "string",
                       "example": "Logout successful"
+                    },
+                    "userId": {
+                      "type": "string",
+                      "description": "The ID of the user who has been logged out."
                     }
                   }
                 }
@@ -428,7 +1652,7 @@
             }
           },
           "400": {
-            "description": "Invalid input data",
+            "description": "Account ID is missing in the request.",
             "content": {
               "application/json": {
                 "schema": {
@@ -436,7 +1660,23 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "Invalid input data"
+                      "example": "Account ID is required"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized access. Token is missing or invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Token is missing or invalid"
                     }
                   }
                 }
@@ -444,7 +1684,7 @@
             }
           },
           "404": {
-            "description": "Session not found",
+            "description": "User not found in the database.",
             "content": {
               "application/json": {
                 "schema": {
@@ -452,7 +1692,23 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "Session not found"
+                      "example": "User not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error during the logout operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "An internal error occurred [error details]"
                     }
                   }
                 }
@@ -479,6 +1735,15 @@
               "type": "string",
               "example": "user123"
             }
+          },
+          {
+            "name": "x-access-token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The JWT token used for authentication."
           }
         ],
         "responses": {
@@ -508,7 +1773,23 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "Username is required"
+                      "example": "Username is"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized access. Token is missing or invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Token is missing or invalid"
                     }
                   }
                 }
@@ -525,6 +1806,22 @@
                     "message": {
                       "type": "string",
                       "example": "User not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error during the operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "An internal error occurred [error details]"
                     }
                   }
                 }
@@ -551,6 +1848,15 @@
               "type": "integer",
               "example": 1
             }
+          },
+          {
+            "name": "x-access-token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The JWT token used for authentication."
           }
         ],
         "responses": {
@@ -576,15 +1882,26 @@
                       "description": "The email address of the player.",
                       "example": "player123@example.com"
                     },
-                    "password": {
-                      "type": "string",
-                      "description": "The hashed password of the player.",
-                      "example": "$2b$12$12345hashedpassword"
-                    },
                     "wallet": {
                       "type": "integer",
                       "description": "The current wallet balance of the player.",
                       "example": 500
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized access. Token is missing or invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Token is missing or invalid"
                     }
                   }
                 }
@@ -654,6 +1971,15 @@
               "format": "float",
               "example": 50
             }
+          },
+          {
+            "name": "x-access-token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The JWT token used for authentication."
           }
         ],
         "responses": {
@@ -688,6 +2014,30 @@
                     "message": {
                       "type": "string",
                       "example": "Invalid input data, amount must be greater than zero"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized action. The current user is not authorized to modify this player's wallet.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "PlayerID Invalid. You are not authorized."
+                    },
+                    "playerID": {
+                      "type": "string",
+                      "description": "The player ID from the request."
+                    },
+                    "currUserID": {
+                      "type": "string",
+                      "description": "The current user ID from the token."
                     }
                   }
                 }
@@ -746,6 +2096,15 @@
               "type": "integer",
               "example": 1
             }
+          },
+          {
+            "name": "x-access-token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The JWT token used for authentication."
           }
         ],
         "requestBody": {
@@ -810,6 +2169,22 @@
               }
             }
           },
+          "401": {
+            "description": "Unauthorized access. Token is missing or invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Token is missing or invalid"
+                    }
+                  }
+                }
+              }
+            }
+          },
           "404": {
             "description": "Player not found",
             "content": {
@@ -861,6 +2236,15 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "x-access-token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The JWT token used for authentication."
           }
         ],
         "requestBody": {
@@ -921,6 +2305,22 @@
               }
             }
           },
+          "401": {
+            "description": "Unauthorized access. Token is missing or invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Token is missing or invalid"
+                    }
+                  }
+                }
+              }
+            }
+          },
           "404": {
             "description": "Player not found",
             "content": {
@@ -973,6 +2373,15 @@
               "type": "integer",
               "example": 1
             }
+          },
+          {
+            "name": "x-access-token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The JWT token used for authentication."
           }
         ],
         "responses": {
@@ -1006,6 +2415,38 @@
               }
             }
           },
+          "204": {
+            "description": "The user does not own any Gacha collection.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Player does not own any Gachas"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized access. Token is missing or invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Token is missing or invalid"
+                    }
+                  }
+                }
+              }
+            }
+          },
           "404": {
             "description": "Player not found or no gachas available",
             "content": {
@@ -1015,7 +2456,116 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "Player not found"
+                      "example": "Player not"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error occurred during the operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "An internal error occurred [error details]"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Gacha Service"
+        ],
+        "summary": "Delete User's Gacha Collection",
+        "description": "Deletes all Gacha associated with a specific user.",
+        "parameters": [
+          {
+            "name": "userID",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The unique ID of the user whose Gacha collection is being deleted."
+          },
+          {
+            "name": "x-access-token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The JWT token used for authentication."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Gacha collection deleted successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Gacha collection deleted successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized access. Token is missing or invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Token is missing or invalid"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No Gacha collection found for the specified user.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "No Gacha collection found for this user"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error occurred during the operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "An internal error occurred [error details]"
                     }
                   }
                 }
@@ -1040,6 +2590,15 @@
               "type": "integer",
               "example": 1
             }
+          },
+          {
+            "name": "x-access-token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The JWT token used for authentication."
           }
         ],
         "requestBody": {
@@ -1112,7 +2671,39 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "Invalid input data"
+                      "example": "Invalid input"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized access. Token is missing or invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Token is missing or invalid"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error occurred during the operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "An error occurred [error details]"
                     }
                   }
                 }
@@ -1149,6 +2740,15 @@
               "type": "integer",
               "example": 101
             }
+          },
+          {
+            "name": "x-access-token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The JWT token used for authentication."
           }
         ],
         "responses": {
@@ -1182,7 +2782,23 @@
                     "ability": {
                       "type": "string",
                       "description": "The ability of the gacha.",
-                      "example": "Stealth Mode"
+                      "example": "Stealth"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized access. Token is missing or invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Token is missing or invalid"
                     }
                   }
                 }
@@ -1198,7 +2814,23 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "Gacha or player not found"
+                      "example": "Gacha or player not"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error occurred during the operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "An internal error occurred [error details]"
                     }
                   }
                 }
@@ -1224,6 +2856,15 @@
               "type": "integer"
             },
             "description": "The ID of the player whose missing gachas are being retrieved."
+          },
+          {
+            "name": "x-access-token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The JWT token used for authentication."
           }
         ],
         "responses": {
@@ -1249,14 +2890,6 @@
                           "rarity": {
                             "type": "string",
                             "description": "Rarity level of the missing pilot."
-                          },
-                          "experience": {
-                            "type": "integer",
-                            "description": "Experience level of the missing pilot."
-                          },
-                          "ability": {
-                            "type": "string",
-                            "description": "Special ability of the missing pilot."
                           }
                         }
                       }
@@ -1267,7 +2900,7 @@
                         "message": {
                           "type": "string",
                           "description": "Message indicating the player has all gachas.",
-                          "example": "Player has all gachas."
+                          "example": "Player has all gachas"
                         }
                       }
                     }
@@ -1276,8 +2909,8 @@
               }
             }
           },
-          "500": {
-            "description": "Internal server error occurred.",
+          "401": {
+            "description": "Unauthorized access. Token is missing or invalid.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1285,7 +2918,39 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "Internal server error occurred."
+                      "example": "Token is missing or invalid"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An error occurred while communicating with the Gacha market service or an internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "An error occurred while communicating with the Gacha market service or an internal server error."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The Gacha market service is temporarily unavailable due to a timeout.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Service is temporarily unavailable"
                     }
                   }
                 }
@@ -1319,7 +2984,16 @@
             "schema": {
               "type": "integer"
             },
-            "description": "The ID of the gacha that is being transferred."
+            "description": "The ID of the gacha that is being transferred"
+          },
+          {
+            "name": "x-access-token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The JWT token used for authentication."
           }
         ],
         "responses": {
@@ -1334,6 +3008,22 @@
                       "type": "string",
                       "description": "Confirmation message for successful ownership update.",
                       "example": "Gacha ownership updated successfully."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized access. Token is missing or invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Token is missing or invalid"
                     }
                   }
                 }
@@ -1377,6 +3067,840 @@
         }
       }
     },
+    "/gacha_service/admin/update_all/{gacha_id}": {
+      "patch": {
+        "tags": [
+          "Gacha Service"
+        ],
+        "summary": "Update Gacha for All Users",
+        "description": "Updates the attributes of a specific Gacha for all users who own it.",
+        "parameters": [
+          {
+            "name": "gacha_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The unique ID of the Gacha to be updated."
+          },
+          {
+            "name": "x-access-token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The JWT token used for authentication."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "pilot_name": {
+                    "type": "string",
+                    "description": "The updated name of the pilot."
+                  },
+                  "rarity": {
+                    "type": "string",
+                    "description": "The updated rarity level of the Gacha."
+                  },
+                  "experience": {
+                    "type": "number",
+                    "description": "The updated experience points of the Gacha."
+                  },
+                  "ability": {
+                    "type": "string",
+                    "description": "The updated special ability of the Gacha."
+                  }
+                },
+                "example": {
+                  "pilot_name": "Updated Pilot",
+                  "rarity": "Epic",
+                  "experience": 7000,
+                  "ability": "Enhanced Defense"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Gacha updated for all users successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Gacha updated for all users successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input data or missing fields in the request body.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Invalid input data"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized access. The user is not an admin.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized access"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No Gacha found for the given gacha_id.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "No gacha found for given gacha_id"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An internal server error occurred during the operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "An internal error occurred [error details]"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Authentication or admin service is temporarily unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Authentication service is temporarily unavailable"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/gacha_service/admin/collections": {
+      "get": {
+        "tags": [
+          "Gacha Service"
+        ],
+        "summary": "Get All Gacha Collections",
+        "description": "Allows an admin to view the entire Gacha Collection database.",
+        "parameters": [
+          {
+            "name": "x-access-token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The JWT token used for authentication."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Gacha collections retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "The unique ID of the Gacha entry."
+                      },
+                      "user_id": {
+                        "type": "string",
+                        "description": "The ID of the user who owns the Gacha."
+                      },
+                      "gacha_id": {
+                        "type": "string",
+                        "description": "The unique ID of the Gacha."
+                      },
+                      "pilot_name": {
+                        "type": "string",
+                        "description": "The name of the pilot associated with the Gacha."
+                      },
+                      "rarity": {
+                        "type": "string",
+                        "description": "The rarity level of the Gacha."
+                      },
+                      "experience": {
+                        "type": "number",
+                        "description": "The experience points of the Gacha."
+                      },
+                      "ability": {
+                        "type": "string",
+                        "description": "The special ability of the Gacha."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "No Gacha collections found in the database.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "No Gacha collections found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized access. The user is not an admin.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized access"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An internal server error occurred during the operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "An internal error occurred [error details]"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The authentication or admin service is temporarily unavailable due to a timeout.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Authentication service is temporarily unavailable"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/market_service/admin/gachas/{gacha_id}": {
+      "patch": {
+        "tags": [
+          "Gacha Market Service"
+        ],
+        "summary": "Update Gacha in Catalog",
+        "description": "Updates the attributes of a specific Gacha in the catalog. Only accessible to admin users.",
+        "parameters": [
+          {
+            "name": "gacha_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The unique ID of the Gacha to be updated."
+          },
+          {
+            "name": "x-access-token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The JWT token used for authentication."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "pilot_name": {
+                    "type": "string",
+                    "description": "The updated name of the pilot associated with the Gacha."
+                  },
+                  "rarity": {
+                    "type": "string",
+                    "description": "The updated rarity level of the Gacha."
+                  },
+                  "experience": {
+                    "type": "number",
+                    "description": "The updated experience points of the Gacha."
+                  },
+                  "ability": {
+                    "type": "string",
+                    "description": "The updated special ability of the Gacha."
+                  }
+                },
+                "example": {
+                  "pilot_name": "Updated Pilot",
+                  "rarity": "Legendary",
+                  "experience": 9000,
+                  "ability": "Enhanced Speed"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Gacha updated successfully in the catalog.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Gacha updated successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input data or missing fields in the request body.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Invalid input data"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized access. The user is not an admin.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized access"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Gacha not found in the catalog.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Gacha not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An internal server error occurred during the operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "An internal error occurred [error details]"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Authentication or admin service is temporarily unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Authentication service is temporarily unavailable"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Gacha Market Service"
+        ],
+        "summary": "Remove Gacha from Catalog",
+        "description": "Allows an administrator to remove a Gacha from the catalog.",
+        "parameters": [
+          {
+            "name": "gacha_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The unique ID of the Gacha to be removed."
+          },
+          {
+            "name": "x-access-token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The JWT token used for authentication."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Gacha removed successfully from the catalog.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Gacha removed successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized access. The user is not an admin.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized access"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Gacha not found in the catalog.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Gacha not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An internal server error occurred during the operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "An internal error occurred [error details]"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Authentication service is temporarily unavailable due to a timeout.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Authentication service is temporarily unavailable"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/market_service/admin/transactions/{userId}": {
+      "get": {
+        "tags": [
+          "Gacha Market Service"
+        ],
+        "summary": "Get User Transactions for Admin",
+        "description": "Allows administrators to view the transaction history for a specific user.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The unique ID of the user whose transactions are being retrieved."
+          },
+          {
+            "name": "x-access-token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The JWT token used for authentication."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Transactions retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "The unique ID of the transaction."
+                      },
+                      "user_id": {
+                        "type": "string",
+                        "description": "The ID of the user associated with the transaction."
+                      },
+                      "amount_spent": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "The amount spent in the transaction."
+                      },
+                      "timestamp": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "The timestamp of the transaction in ISO format."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized access. The user is not an admin.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized access"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No transactions found for the specified user.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "No transactions found for this user"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An internal server error occurred during the operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "An internal error occurred [error details]"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Authentication service is temporarily unavailable due to a timeout.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Authentication service is temporarily unavailable"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/market_service/admin/gachas": {
+      "post": {
+        "tags": [
+          "Gacha Market Service"
+        ],
+        "summary": "Add New Gacha to Catalog",
+        "description": "Allows an administrator to add a new Gacha to the catalog.",
+        "parameters": [
+          {
+            "name": "x-access-token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The JWT token used for authentication."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "pilot_name": {
+                    "type": "string",
+                    "description": "The name of the pilot associated with the Gacha."
+                  },
+                  "rarity": {
+                    "type": "string",
+                    "description": "The rarity level of the Gacha."
+                  },
+                  "experience": {
+                    "type": "number",
+                    "description": "The experience points associated with the Gacha."
+                  },
+                  "ability": {
+                    "type": "string",
+                    "description": "The special ability or feature of the Gacha."
+                  }
+                },
+                "required": [
+                  "pilot_name",
+                  "rarity",
+                  "experience",
+                  "ability"
+                ],
+                "example": {
+                  "pilot_name": "Ace Pilot",
+                  "rarity": "Legendary",
+                  "experience": 5000,
+                  "ability": "Double Attack"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Gacha added successfully to the catalog.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Gacha added successfully"
+                    },
+                    "gacha_id": {
+                      "type": "string",
+                      "description": "The unique ID of the newly created Gacha."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input data. Required fields are missing or incorrect.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Invalid input data"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized access. The user is not an admin.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized access"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An internal server error occurred during the operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "An internal error occurred [error details]"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Authentication service is temporarily unavailable due to a timeout.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Authentication service is temporarily unavailable"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/market_service/players/{userId}/transactions": {
       "get": {
         "tags": [
@@ -1394,6 +3918,15 @@
               "type": "integer",
               "example": 1
             }
+          },
+          {
+            "name": "x-access-token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The JWT token used for authentication."
           }
         ],
         "responses": {
@@ -1428,6 +3961,22 @@
                         "description": "The timestamp of the transaction.",
                         "example": "2024-11-17T10:15:30"
                       }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized access. Token is missing or invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Token is missing or invalid"
                     }
                   }
                 }
@@ -1495,8 +4044,17 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "example": 50
+              "example": null
             }
+          },
+          {
+            "name": "x-access-token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The JWT token used for authentication."
           }
         ],
         "responses": {
@@ -1526,6 +4084,22 @@
                     "message": {
                       "type": "string",
                       "example": "Invalid input data Amount must be greater than zero"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized access. Token is missing or invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Token is missing or invalid"
                     }
                   }
                 }
@@ -1607,6 +4181,15 @@
               "type": "integer",
               "example": 1
             }
+          },
+          {
+            "name": "x-access-token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The JWT token used for authentication."
           }
         ],
         "responses": {
@@ -1717,6 +4300,22 @@
                 }
               }
             }
+          },
+          "503": {
+            "description": "Authentication or Gacha service is temporarily unavailable due to a timeout.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Authentication service is temporarily unavailable"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -1728,6 +4327,17 @@
         ],
         "summary": "Retrieve the complete catalog of pilots (gachas)",
         "description": "Returns the complete catalog of all available pilots (gachas) in the system, including their details such as rarity, experience, and special abilities.",
+        "parameters": [
+          {
+            "name": "x-access-token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The JWT token used for authentication."
+          }
+        ],
         "responses": {
           "200": {
             "description": "Catalog retrieved successfully.",
@@ -1764,6 +4374,22 @@
                       "pilot_name",
                       "rarity"
                     ]
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized access. Token is missing or invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Token is missing or invalid"
+                    }
                   }
                 }
               }
@@ -1836,6 +4462,10 @@
                         "description": "The ID of the user who issued the auction.",
                         "example": 55
                       },
+                      "current_user_winner_id": {
+                        "type": "string",
+                        "description": "The ID of the user currently winning the auction."
+                      },
                       "current_bid": {
                         "type": "number",
                         "format": "float",
@@ -1901,11 +4531,19 @@
             "name": "userId",
             "in": "path",
             "required": true,
-            "description": "The unique ID of the user creating the auction.",
             "schema": {
-              "type": "integer",
-              "example": 1
-            }
+              "type": "string"
+            },
+            "description": "The unique ID of the user setting the auction."
+          },
+          {
+            "name": "x-access-token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The JWT token used for authentication."
           }
         ],
         "requestBody": {
@@ -1916,9 +4554,9 @@
                 "type": "object",
                 "properties": {
                   "gacha_id": {
-                    "type": "integer",
+                    "type": "string",
                     "description": "The unique ID of the gacha being auctioned.",
-                    "example": 101
+                    "example": "101"
                   },
                   "base_price": {
                     "type": "number",
@@ -2011,6 +4649,22 @@
                 }
               }
             }
+          },
+          "503": {
+            "description": "Gacha service is temporarily unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Gacha service is temporarily unavailable"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -2031,6 +4685,15 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "x-access-token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The JWT token used for authentication."
           }
         ],
         "requestBody": {
@@ -2053,7 +4716,11 @@
                 "required": [
                   "user_id",
                   "bid_amount"
-                ]
+                ],
+                "example": {
+                  "bid_amount": 500,
+                  "user_id": "12345"
+                }
               }
             }
           }
@@ -2117,6 +4784,22 @@
                     "message": {
                       "type": "string",
                       "example": "An error occurred while communicating with other services"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Authentication service is temporarily unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Authentication service is temporarily unavailable"
                     }
                   }
                 }
