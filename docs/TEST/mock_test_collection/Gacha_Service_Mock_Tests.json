@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "2d2060e9-48b9-4bd0-aa83-669c21e681eb",
-		"name": "Gacha Service - User Gacha Collection Tests",
+		"name": "Gacha Market Service - User Gacha Collection Tests",
 		"description": "Postman collection for testing Gacha Service endpoints with mock responses.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "39855974"
@@ -1254,6 +1254,176 @@
 						}
 					},
 					"status": "Error",
+					"code": 403,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Unauthorized access\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Get All Gacha Collections (Admin Only)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Check if the status code is 200",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Validate that the response is an array",
+							"pm.test(\"Response is an array\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.be.an(\"array\");",
+							"});",
+							"",
+							"// Validate the structure of each gacha collection",
+							"pm.test(\"Each gacha collection contains required fields\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    jsonData.forEach(gacha => {",
+							"        pm.expect(gacha).to.have.property(\"id\").that.is.a(\"number\");",
+							"        pm.expect(gacha).to.have.property(\"user_id\").that.is.a(\"number\");",
+							"        pm.expect(gacha).to.have.property(\"gacha_id\").that.is.a(\"number\");",
+							"        pm.expect(gacha).to.have.property(\"pilot_name\").that.is.a(\"string\");",
+							"        pm.expect(gacha).to.have.property(\"rarity\").that.is.a(\"string\");",
+							"        pm.expect(gacha).to.have.property(\"experience\").that.is.a(\"string\");",
+							"        pm.expect(gacha).to.have.property(\"ability\").that.is.a(\"string\");",
+							"    });",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "admin_token_example"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5002/gacha_service/admin/collections",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5002",
+					"path": [
+						"gacha_service",
+						"admin",
+						"collections"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success - Retrieved All Gacha Collections",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "admin_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5002/gacha_service/admin/collections",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"gacha_service",
+								"admin",
+								"collections"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "[\n    {\n        \"id\": 1,\n        \"user_id\": 1,\n        \"gacha_id\": 101,\n        \"pilot_name\": \"Ace Pilot\",\n        \"rarity\": \"Rare\",\n        \"experience\": \"500\",\n        \"ability\": \"Speed Boost\"\n    },\n    {\n        \"id\": 2,\n        \"user_id\": 2,\n        \"gacha_id\": 102,\n        \"pilot_name\": \"Hero Pilot\",\n        \"rarity\": \"Epic\",\n        \"experience\": \"700\",\n        \"ability\": \"Shield\"\n    }\n]"
+				},
+				{
+					"name": "Failure - No Gacha Collections Found",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "admin_token_example"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5002/gacha_service/admin/collections",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"gacha_service",
+								"admin",
+								"collections"
+							]
+						}
+					},
+					"status": "No Content",
+					"code": 204,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"No Gacha collections found\"\n}"
+				},
+				{
+					"name": "Failure - Unauthorized Access",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "invalid_admin_token"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5002/gacha_service/admin/collections",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"gacha_service",
+								"admin",
+								"collections"
+							]
+						}
+					},
+					"status": "Forbidden",
 					"code": 403,
 					"_postman_previewlanguage": "Text",
 					"header": [],

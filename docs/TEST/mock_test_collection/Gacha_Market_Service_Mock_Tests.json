@@ -242,6 +242,806 @@
 			]
 		},
 		{
+			"name": "Remove Gacha by ID",
+			"request": {
+			  "method": "DELETE",
+			  "header": [
+				{
+				  "key": "x-access-token",
+				  "value": "admin_token_example",
+				  "type": "text"
+				},
+				{
+				  "key": "Content-Type",
+				  "value": "application/json",
+				  "type": "text"
+				}
+			  ],
+			  "url": {
+				"raw": "http://localhost:5003/market_service/admin/gachas/1",
+				"protocol": "http",
+				"host": [
+				  "localhost"
+				],
+				"port": "5003",
+				"path": [
+				  "market_service",
+				  "admin",
+				  "gachas",
+				  "1"
+				]
+			  }
+			},
+			"response": [
+			  {
+				"name": "Success - Gacha Removed",
+				"originalRequest": {
+				  "method": "DELETE",
+				  "header": [
+					{
+					  "key": "x-access-token",
+					  "value": "admin_token_example",
+					  "type": "text"
+					},
+					{
+					  "key": "Content-Type",
+					  "value": "application/json",
+					  "type": "text"
+					}
+				  ],
+				  "url": {
+					"raw": "http://localhost:5003/market_service/admin/gachas/1",
+					"protocol": "http",
+					"host": [
+					  "localhost"
+					],
+					"port": "5003",
+					"path": [
+					  "market_service",
+					  "admin",
+					  "gachas",
+					  "1"
+					]
+				  }
+				},
+				"status": "OK",
+				"code": 200,
+				"_postman_previewlanguage": "json",
+				"body": "{\n    \"message\": \"Gacha removed successfully\"\n}"
+			  },
+			  {
+				"name": "Failure - Gacha Not Found",
+				"originalRequest": {
+				  "method": "DELETE",
+				  "header": [
+					{
+					  "key": "x-access-token",
+					  "value": "admin_token_example",
+					  "type": "text"
+					},
+					{
+					  "key": "Content-Type",
+					  "value": "application/json",
+					  "type": "text"
+					}
+				  ],
+				  "url": {
+					"raw": "http://localhost:5003/market_service/admin/gachas/999",
+					"protocol": "http",
+					"host": [
+					  "localhost"
+					],
+					"port": "5003",
+					"path": [
+					  "market_service",
+					  "admin",
+					  "gachas",
+					  "999"
+					]
+				  }
+				},
+				"status": "Not Found",
+				"code": 404,
+				"_postman_previewlanguage": "json",
+				"body": "{\n    \"message\": \"Gacha not found\"\n}"
+			  },
+			  {
+				"name": "Failure - Unauthorized Access",
+				"originalRequest": {
+				  "method": "DELETE",
+				  "header": [
+					{
+					  "key": "x-access-token",
+					  "value": "invalid_admin_token",
+					  "type": "text"
+					},
+					{
+					  "key": "Content-Type",
+					  "value": "application/json",
+					  "type": "text"
+					}
+				  ],
+				  "url": {
+					"raw": "http://localhost:5003/market_service/admin/gachas/1",
+					"protocol": "http",
+					"host": [
+					  "localhost"
+					],
+					"port": "5003",
+					"path": [
+					  "market_service",
+					  "admin",
+					  "gachas",
+					  "1"
+					]
+				  }
+				},
+				"status": "Forbidden",
+				"code": 403,
+				"_postman_previewlanguage": "json",
+				"body": "{\n    \"message\": \"Unauthorized access\"\n}"
+			  },
+			  {
+				"name": "Failure - Missing Token",
+				"originalRequest": {
+				  "method": "DELETE",
+				  "header": [
+					{
+					  "key": "Content-Type",
+					  "value": "application/json",
+					  "type": "text"
+					}
+				  ],
+				  "url": {
+					"raw": "http://localhost:5003/market_service/admin/gachas/1",
+					"protocol": "http",
+					"host": [
+					  "localhost"
+					],
+					"port": "5003",
+					"path": [
+					  "market_service",
+					  "admin",
+					  "gachas",
+					  "1"
+					]
+				  }
+				},
+				"status": "Unauthorized",
+				"code": 401,
+				"_postman_previewlanguage": "json",
+				"body": "{\n    \"message\": \"Token is missing!\"\n}"
+			  },
+			  {
+				"name": "Failure - Internal Server Error",
+				"originalRequest": {
+				  "method": "DELETE",
+				  "header": [
+					{
+					  "key": "x-access-token",
+					  "value": "admin_token_example",
+					  "type": "text"
+					},
+					{
+					  "key": "Content-Type",
+					  "value": "application/json",
+					  "type": "text"
+					}
+				  ],
+				  "url": {
+					"raw": "http://localhost:5003/market_service/admin/gachas/1",
+					"protocol": "http",
+					"host": [
+					  "localhost"
+					],
+					"port": "5003",
+					"path": [
+					  "market_service",
+					  "admin",
+					  "gachas",
+					  "1"
+					]
+				  }
+				},
+				"status": "Internal Server Error",
+				"code": 500,
+				"_postman_previewlanguage": "json",
+				"body": "{\n    \"message\": \"An internal error occurred: [Error Details]\"\n}"
+			  }
+			],
+			"event": [
+			  {
+				"listen": "test",
+				"script": {
+				  "type": "text/javascript",
+				  "exec": [
+					"// Check for status code 200 (Success)",
+					"pm.test(\"Status code is 200\", function () {",
+					"    pm.response.to.have.status(200);",
+					"});",
+					"",
+					"// Validate the response body for successful deletion",
+					"pm.test(\"Response message confirms successful deletion\", function () {",
+					"    const jsonData = pm.response.json();",
+					"    pm.expect(jsonData).to.have.property('message', 'Gacha removed successfully');",
+					"});",
+					"",
+					"// Test for other scenarios such as missing gacha or unauthorized access",
+					"if (pm.response.status === 404) {",
+					"    pm.test(\"Gacha not found\", function () {",
+					"        const jsonData = pm.response.json();",
+					"        pm.expect(jsonData).to.have.property('message', 'Gacha not found');",
+					"    });",
+					"}",
+					"",
+					"if (pm.response.status === 403) {",
+					"    pm.test(\"Unauthorized access\", function () {",
+					"        const jsonData = pm.response.json();",
+					"        pm.expect(jsonData).to.have.property('message', 'Unauthorized access');",
+					"    });",
+					"}",
+					"",
+					"if (pm.response.status === 401) {",
+					"    pm.test(\"Missing Token\", function () {",
+					"        const jsonData = pm.response.json();",
+					"        pm.expect(jsonData).to.have.property('message', 'Token is missing!');",
+					"    });",
+					"}",
+					"",
+					"// Check for internal server error",
+					"if (pm.response.status === 500) {",
+					"    pm.test(\"Internal Server Error\", function () {",
+					"        const jsonData = pm.response.json();",
+					"        pm.expect(jsonData).to.have.property('message');",
+					"    });",
+					"}"
+				  ]
+				}
+			  }
+			]
+		},
+		{
+			"name": "Get User Transactions (Admin)",
+			"request": {
+			  "method": "GET",
+			  "header": [
+				{
+				  "key": "x-access-token",
+				  "value": "admin_token_example",
+				  "type": "text"
+				},
+				{
+				  "key": "Content-Type",
+				  "value": "application/json",
+				  "type": "text"
+				}
+			  ],
+			  "url": {
+				"raw": "http://localhost:5003/market_service/admin/transactions/1",
+				"protocol": "http",
+				"host": [
+				  "localhost"
+				],
+				"port": "5003",
+				"path": [
+				  "market_service",
+				  "admin",
+				  "transactions",
+				  "1"
+				]
+			  }
+			},
+			"response": [
+			  {
+				"name": "Success - Transactions Found",
+				"originalRequest": {
+				  "method": "GET",
+				  "header": [
+					{
+					  "key": "x-access-token",
+					  "value": "admin_token_example",
+					  "type": "text"
+					},
+					{
+					  "key": "Content-Type",
+					  "value": "application/json",
+					  "type": "text"
+					}
+				  ],
+				  "url": {
+					"raw": "http://localhost:5003/market_service/admin/transactions/1",
+					"protocol": "http",
+					"host": [
+					  "localhost"
+					],
+					"port": "5003",
+					"path": [
+					  "market_service",
+					  "admin",
+					  "transactions",
+					  "1"
+					]
+				  }
+				},
+				"status": "OK",
+				"code": 200,
+				"_postman_previewlanguage": "json",
+				"body": "[\n    {\n        \"id\": 1,\n        \"user_id\": \"1\",\n        \"amount_spent\": 50.0,\n        \"timestamp\": \"2024-11-28T10:00:00+00:00\"\n    },\n    {\n        \"id\": 2,\n        \"user_id\": \"1\",\n        \"amount_spent\": 20.0,\n        \"timestamp\": \"2024-11-29T12:30:00+00:00\"\n    }\n]"
+			  },
+			  {
+				"name": "Failure - No Transactions Found",
+				"originalRequest": {
+				  "method": "GET",
+				  "header": [
+					{
+					  "key": "x-access-token",
+					  "value": "admin_token_example",
+					  "type": "text"
+					},
+					{
+					  "key": "Content-Type",
+					  "value": "application/json",
+					  "type": "text"
+					}
+				  ],
+				  "url": {
+					"raw": "http://localhost:5003/market_service/admin/transactions/999",
+					"protocol": "http",
+					"host": [
+					  "localhost"
+					],
+					"port": "5003",
+					"path": [
+					  "market_service",
+					  "admin",
+					  "transactions",
+					  "999"
+					]
+				  }
+				},
+				"status": "Not Found",
+				"code": 404,
+				"_postman_previewlanguage": "json",
+				"body": "{\n    \"message\": \"No transactions found for this user\"\n}"
+			  },
+			  {
+				"name": "Failure - Unauthorized Access",
+				"originalRequest": {
+				  "method": "GET",
+				  "header": [
+					{
+					  "key": "x-access-token",
+					  "value": "invalid_admin_token",
+					  "type": "text"
+					},
+					{
+					  "key": "Content-Type",
+					  "value": "application/json",
+					  "type": "text"
+					}
+				  ],
+				  "url": {
+					"raw": "http://localhost:5003/market_service/admin/transactions/1",
+					"protocol": "http",
+					"host": [
+					  "localhost"
+					],
+					"port": "5003",
+					"path": [
+					  "market_service",
+					  "admin",
+					  "transactions",
+					  "1"
+					]
+				  }
+				},
+				"status": "Forbidden",
+				"code": 403,
+				"_postman_previewlanguage": "json",
+				"body": "{\n    \"message\": \"Unauthorized access\"\n}"
+			  },
+			  {
+				"name": "Failure - Missing Token",
+				"originalRequest": {
+				  "method": "GET",
+				  "header": [
+					{
+					  "key": "Content-Type",
+					  "value": "application/json",
+					  "type": "text"
+					}
+				  ],
+				  "url": {
+					"raw": "http://localhost:5003/market_service/admin/transactions/1",
+					"protocol": "http",
+					"host": [
+					  "localhost"
+					],
+					"port": "5003",
+					"path": [
+					  "market_service",
+					  "admin",
+					  "transactions",
+					  "1"
+					]
+				  }
+				},
+				"status": "Unauthorized",
+				"code": 401,
+				"_postman_previewlanguage": "json",
+				"body": "{\n    \"message\": \"Token is missing!\"\n}"
+			  },
+			  {
+				"name": "Failure - Internal Server Error",
+				"originalRequest": {
+				  "method": "GET",
+				  "header": [
+					{
+					  "key": "x-access-token",
+					  "value": "admin_token_example",
+					  "type": "text"
+					},
+					{
+					  "key": "Content-Type",
+					  "value": "application/json",
+					  "type": "text"
+					}
+				  ],
+				  "url": {
+					"raw": "http://localhost:5003/market_service/admin/transactions/1",
+					"protocol": "http",
+					"host": [
+					  "localhost"
+					],
+					"port": "5003",
+					"path": [
+					  "market_service",
+					  "admin",
+					  "transactions",
+					  "1"
+					]
+				  }
+				},
+				"status": "Internal Server Error",
+				"code": 500,
+				"_postman_previewlanguage": "json",
+				"body": "{\n    \"message\": \"An internal error occurred: [Error Details]\"\n}"
+			  }
+			],
+			"event": [
+			  {
+				"listen": "test",
+				"script": {
+				  "type": "text/javascript",
+				  "exec": [
+					"// Check for status code 200 (Success)",
+					"pm.test(\"Status code is 200\", function () {",
+					"    pm.response.to.have.status(200);",
+					"});",
+					"",
+					"// Validate the response body for successful retrieval",
+					"pm.test(\"Response contains transactions\", function () {",
+					"    const jsonData = pm.response.json();",
+					"    pm.expect(jsonData).to.be.an('array');",
+					"    jsonData.forEach(transaction => {",
+					"        pm.expect(transaction).to.have.property('id');",
+					"        pm.expect(transaction).to.have.property('user_id');",
+					"        pm.expect(transaction).to.have.property('amount_spent');",
+					"        pm.expect(transaction).to.have.property('timestamp');",
+					"    });",
+					"});",
+					"",
+					"// Handle other scenarios",
+					"if (pm.response.status === 404) {",
+					"    pm.test(\"No transactions found\", function () {",
+					"        const jsonData = pm.response.json();",
+					"        pm.expect(jsonData).to.have.property('message', 'No transactions found for this user');",
+					"    });",
+					"}",
+					"",
+					"if (pm.response.status === 403) {",
+					"    pm.test(\"Unauthorized access\", function () {",
+					"        const jsonData = pm.response.json();",
+					"        pm.expect(jsonData).to.have.property('message', 'Unauthorized access');",
+					"    });",
+					"}",
+					"",
+					"if (pm.response.status === 401) {",
+					"    pm.test(\"Missing Token\", function () {",
+					"        const jsonData = pm.response.json();",
+					"        pm.expect(jsonData).to.have.property('message', 'Token is missing!');",
+					"    });",
+					"}",
+					"",
+					"if (pm.response.status === 500) {",
+					"    pm.test(\"Internal Server Error\", function () {",
+					"        const jsonData = pm.response.json();",
+					"        pm.expect(jsonData).to.have.property('message');",
+					"    });",
+					"}"
+				  ]
+				}
+			  }
+			]
+		},
+		{
+			"name": "Add Gacha (Admin)",
+			"request": {
+			  "method": "POST",
+			  "header": [
+				{
+				  "key": "x-access-token",
+				  "value": "admin_token_example",
+				  "type": "text"
+				},
+				{
+				  "key": "Content-Type",
+				  "value": "application/json",
+				  "type": "text"
+				}
+			  ],
+			  "body": {
+				"mode": "raw",
+				"raw": "{\n    \"pilot_name\": \"Test Pilot\",\n    \"rarity\": \"Legendary\",\n    \"experience\": 99,\n    \"ability\": \"Ultimate Skill\"\n}"
+			  },
+			  "url": {
+				"raw": "http://localhost:5003/market_service/admin/gachas",
+				"protocol": "http",
+				"host": [
+				  "localhost"
+				],
+				"port": "5003",
+				"path": [
+				  "market_service",
+				  "admin",
+				  "gachas"
+				]
+			  }
+			},
+			"response": [
+			  {
+				"name": "Success - Gacha Added",
+				"originalRequest": {
+				  "method": "POST",
+				  "header": [
+					{
+					  "key": "x-access-token",
+					  "value": "admin_token_example",
+					  "type": "text"
+					},
+					{
+					  "key": "Content-Type",
+					  "value": "application/json",
+					  "type": "text"
+					}
+				  ],
+				  "body": {
+					"mode": "raw",
+					"raw": "{\n    \"pilot_name\": \"Test Pilot\",\n    \"rarity\": \"Legendary\",\n    \"experience\": 99,\n    \"ability\": \"Ultimate Skill\"\n}"
+				  },
+				  "url": {
+					"raw": "http://localhost:5003/market_service/admin/gachas",
+					"protocol": "http",
+					"host": [
+					  "localhost"
+					],
+					"port": "5003",
+					"path": [
+					  "market_service",
+					  "admin",
+					  "gachas"
+					]
+				  }
+				},
+				"status": "Created",
+				"code": 201,
+				"_postman_previewlanguage": "json",
+				"body": "{\n    \"message\": \"Gacha added successfully\",\n    \"gacha_id\": 5\n}"
+			  },
+			  {
+				"name": "Failure - Invalid Input Data",
+				"originalRequest": {
+				  "method": "POST",
+				  "header": [
+					{
+					  "key": "x-access-token",
+					  "value": "admin_token_example",
+					  "type": "text"
+					},
+					{
+					  "key": "Content-Type",
+					  "value": "application/json",
+					  "type": "text"
+					}
+				  ],
+				  "body": {
+					"mode": "raw",
+					"raw": "{\n    \"pilot_name\": \"Test Pilot\",\n    \"rarity\": \"Legendary\"\n}"
+				  },
+				  "url": {
+					"raw": "http://localhost:5003/market_service/admin/gachas",
+					"protocol": "http",
+					"host": [
+					  "localhost"
+					],
+					"port": "5003",
+					"path": [
+					  "market_service",
+					  "admin",
+					  "gachas"
+					]
+				  }
+				},
+				"status": "Bad Request",
+				"code": 400,
+				"_postman_previewlanguage": "json",
+				"body": "{\n    \"message\": \"Invalid input data\"\n}"
+			  },
+			  {
+				"name": "Failure - Unauthorized Access",
+				"originalRequest": {
+				  "method": "POST",
+				  "header": [
+					{
+					  "key": "x-access-token",
+					  "value": "invalid_admin_token",
+					  "type": "text"
+					},
+					{
+					  "key": "Content-Type",
+					  "value": "application/json",
+					  "type": "text"
+					}
+				  ],
+				  "body": {
+					"mode": "raw",
+					"raw": "{\n    \"pilot_name\": \"Test Pilot\",\n    \"rarity\": \"Legendary\",\n    \"experience\": 99,\n    \"ability\": \"Ultimate Skill\"\n}"
+				  },
+				  "url": {
+					"raw": "http://localhost:5003/market_service/admin/gachas",
+					"protocol": "http",
+					"host": [
+					  "localhost"
+					],
+					"port": "5003",
+					"path": [
+					  "market_service",
+					  "admin",
+					  "gachas"
+					]
+				  }
+				},
+				"status": "Forbidden",
+				"code": 403,
+				"_postman_previewlanguage": "json",
+				"body": "{\n    \"message\": \"Unauthorized access\"\n}"
+			  },
+			  {
+				"name": "Failure - Missing Token",
+				"originalRequest": {
+				  "method": "POST",
+				  "header": [
+					{
+					  "key": "Content-Type",
+					  "value": "application/json",
+					  "type": "text"
+					}
+				  ],
+				  "body": {
+					"mode": "raw",
+					"raw": "{\n    \"pilot_name\": \"Test Pilot\",\n    \"rarity\": \"Legendary\",\n    \"experience\": 99,\n    \"ability\": \"Ultimate Skill\"\n}"
+				  },
+				  "url": {
+					"raw": "http://localhost:5003/market_service/admin/gachas",
+					"protocol": "http",
+					"host": [
+					  "localhost"
+					],
+					"port": "5003",
+					"path": [
+					  "market_service",
+					  "admin",
+					  "gachas"
+					]
+				  }
+				},
+				"status": "Unauthorized",
+				"code": 401,
+				"_postman_previewlanguage": "json",
+				"body": "{\n    \"message\": \"Token is missing!\"\n}"
+			  },
+			  {
+				"name": "Failure - Internal Server Error",
+				"originalRequest": {
+				  "method": "POST",
+				  "header": [
+					{
+					  "key": "x-access-token",
+					  "value": "admin_token_example",
+					  "type": "text"
+					},
+					{
+					  "key": "Content-Type",
+					  "value": "application/json",
+					  "type": "text"
+					}
+				  ],
+				  "body": {
+					"mode": "raw",
+					"raw": "{\n    \"pilot_name\": \"Test Pilot\",\n    \"rarity\": \"Legendary\",\n    \"experience\": 99,\n    \"ability\": \"Ultimate Skill\"\n}"
+				  },
+				  "url": {
+					"raw": "http://localhost:5003/market_service/admin/gachas",
+					"protocol": "http",
+					"host": [
+					  "localhost"
+					],
+					"port": "5003",
+					"path": [
+					  "market_service",
+					  "admin",
+					  "gachas"
+					]
+				  }
+				},
+				"status": "Internal Server Error",
+				"code": 500,
+				"_postman_previewlanguage": "json",
+				"body": "{\n    \"message\": \"An internal error occurred: [Error Details]\"\n}"
+			  }
+			],
+			"event": [
+			  {
+				"listen": "test",
+				"script": {
+				  "type": "text/javascript",
+				  "exec": [
+					"// Check for status code 201 (Created)",
+					"pm.test(\"Status code is 201\", function () {",
+					"    pm.response.to.have.status(201);",
+					"});",
+					"",
+					"// Validate the response body for successful addition",
+					"pm.test(\"Response contains success message and gacha_id\", function () {",
+					"    const jsonData = pm.response.json();",
+					"    pm.expect(jsonData).to.have.property('message', 'Gacha added successfully');",
+					"    pm.expect(jsonData).to.have.property('gacha_id');",
+					"});",
+					"",
+					"// Handle other scenarios",
+					"if (pm.response.status === 400) {",
+					"    pm.test(\"Invalid input data\", function () {",
+					"        const jsonData = pm.response.json();",
+					"        pm.expect(jsonData).to.have.property('message', 'Invalid input data');",
+					"    });",
+					"}",
+					"",
+					"if (pm.response.status === 403) {",
+					"    pm.test(\"Unauthorized access\", function () {",
+					"        const jsonData = pm.response.json();",
+					"        pm.expect(jsonData).to.have.property('message', 'Unauthorized access');",
+					"    });",
+					"}",
+					"",
+					"if (pm.response.status === 401) {",
+					"    pm.test(\"Missing Token\", function () {",
+					"        const jsonData = pm.response.json();",
+					"        pm.expect(jsonData).to.have.property('message', 'Token is missing!');",
+					"    });",
+					"}",
+					"",
+					"if (pm.response.status === 500) {",
+					"    pm.test(\"Internal Server Error\", function () {",
+					"        const jsonData = pm.response.json();",
+					"        pm.expect(jsonData).to.have.property('message');",
+					"    });",
+					"}"
+				  ]
+				}
+			  }
+			]
+		},
+		{
 			"name": "Get User Transactions",
 			"event": [
 				{
