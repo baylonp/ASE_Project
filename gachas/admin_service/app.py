@@ -375,4 +375,4 @@ def get_user_transactions_via_admin_service(current_admin, token, userId):
 
 # Punto di ingresso dell'app
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()

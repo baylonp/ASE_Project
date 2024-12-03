@@ -586,4 +586,4 @@ def buy_gacha_roll(current_user_id, token, playerId):
         return make_response(jsonify({'message': f'An internal error occurred: {str(e)}'}), 500)
  
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()

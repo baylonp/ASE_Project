@@ -8,6 +8,7 @@ from functools import wraps
 import base64
 import json
 from requests.exceptions import Timeout, RequestException
+import re
 
  
 # Configura l'app Flask
@@ -175,6 +176,18 @@ def create_account():
     data = request.json
     if not data or 'username' not in data or 'password' not in data or 'email' not in data:
         return make_response(jsonify({'message': 'Invalid input data'}), 400)
+    
+    # Regex per validare lo username
+    username_pattern = r'^[a-zA-Z0-9_.-]{3,20}$'
+    if not re.match(username_pattern, data['username']):
+        return make_response(jsonify({'message': 'Invalid username format. Only alphanumeric characters, underscores, dots, and hyphens are allowed. Length must be between 3 and 20.'}), 400)
+    
+    # Regex per validare la email
+    email_pattern = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+    if not re.match(email_pattern, data['email']):
+        return make_response(jsonify({'message': 'Invalid email format'}), 400)
+    
+
  
     if User.query.filter_by(username=data['username']).first():
         return make_response(jsonify({'message': 'Username already exists'}), 400)
@@ -196,6 +209,12 @@ def login():
     data = request.json
     if not data or 'username' not in data or 'password' not in data:
         return make_response(jsonify({'message': 'Invalid input data'}), 400)
+    
+    # Regex per validare lo username
+    username_pattern = r'^[a-zA-Z0-9_.-]{3,20}$'
+    if not re.match(username_pattern, data['username']):
+        return make_response(jsonify({'message': 'Invalid username format. Only alphanumeric characters, underscores, dots, and hyphens are allowed. Length must be between 3 and 20.'}), 400)
+    
  
     user = User.query.filter_by(username=data['username']).first()
     if user and checkpw(data['password'].encode('utf-8'), user.password.encode('utf-8')):
@@ -447,4 +466,4 @@ def update_user_currency(current_user, token, playerId):
  
 # Punto di ingresso dell'app
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()

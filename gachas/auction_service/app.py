@@ -119,10 +119,11 @@ def set_auction(current_user, token, userId):
     Permette a un utente di mettere all'asta uno dei suoi gacha
     ---
     """
+        
     # Validazione del parametro userId come numero intero
-    if not re.match(r'^\d+$', userId):
+    if not re.match(r'^\d+$', str(userId)):
         return make_response(jsonify({'message': 'Invalid user ID, must be a positive number'}), 400)
-
+    
     try:
         # Recuperare i dati dall'input JSON
         data = request.json
@@ -132,10 +133,12 @@ def set_auction(current_user, token, userId):
         gacha_id = data['gacha_id']
         base_price = data['base_price']
 
+        
         # Validazione del parametro gacha_id come numero intero
-        if not re.match(r'^\d+$', gacha_id):
+        if not re.match(r'^\d+$', str(gacha_id)):
             return make_response(jsonify({'message': 'Invalid gacha_id, must be a positive number'}), 400)
- 
+        
+
         try:
             # Effettuare una richiesta GET al gacha_service per verificare se l'utente possiede il gacha
             headers = {'x-access-token': token}  # Aggiungi il token all'header
@@ -214,7 +217,7 @@ def place_bid(current_user, token, auctionID):
     """
 
     # Validazione del parametro auctionID come numero intero
-    if not re.match(r'^\d+$', auctionID):
+    if not re.match(r'^\d+$', str(auctionID)):
         return make_response(jsonify({'message': 'Invalid auctionID, must be a positive number'}), 400)
 
 
@@ -228,11 +231,11 @@ def place_bid(current_user, token, auctionID):
         bid_amount = data['bid_amount']
 
         # Validazione del parametro user_id come numero intero
-        if not re.match(r'^\d+$', user_id):
+        if not re.match(r'^\d+$', str(user_id)):
             return make_response(jsonify({'message': 'Invalid user_id, must be a positive number'}), 400)
 
         # Validazione del parametro user_id come numero intero
-        if not re.match(r'^\d+(\.\d+)?$', bid_amount):
+        if not re.match(r'^\d+(\.\d+)?$', str(bid_amount)):
             return make_response(jsonify({'message': 'Invalid bid_amount, must be a positive number'}), 400)       
 
 
@@ -370,4 +373,4 @@ def end_auction(auction_id, token):
                     print(f"Gacha {auction.gacha_id} successfully transferred to user {auction.current_user_winner_id}")
  
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
