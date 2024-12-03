@@ -1,0 +1,5 @@
+Flask==2.3.2
+requests
+Flask-SQLAlchemy==3.0.5
+pyjwt
+bcrypt==4.0.1
