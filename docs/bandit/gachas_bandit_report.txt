@@ -1,0 +1,546 @@
+Run started:2024-12-03 17:33:32.923271
+
+Test results:
+>> Issue: [B105:hardcoded_password_string] Possible hardcoded password: 'your_secret_key'
+   Severity: Low   Confidence: Medium
+   CWE: CWE-259 (https://cwe.mitre.org/data/definitions/259.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b105_hardcoded_password_string.html
+   Location: ./gachas/admin_service/app.py:18:11
+17	app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+18	app.config['SECRET_KEY'] = 'your_secret_key'
+19	 
+
+--------------------------------------------------
+>> Issue: [B501:request_with_no_cert_validation] Call to requests with verify=False disabling SSL certificate checks, security issue.
+   Severity: High   Confidence: High
+   CWE: CWE-295 (https://cwe.mitre.org/data/definitions/295.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b501_request_with_no_cert_validation.html
+   Location: ./gachas/admin_service/app.py:204:19
+203	        response = requests.get(f"{AUTH_SERVICE_URL}/authentication/players/{playerId}",
+204	                                headers={'x-access-token': token}, verify=False, timeout=5)
+205	        if response.status_code == 200:
+206	            return make_response(jsonify(response.json()), 200)
+
+--------------------------------------------------
+>> Issue: [B501:request_with_no_cert_validation] Call to requests with verify=False disabling SSL certificate checks, security issue.
+   Severity: High   Confidence: High
+   CWE: CWE-295 (https://cwe.mitre.org/data/definitions/295.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b501_request_with_no_cert_validation.html
+   Location: ./gachas/admin_service/app.py:231:19
+230	        response = requests.patch(f"{GACHA_MARKET_SERVICE_URL}/{gacha_id}",
+231	                                headers={'x-access-token': token}, json=data, verify=False, timeout=5)
+232	        if response.status_code != 200:
+233	            return make_response(jsonify({'message': 'Failed to update gacha in catalog',}), response.status_code)
+
+--------------------------------------------------
+>> Issue: [B501:request_with_no_cert_validation] Call to requests with verify=False disabling SSL certificate checks, security issue.
+   Severity: High   Confidence: High
+   CWE: CWE-295 (https://cwe.mitre.org/data/definitions/295.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b501_request_with_no_cert_validation.html
+   Location: ./gachas/admin_service/app.py:237:26
+236	        
+237	        update_response = requests.patch(f"{GACHA_SERVICE_URL}/{gacha_id}", json=data, headers={'x-access-token': request.headers.get('x-access-token')},verify=False, timeout=5)
+238	        if update_response.status_code != 200:
+
+--------------------------------------------------
+>> Issue: [B501:request_with_no_cert_validation] Call to requests with verify=False disabling SSL certificate checks, security issue.
+   Severity: High   Confidence: High
+   CWE: CWE-295 (https://cwe.mitre.org/data/definitions/295.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b501_request_with_no_cert_validation.html
+   Location: ./gachas/admin_service/app.py:261:19
+260	            headers={'x-access-token': token},
+261	            verify=False,
+262	            timeout=5  # Timeout in secondi
+263	        )
+264	        
+265	        if response.status_code == 200:
+266	            return make_response(jsonify(response.json()), 200)
+267	        elif response.status_code == 204:
+
+--------------------------------------------------
+>> Issue: [B501:request_with_no_cert_validation] Call to requests with verify=False disabling SSL certificate checks, security issue.
+   Severity: High   Confidence: High
+   CWE: CWE-295 (https://cwe.mitre.org/data/definitions/295.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b501_request_with_no_cert_validation.html
+   Location: ./gachas/admin_service/app.py:299:19
+298	            json=data,
+299	            verify=False,
+300	            timeout=5
+301	        )
+302	        
+303	        if response.status_code == 201:
+304	            return make_response(jsonify({'message': 'Gacha added successfully'}), 201)
+305	        else:
+306	            return make_response(jsonify({'message': 'Failed to add gacha', 'details': response.json()}), response.status_code)
+
+--------------------------------------------------
+>> Issue: [B501:request_with_no_cert_validation] Call to requests with verify=False disabling SSL certificate checks, security issue.
+   Severity: High   Confidence: High
+   CWE: CWE-295 (https://cwe.mitre.org/data/definitions/295.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b501_request_with_no_cert_validation.html
+   Location: ./gachas/admin_service/app.py:327:19
+326	            headers={'x-access-token': token},
+327	            verify=False,
+328	            timeout=5
+329	        )
+330	        
+331	        if response.status_code == 200:
+332	            return make_response(jsonify({'message': 'Gacha removed successfully'}), 200)
+333	        elif response.status_code == 404:
+
+--------------------------------------------------
+>> Issue: [B501:request_with_no_cert_validation] Call to requests with verify=False disabling SSL certificate checks, security issue.
+   Severity: High   Confidence: High
+   CWE: CWE-295 (https://cwe.mitre.org/data/definitions/295.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b501_request_with_no_cert_validation.html
+   Location: ./gachas/admin_service/app.py:356:19
+355	            headers={'x-access-token': token},
+356	            verify=False,
+357	            timeout=5
+358	        )
+359	
+360	        if response.status_code == 200:
+361	            return make_response(jsonify(response.json()), 200)
+362	        elif response.status_code == 404:
+
+--------------------------------------------------
+>> Issue: [B105:hardcoded_password_string] Possible hardcoded password: 'your_secret_key'
+   Severity: Low   Confidence: Medium
+   CWE: CWE-259 (https://cwe.mitre.org/data/definitions/259.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b105_hardcoded_password_string.html
+   Location: ./gachas/auction_service/app.py:16:11
+15	app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+16	app.config['SECRET_KEY'] = 'your_secret_key'  
+17	 
+
+--------------------------------------------------
+>> Issue: [B501:request_with_no_cert_validation] Call to requests with verify=False disabling SSL certificate checks, security issue.
+   Severity: High   Confidence: High
+   CWE: CWE-295 (https://cwe.mitre.org/data/definitions/295.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b501_request_with_no_cert_validation.html
+   Location: ./gachas/auction_service/app.py:64:31
+63	                try:
+64	                    response = requests.get(user_service_url, headers={'x-access-token': token}, verify=False)
+65	                    # Ensure status code is 200
+
+--------------------------------------------------
+>> Issue: [B113:request_without_timeout] Call to requests without timeout
+   Severity: Medium   Confidence: Low
+   CWE: CWE-400 (https://cwe.mitre.org/data/definitions/400.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b113_request_without_timeout.html
+   Location: ./gachas/auction_service/app.py:64:31
+63	                try:
+64	                    response = requests.get(user_service_url, headers={'x-access-token': token}, verify=False)
+65	                    # Ensure status code is 200
+
+--------------------------------------------------
+>> Issue: [B501:request_with_no_cert_validation] Call to requests with verify=False disabling SSL certificate checks, security issue.
+   Severity: High   Confidence: High
+   CWE: CWE-295 (https://cwe.mitre.org/data/definitions/295.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b501_request_with_no_cert_validation.html
+   Location: ./gachas/auction_service/app.py:92:31
+91	                try:
+92	                    response = requests.get(admin_service_url, headers={'x-access-token': token}, verify=False)
+93	                    # Ensure status code is 200
+
+--------------------------------------------------
+>> Issue: [B113:request_without_timeout] Call to requests without timeout
+   Severity: Medium   Confidence: Low
+   CWE: CWE-400 (https://cwe.mitre.org/data/definitions/400.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b113_request_without_timeout.html
+   Location: ./gachas/auction_service/app.py:92:31
+91	                try:
+92	                    response = requests.get(admin_service_url, headers={'x-access-token': token}, verify=False)
+93	                    # Ensure status code is 200
+
+--------------------------------------------------
+>> Issue: [B501:request_with_no_cert_validation] Call to requests with verify=False disabling SSL certificate checks, security issue.
+   Severity: High   Confidence: High
+   CWE: CWE-295 (https://cwe.mitre.org/data/definitions/295.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b501_request_with_no_cert_validation.html
+   Location: ./gachas/auction_service/app.py:145:23
+144	            headers = {'x-access-token': token}  # Aggiungi il token all'header
+145	            response = requests.get(f"{GACHA_SERVICE_URL}/gacha_service/players/{userId}/gachas/{gacha_id}", headers=headers, verify= False, timeout=5 )
+146	
+
+--------------------------------------------------
+>> Issue: [B501:request_with_no_cert_validation] Call to requests with verify=False disabling SSL certificate checks, security issue.
+   Severity: High   Confidence: High
+   CWE: CWE-295 (https://cwe.mitre.org/data/definitions/295.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b501_request_with_no_cert_validation.html
+   Location: ./gachas/auction_service/app.py:257:23
+256	            headers = {'x-access-token': token}  # Aggiungi il token all'header
+257	            response = requests.get(f"{AUTH_SERVICE_URL}/authentication/players/{user_id}", headers=headers, verify=False, timeout=5)
+258	            
+
+--------------------------------------------------
+>> Issue: [B501:request_with_no_cert_validation] Call to requests with verify=False disabling SSL certificate checks, security issue.
+   Severity: High   Confidence: High
+   CWE: CWE-295 (https://cwe.mitre.org/data/definitions/295.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b501_request_with_no_cert_validation.html
+   Location: ./gachas/auction_service/app.py:283:34
+282	                    headers=headers,
+283	                    verify=False,
+284	                    timeout=5
+285	                )
+286	                if refund_response.status_code != 200:
+287	                    return make_response(jsonify({'message': 'Failed to refund previous bidder'}), 500)
+288	            except Timeout:
+289	                return make_response(jsonify({'message': 'Authentication service is temporarily unavailable'}), 503)  # Service Unavailable
+290	
+
+--------------------------------------------------
+>> Issue: [B501:request_with_no_cert_validation] Call to requests with verify=False disabling SSL certificate checks, security issue.
+   Severity: High   Confidence: High
+   CWE: CWE-295 (https://cwe.mitre.org/data/definitions/295.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b501_request_with_no_cert_validation.html
+   Location: ./gachas/auction_service/app.py:297:29
+296	                headers=headers,
+297	                verify=False,
+298	                timeout=5
+299	            )
+300	            if debit_response.status_code != 200:
+301	                return make_response(jsonify({'message': 'Failed to debit user funds'}), 500)
+302	        
+303	        except Timeout:
+304	            return make_response(jsonify({'message': 'Authentication service is temporarily unavailable'}), 503)  # Service Unavailable
+
+--------------------------------------------------
+>> Issue: [B501:request_with_no_cert_validation] Call to requests with verify=False disabling SSL certificate checks, security issue.
+   Severity: High   Confidence: High
+   CWE: CWE-295 (https://cwe.mitre.org/data/definitions/295.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b501_request_with_no_cert_validation.html
+   Location: ./gachas/auction_service/app.py:340:41
+339	                        headers=headers, 
+340	                        verify=False, # Aggiungi il token all'header
+341	                        timeout=5
+342	                    )
+343	                    if add_funds_response.status_code != 200:
+344	                        print(f"Failed to add funds to the issuer {auction.issuer_id} for auction {auction_id}")  
+345	
+346	                except Timeout:
+347	                    return make_response(jsonify({'message': 'Authentication service is temporarily unavailable'}), 503)  # Service Unavailable
+
+--------------------------------------------------
+>> Issue: [B501:request_with_no_cert_validation] Call to requests with verify=False disabling SSL certificate checks, security issue.
+   Severity: High   Confidence: High
+   CWE: CWE-295 (https://cwe.mitre.org/data/definitions/295.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b501_request_with_no_cert_validation.html
+   Location: ./gachas/auction_service/app.py:361:44
+360	                        headers=headers,  # Aggiungi il token all'header
+361	                        verify= False,
+362	                        timeout=5
+363	                        
+364	                    )
+365	                except Timeout:
+366	                    return make_response(jsonify({'message': 'Gacha service is temporarily unavailable'}), 503)  # Service unavailable
+367	    
+368	 
+
+--------------------------------------------------
+>> Issue: [B105:hardcoded_password_string] Possible hardcoded password: 'your_secret_key'
+   Severity: Low   Confidence: Medium
+   CWE: CWE-259 (https://cwe.mitre.org/data/definitions/259.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b105_hardcoded_password_string.html
+   Location: ./gachas/authentication/app.py:20:11
+19	app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+20	app.config['SECRET_KEY'] = 'your_secret_key'
+21	 
+
+--------------------------------------------------
+>> Issue: [B501:request_with_no_cert_validation] Call to requests with verify=False disabling SSL certificate checks, security issue.
+   Severity: High   Confidence: High
+   CWE: CWE-295 (https://cwe.mitre.org/data/definitions/295.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b501_request_with_no_cert_validation.html
+   Location: ./gachas/authentication/app.py:106:31
+105	                try:
+106	                    response = requests.get(admin_service_url, headers={'x-access-token': token}, verify=False)
+107	                    # Ensure status code is 200
+
+--------------------------------------------------
+>> Issue: [B113:request_without_timeout] Call to requests without timeout
+   Severity: Medium   Confidence: Low
+   CWE: CWE-400 (https://cwe.mitre.org/data/definitions/400.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b113_request_without_timeout.html
+   Location: ./gachas/authentication/app.py:106:31
+105	                try:
+106	                    response = requests.get(admin_service_url, headers={'x-access-token': token}, verify=False)
+107	                    # Ensure status code is 200
+
+--------------------------------------------------
+>> Issue: [B501:request_with_no_cert_validation] Call to requests with verify=False disabling SSL certificate checks, security issue.
+   Severity: High   Confidence: High
+   CWE: CWE-295 (https://cwe.mitre.org/data/definitions/295.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b501_request_with_no_cert_validation.html
+   Location: ./gachas/authentication/app.py:264:29
+263	        try:
+264	            gacha_response = requests.delete(f"{GACHA_SERVICE_URL}/gacha_service/players/{account_id}/gachas", headers=headers,verify= False,timeout=5)
+265	 
+
+--------------------------------------------------
+>> Issue: [B105:hardcoded_password_string] Possible hardcoded password: 'your_secret_key'
+   Severity: Low   Confidence: Medium
+   CWE: CWE-259 (https://cwe.mitre.org/data/definitions/259.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b105_hardcoded_password_string.html
+   Location: ./gachas/gacha_market_service/app.py:25:11
+24	app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+25	app.config['SECRET_KEY'] = 'your_secret_key'
+26	 
+
+--------------------------------------------------
+>> Issue: [B501:request_with_no_cert_validation] Call to requests with verify=False disabling SSL certificate checks, security issue.
+   Severity: High   Confidence: High
+   CWE: CWE-295 (https://cwe.mitre.org/data/definitions/295.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b501_request_with_no_cert_validation.html
+   Location: ./gachas/gacha_market_service/app.py:54:31
+53	                try:
+54	                    response = requests.get(user_service_url, headers={'x-access-token': token}, verify=False)
+55	                    # Ensure status code is 200
+
+--------------------------------------------------
+>> Issue: [B113:request_without_timeout] Call to requests without timeout
+   Severity: Medium   Confidence: Low
+   CWE: CWE-400 (https://cwe.mitre.org/data/definitions/400.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b113_request_without_timeout.html
+   Location: ./gachas/gacha_market_service/app.py:54:31
+53	                try:
+54	                    response = requests.get(user_service_url, headers={'x-access-token': token}, verify=False)
+55	                    # Ensure status code is 200
+
+--------------------------------------------------
+>> Issue: [B501:request_with_no_cert_validation] Call to requests with verify=False disabling SSL certificate checks, security issue.
+   Severity: High   Confidence: High
+   CWE: CWE-295 (https://cwe.mitre.org/data/definitions/295.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b501_request_with_no_cert_validation.html
+   Location: ./gachas/gacha_market_service/app.py:82:31
+81	                try:
+82	                    response = requests.get(admin_service_url, headers={'x-access-token': token}, verify=False)
+83	                    # Ensure status code is 200
+
+--------------------------------------------------
+>> Issue: [B113:request_without_timeout] Call to requests without timeout
+   Severity: Medium   Confidence: Low
+   CWE: CWE-400 (https://cwe.mitre.org/data/definitions/400.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b113_request_without_timeout.html
+   Location: ./gachas/gacha_market_service/app.py:82:31
+81	                try:
+82	                    response = requests.get(admin_service_url, headers={'x-access-token': token}, verify=False)
+83	                    # Ensure status code is 200
+
+--------------------------------------------------
+>> Issue: [B501:request_with_no_cert_validation] Call to requests with verify=False disabling SSL certificate checks, security issue.
+   Severity: High   Confidence: High
+   CWE: CWE-295 (https://cwe.mitre.org/data/definitions/295.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b501_request_with_no_cert_validation.html
+   Location: ./gachas/gacha_market_service/app.py:179:30
+178	        try:
+179	            verify_response = requests.get(ADMIN_SERVICE_URL, headers={'x-access-token': token}, verify=False, timeout=5)
+180	            if verify_response.status_code != 200:
+
+--------------------------------------------------
+>> Issue: [B501:request_with_no_cert_validation] Call to requests with verify=False disabling SSL certificate checks, security issue.
+   Severity: High   Confidence: High
+   CWE: CWE-295 (https://cwe.mitre.org/data/definitions/295.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b501_request_with_no_cert_validation.html
+   Location: ./gachas/gacha_market_service/app.py:224:26
+223	    try:
+224	        verify_response = requests.get(ADMIN_SERVICE_URL, headers={'x-access-token': token}, verify=False, timeout=5)
+225	        if verify_response.status_code != 200:
+
+--------------------------------------------------
+>> Issue: [B501:request_with_no_cert_validation] Call to requests with verify=False disabling SSL certificate checks, security issue.
+   Severity: High   Confidence: High
+   CWE: CWE-295 (https://cwe.mitre.org/data/definitions/295.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b501_request_with_no_cert_validation.html
+   Location: ./gachas/gacha_market_service/app.py:264:26
+263	    try:
+264	        verify_response = requests.get(ADMIN_SERVICE_URL, headers={'x-access-token': token}, verify=False, timeout=5)
+265	        if verify_response.status_code != 200:
+
+--------------------------------------------------
+>> Issue: [B501:request_with_no_cert_validation] Call to requests with verify=False disabling SSL certificate checks, security issue.
+   Severity: High   Confidence: High
+   CWE: CWE-295 (https://cwe.mitre.org/data/definitions/295.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b501_request_with_no_cert_validation.html
+   Location: ./gachas/gacha_market_service/app.py:302:26
+301	    try:
+302	        verify_response = requests.get(ADMIN_SERVICE_URL, headers={'x-access-token': token}, verify=False, timeout=5)
+303	        if verify_response.status_code != 200:
+
+--------------------------------------------------
+>> Issue: [B501:request_with_no_cert_validation] Call to requests with verify=False disabling SSL certificate checks, security issue.
+   Severity: High   Confidence: High
+   CWE: CWE-295 (https://cwe.mitre.org/data/definitions/295.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b501_request_with_no_cert_validation.html
+   Location: ./gachas/gacha_market_service/app.py:376:23
+375	                headers=headers,
+376	                verify=False,
+377	                timeout=5
+378	            )
+379	        except Timeout:
+380	            return make_response(jsonify({'message': 'Authentication service is temporarily unavailable'}), 503)  # Service Unavailable
+381	
+382	 
+383	        if response.status_code == 200:
+
+--------------------------------------------------
+>> Issue: [B311:blacklist] Standard pseudo-random generators are not suitable for security/cryptographic purposes.
+   Severity: Low   Confidence: High
+   CWE: CWE-330 (https://cwe.mitre.org/data/definitions/330.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/blacklists/blacklist_calls.html#b311-random
+   Location: ./gachas/gacha_market_service/app.py:487:22
+486	    # Select a rarity based on weights
+487	    selected_rarity = random.choices(list(rarities), weights=available_rarity_weights, k=1)[0]
+488	
+
+--------------------------------------------------
+>> Issue: [B311:blacklist] Standard pseudo-random generators are not suitable for security/cryptographic purposes.
+   Severity: Low   Confidence: High
+   CWE: CWE-330 (https://cwe.mitre.org/data/definitions/330.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/blacklists/blacklist_calls.html#b311-random
+   Location: ./gachas/gacha_market_service/app.py:493:21
+492	    # Select a random pilot from the filtered list
+493	    selected_pilot = random.choice(filtered_pilots)
+494	
+
+--------------------------------------------------
+>> Issue: [B501:request_with_no_cert_validation] Call to requests with verify=False disabling SSL certificate checks, security issue.
+   Severity: High   Confidence: High
+   CWE: CWE-295 (https://cwe.mitre.org/data/definitions/295.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b501_request_with_no_cert_validation.html
+   Location: ./gachas/gacha_market_service/app.py:510:23
+509	        try:
+510	            response = requests.get(f"{AUTH_SERVICE_URL}/authentication/players/{playerId}", headers=headers,verify=False, timeout=5)
+511	    
+
+--------------------------------------------------
+>> Issue: [B501:request_with_no_cert_validation] Call to requests with verify=False disabling SSL certificate checks, security issue.
+   Severity: High   Confidence: High
+   CWE: CWE-295 (https://cwe.mitre.org/data/definitions/295.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b501_request_with_no_cert_validation.html
+   Location: ./gachas/gacha_market_service/app.py:537:30
+536	                headers=headers,
+537	                verify=False,
+538	                timeout=5
+539	            )
+540	        except Timeout:
+541	            return make_response(jsonify({'message': 'Authentication service is temporarily unavailable'}), 503)  # Service Unavailable
+542	
+543	 
+544	        if update_response.status_code != 200:
+
+--------------------------------------------------
+>> Issue: [B501:request_with_no_cert_validation] Call to requests with verify=False disabling SSL certificate checks, security issue.
+   Severity: High   Confidence: High
+   CWE: CWE-295 (https://cwe.mitre.org/data/definitions/295.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b501_request_with_no_cert_validation.html
+   Location: ./gachas/gacha_market_service/app.py:560:33
+559	                headers=headers,
+560	                verify=False,
+561	                timeout=5
+562	            )
+563	 
+564	            if add_gacha_response.status_code != 201:
+565	                return make_response(jsonify({'message': 'Failed to add gacha to user collection'}), 500)
+566	            
+567	        except Timeout:
+
+--------------------------------------------------
+>> Issue: [B105:hardcoded_password_string] Possible hardcoded password: 'your_secret_key'
+   Severity: Low   Confidence: Medium
+   CWE: CWE-259 (https://cwe.mitre.org/data/definitions/259.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b105_hardcoded_password_string.html
+   Location: ./gachas/gacha_service/app.py:13:11
+12	app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+13	app.config['SECRET_KEY'] = 'your_secret_key'
+14	 
+
+--------------------------------------------------
+>> Issue: [B501:request_with_no_cert_validation] Call to requests with verify=False disabling SSL certificate checks, security issue.
+   Severity: High   Confidence: High
+   CWE: CWE-295 (https://cwe.mitre.org/data/definitions/295.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b501_request_with_no_cert_validation.html
+   Location: ./gachas/gacha_service/app.py:40:31
+39	                try:
+40	                    response = requests.get(user_service_url, headers={'x-access-token': token}, verify=False)
+41	                    # Ensure status code is 200
+
+--------------------------------------------------
+>> Issue: [B113:request_without_timeout] Call to requests without timeout
+   Severity: Medium   Confidence: Low
+   CWE: CWE-400 (https://cwe.mitre.org/data/definitions/400.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b113_request_without_timeout.html
+   Location: ./gachas/gacha_service/app.py:40:31
+39	                try:
+40	                    response = requests.get(user_service_url, headers={'x-access-token': token}, verify=False)
+41	                    # Ensure status code is 200
+
+--------------------------------------------------
+>> Issue: [B501:request_with_no_cert_validation] Call to requests with verify=False disabling SSL certificate checks, security issue.
+   Severity: High   Confidence: High
+   CWE: CWE-295 (https://cwe.mitre.org/data/definitions/295.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b501_request_with_no_cert_validation.html
+   Location: ./gachas/gacha_service/app.py:68:31
+67	                try:
+68	                    response = requests.get(admin_service_url, headers={'x-access-token': token}, verify=False)
+69	                    # Ensure status code is 200
+
+--------------------------------------------------
+>> Issue: [B113:request_without_timeout] Call to requests without timeout
+   Severity: Medium   Confidence: Low
+   CWE: CWE-400 (https://cwe.mitre.org/data/definitions/400.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b113_request_without_timeout.html
+   Location: ./gachas/gacha_service/app.py:68:31
+67	                try:
+68	                    response = requests.get(admin_service_url, headers={'x-access-token': token}, verify=False)
+69	                    # Ensure status code is 200
+
+--------------------------------------------------
+>> Issue: [B501:request_with_no_cert_validation] Call to requests with verify=False disabling SSL certificate checks, security issue.
+   Severity: High   Confidence: High
+   CWE: CWE-295 (https://cwe.mitre.org/data/definitions/295.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b501_request_with_no_cert_validation.html
+   Location: ./gachas/gacha_service/app.py:205:23
+204	        try:
+205	            response = requests.get(f"{GACHA_MARKET_SERVICE_URL}", headers=headers, verify=False, timeout=5)
+206	    
+
+--------------------------------------------------
+>> Issue: [B501:request_with_no_cert_validation] Call to requests with verify=False disabling SSL certificate checks, security issue.
+   Severity: High   Confidence: High
+   CWE: CWE-295 (https://cwe.mitre.org/data/definitions/295.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b501_request_with_no_cert_validation.html
+   Location: ./gachas/gacha_service/app.py:262:30
+261	            # Effettua una richiesta all'admin_service per verificare che l'utente sia un admin
+262	            verify_response = requests.get(ADMIN_SERVICE_URL, headers={'x-access-token': token}, verify=False, timeout=5)
+263	            if verify_response.status_code != 200:
+
+--------------------------------------------------
+>> Issue: [B501:request_with_no_cert_validation] Call to requests with verify=False disabling SSL certificate checks, security issue.
+   Severity: High   Confidence: High
+   CWE: CWE-295 (https://cwe.mitre.org/data/definitions/295.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.0/plugins/b501_request_with_no_cert_validation.html
+   Location: ./gachas/gacha_service/app.py:307:26
+306	        # Effettua una richiesta all'admin_service per verificare che l'utente sia un admin
+307	        verify_response = requests.get(ADMIN_SERVICE_URL, headers={'x-access-token': token},verify=False,timeout=5)
+308	        if verify_response.status_code != 200:
+
+--------------------------------------------------
+
+Code scanned:
+	Total lines of code: 1490
+	Total lines skipped (#nosec): 0
+	Total potential issues skipped due to specifically being disabled (e.g., #nosec BXXX): 0
+
+Run metrics:
+	Total issues (by severity):
+		Undefined: 0
+		Low: 7
+		Medium: 7
+		High: 32
+	Total issues (by confidence):
+		Undefined: 0
+		Low: 7
+		Medium: 5
+		High: 34
+Files skipped (0):
