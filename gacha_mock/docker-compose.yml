@@ -39,3 +39,13 @@ services:
     environment:
       FLASK_APP: mock_app.py
       FLASK_ENV: development
+  admin_service:
+    build:
+      context: ./admin_service
+      dockerfile: Dockerfile
+    container_name: admin_mock_service
+    ports:
+      - "5005:5005"  
+    environment:
+      FLASK_APP: mock_app.py
+      FLASK_ENV: development

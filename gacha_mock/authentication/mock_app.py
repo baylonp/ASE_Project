@@ -60,6 +60,24 @@ def decode_jwt(token):
 
  
 # Definizione degli endpoint Mock
+
+@app.route("/authentication/validate", methods=["GET"])
+@token_required
+def validate_service_token(curr_user, token):
+    """
+    Endpoint to validate JWT token.
+    """
+    # Verifica eventuali errori non gestiti dal decoratore @token_required
+    if curr_user is None or token is None: 
+        return make_response(jsonify({
+            'message': 'Bad Request. Something happened on Token Verification.'
+        }), 400)  # Bad Request
+    
+    # Se il decoratore @token_required ha validato correttamente il token
+    return make_response(jsonify({
+        'message': 'Ok.'
+    }), 200)  # OK
+
  
 @app.route('/authentication/account', methods=['POST'])
 def create_account():

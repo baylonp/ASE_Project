@@ -11,10 +11,11 @@ app.config['SECRET_KEY'] = 'your_secret_key'
 
 # Mock del database
 MOCK_PILOTS = [
-    {"id": 1, "pilot_name": "Max Verstappen", "rarity": "Leggendaria", "experience": 95, "ability": "Dominatore assoluto"},
-    {"id": 2, "pilot_name": "Charles Leclerc", "rarity": "Leggendaria", "experience": 92, "ability": "Eccellente nelle qualifiche"},
-    {"id": 3, "pilot_name": "Carlos Sainz", "rarity": "Epica", "experience": 88, "ability": "Specialista strategie"},
-    {"id": 4, "pilot_name": "Oscar Piastri", "rarity": "Rara", "experience": 78, "ability": "Promessa emergente"}
+    {"id": 1, "pilot_name": "Max Verstappen", "rarity": "leggendaria", "experience": 95, "ability": "Dominatore assoluto"},
+    {"id": 2, "pilot_name": "Charles Leclerc", "rarity": "leggendaria", "experience": 92, "ability": "Eccellente nelle qualifiche"},
+    {"id": 3, "pilot_name": "Carlos Sainz", "rarity": "epica", "experience": 88, "ability": "Specialista strategie"},
+    {"id": 4, "pilot_name": "Oscar Piastri", "rarity": "rara", "experience": 78, "ability": "Promessa emergente"},
+    {"id": 5, "pilot_name": "Pilot", "rarity": "comune", "experience": 78, "ability": "Promessa emergente"}
 ]
 
 # Mock del database delle transazioni
@@ -73,6 +74,97 @@ def update_gacha_catalog(gacha_id):
         gacha['ability'] = data['ability']
 
     return make_response(jsonify({'message': 'Gacha updated successfully'}), 200)
+
+@app.route('/market_service/admin/gachas/<int:gacha_id>', methods=['DELETE'])
+def remove_gacha(gacha_id):
+    """
+    Permette all'amministratore di rimuovere un gacha dal catalogo
+    """
+    # Verifica token admin
+    token = request.headers.get('x-access-token')
+    if not token:
+        return jsonify({'message': 'Token is missing!'}), 401
+    if token != ADMIN_TOKEN:
+        return jsonify({'message': 'Unauthorized access'}), 403
+
+    try:
+        # Trova il gacha nel mock database
+        gacha = next((pilot for pilot in MOCK_PILOTS if pilot['id'] == gacha_id), None)
+        if not gacha:
+            return make_response(jsonify({'message': 'Gacha not found'}), 404)
+
+        # Rimuove il gacha dal mock database
+        MOCK_PILOTS.remove(gacha)
+
+        return make_response(jsonify({'message': 'Gacha removed successfully'}), 200)
+
+    except Exception as e:
+        return make_response(jsonify({'message': f'An internal error occurred: {str(e)}'}), 500)
+
+@app.route('/market_service/admin/transactions/<userId>', methods=['GET'])
+def get_user_transactions_admin(userId):
+    """
+    Permette agli amministratori di vedere lo storico delle transazioni per un utente specifico.
+    """
+    # Verifica token admin
+    token = request.headers.get('x-access-token')
+    if not token:
+        return jsonify({'message': 'Token is missing!'}), 401
+    if token != ADMIN_TOKEN:
+        return jsonify({'message': 'Unauthorized access'}), 403
+
+    try:
+        # Recupera le transazioni per l'utente specificato dal mock database
+        transactions = [t for t in MOCK_TRANSACTIONS if t['user_id'] == userId]
+
+        if not transactions:
+            return make_response(jsonify({'message': 'No transactions found for this user'}), 404)
+
+        result = [
+            {
+                'id': transaction['id'],
+                'user_id': transaction['user_id'],
+                'amount_spent': transaction['amount_spent'],
+                'timestamp': transaction['timestamp']
+            } for transaction in transactions
+        ]
+
+        return make_response(jsonify(result), 200)
+
+    except Exception as e:
+        return make_response(jsonify({'message': f'An internal error occurred: {str(e)}'}), 500)
+    
+@app.route('/market_service/admin/gachas', methods=['POST'])
+def add_gacha():
+    """
+    Permette all'amministratore di aggiungere un nuovo gacha al catalogo
+    """
+    # Verifica token admin
+    token = request.headers.get('x-access-token')
+    if not token:
+        return jsonify({'message': 'Token is missing!'}), 401
+    if token != ADMIN_TOKEN:
+        return jsonify({'message': 'Unauthorized access'}), 403
+
+    # Ottieni i dati per il nuovo gacha
+    data = request.json
+    if not data or 'pilot_name' not in data or 'rarity' not in data or 'experience' not in data or 'ability' not in data:
+        return make_response(jsonify({'message': 'Invalid input data'}), 400)
+
+    try:
+        # Crea un nuovo gacha nel catalogo
+        new_gacha = {
+            "id": len(MOCK_PILOTS) + 1,
+            "pilot_name": data['pilot_name'],
+            "rarity": data['rarity'],
+            "experience": data['experience'],
+            "ability": data['ability']
+        }
+        MOCK_PILOTS.append(new_gacha)
+        return make_response(jsonify({'message': 'Gacha added successfully', 'gacha_id': new_gacha['id']}), 201)
+
+    except Exception as e:
+        return make_response(jsonify({'message': f'An internal error occurred: {str(e)}'}), 500)
 
 # Restituisce lo storico delle transazioni per un utente specifico.
 @app.route('/market_service/players/<userId>/transactions', methods=['GET'])
@@ -166,18 +258,35 @@ def buy_gacha_roll(playerId):
         return jsonify({'message': 'No pilots available in the catalog'}), 404
 
     # Esegui la roll basata sulla rarità
+   # Esegui la roll basata sulla rarità
     def get_random_pilot(pilots):
         rarity_weights = {
-            'Leggendaria': 5,
-            'Epica': 10,
-            'Rara': 20,
-            'Comune': 65
+            'leggendaria': 5,
+            'epica': 10,
+            'rara': 20,
+            'comune': 65
         }
-        rarities = {pilot['rarity'] for pilot in pilots}
-        weights = [rarity_weights[rarity] for rarity in rarities]
 
-        selected_rarity = random.choices(list(rarities), weights=weights, k=1)[0]
-        filtered_pilots = [pilot for pilot in pilots if pilot['rarity'] == selected_rarity]
+        # Normalizza le rarità nel database
+        rarities = {pilot['rarity'].lower() for pilot in pilots}
+        
+        # Filtra solo le rarità con un peso definito
+        valid_rarities = [rarity for rarity in rarities if rarity in rarity_weights]
+        weights = [rarity_weights[rarity] for rarity in valid_rarities]
+
+        # Controlla se ci sono rarità non mappate
+        unmatched_rarities = rarities - set(rarity_weights.keys())
+        if unmatched_rarities:
+            print(f"Warning: Rarities not mapped in weights: {unmatched_rarities}")
+
+        if not valid_rarities or not weights:
+            raise ValueError("No valid rarities found to perform the roll.")
+
+        # Seleziona una rarità casuale in base ai pesi
+        selected_rarity = random.choices(valid_rarities, weights=weights, k=1)[0]
+
+        # Filtra i piloti con la rarità selezionata
+        filtered_pilots = [pilot for pilot in pilots if pilot['rarity'].lower() == selected_rarity]
         return random.choice(filtered_pilots)
 
     selected_pilot = get_random_pilot(MOCK_PILOTS)

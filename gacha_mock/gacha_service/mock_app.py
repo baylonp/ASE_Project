@@ -182,6 +182,43 @@ def update_gacha_for_all_users(gacha_id):
     except Exception as e:
         return make_response(jsonify({'message': f'An internal error occurred: {str(e)}'}), 500)
 
+@app.route('/gacha_service/admin/collections', methods=['GET'])
+def get_all_collections():
+    """
+    Permette ad un admin di vedere tutto il database di Gacha Collection
+    """
+    try:
+        # Simulazione token admin
+        token = request.headers.get('x-access-token')
+        if not token:
+            return jsonify({'message': 'Token is missing!'}), 401
+
+        # Simula richiesta all'admin_service
+        if token != "admin_token_example":
+            return jsonify({'message': 'Unauthorized access'}), 403
+
+        # Recupera tutte le collezioni di Gacha
+        if not MOCK_GACHAS:
+            return make_response(jsonify({'message': 'No Gacha collections found'}), 204)
+
+        # Prepara la risposta contenente tutte le collezioni di Gacha
+        result = []
+        for gacha in MOCK_GACHAS:
+            result.append({
+                'id': gacha['id'],
+                'user_id': gacha['user_id'],
+                'gacha_id': gacha['gacha_id'],
+                'pilot_name': gacha['pilot_name'],
+                'rarity': gacha['rarity'],
+                'experience': gacha['experience'],
+                'ability': gacha['ability']
+            })
+
+        return jsonify(result), 200
+
+    except Exception as e:
+        # Gestione di eventuali errori interni
+        return make_response(jsonify({'message': f'An internal error occurred: {str(e)}'}), 500)
 
 # Punto di ingresso dell'app
 if __name__ == '__main__':
