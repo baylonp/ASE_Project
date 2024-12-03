@@ -14,24 +14,7 @@ app.config['SECRET_KEY'] = 'your_secret_key'
  
 db = SQLAlchemy(app)
 
-'''
-# Decoratore per proteggere gli endpoint con autenticazione JWT
-def token_required(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        token = request.headers.get('x-access-token')  # Il token deve essere inviato nell'header della richiesta
-        if not token:
-            return jsonify({'message': 'Token is missing!'}), 401
-        try:
-            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
-            current_user_id = data['user_id']  # Ricaviamo l'ID utente dal token
-        except jwt.ExpiredSignatureError:
-            return jsonify({'message': 'Token has expired!'}), 401
-        except jwt.InvalidTokenError:
-            return jsonify({'message': 'Token is invalid!'}), 401
-        return f(current_user_id, token, *args, **kwargs)  # Passiamo l'ID utente e il token come parametro
-    return decorated
-'''
+
 # Decoratore per proteggere gli endpoint con autenticazione JWT
 def token_required(f):
     @wraps(f)
@@ -62,7 +45,7 @@ def token_required(f):
                     if 'application/json' not in response.headers.get('Content-Type', ''):
                         return jsonify({'message': 'Invalid response format from admin service!', 'details': response.text}), 500
                     
-                    # Parse the JSON body
+                
                     user_data = {
                         'username': username,
                         'user_id': id
@@ -143,7 +126,7 @@ def handle_user_gachas(current_user_id, token, userID):
         return jsonify(result), 200
  
     elif request.method == 'DELETE':
-        # Nuovo: elimina tutti i gacha associati a un utente specifico
+       
         try:
             user_gachas = GachaCollection.query.filter_by(user_id=userID).all()
             if not user_gachas:
@@ -217,7 +200,7 @@ def get_missing_gachas(current_user_id, token, userID):
         user_gacha_ids = {gacha.gacha_id for gacha in user_gachas}
  
         # Effettuare una richiesta al servizio gacha_market_service per ottenere il catalogo completo dei gachas
-        headers = {'x-access-token': token}  # Aggiungi il token all'header
+        headers = {'x-access-token': token}  
         try:
             response = requests.get(f"{GACHA_MARKET_SERVICE_URL}", headers=headers, verify=False, timeout=5)
     

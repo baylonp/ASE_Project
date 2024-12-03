@@ -6,6 +6,7 @@ import requests
 import jwt
 from functools import wraps
 from requests.exceptions import Timeout, RequestException
+import re
  
 app = Flask(__name__)
  
@@ -54,6 +55,7 @@ def token_required(f):
                 # Logica per token user
                 username = data['username']
                 id = data['user_id']
+                
                 
                 # Effettua una richiesta HTTP al servizio esterno
                 user_service_url = "https://authentication_service:5000/authentication/validate"
@@ -117,7 +119,10 @@ def set_auction(current_user, token, userId):
     Permette a un utente di mettere all'asta uno dei suoi gacha
     ---
     """
- 
+    # Validazione del parametro userId come numero intero
+    if not re.match(r'^\d+$', userId):
+        return make_response(jsonify({'message': 'Invalid user ID, must be a positive number'}), 400)
+
     try:
         # Recuperare i dati dall'input JSON
         data = request.json
@@ -126,6 +131,10 @@ def set_auction(current_user, token, userId):
  
         gacha_id = data['gacha_id']
         base_price = data['base_price']
+
+        # Validazione del parametro gacha_id come numero intero
+        if not re.match(r'^\d+$', gacha_id):
+            return make_response(jsonify({'message': 'Invalid gacha_id, must be a positive number'}), 400)
  
         try:
             # Effettuare una richiesta GET al gacha_service per verificare se l'utente possiede il gacha
@@ -203,6 +212,12 @@ def place_bid(current_user, token, auctionID):
     """
     Permette a un utente di fare una puntata su un'asta specifica
     """
+
+    # Validazione del parametro auctionID come numero intero
+    if not re.match(r'^\d+$', auctionID):
+        return make_response(jsonify({'message': 'Invalid auctionID, must be a positive number'}), 400)
+
+
     try:
         # Ottenere i dati dall'input JSON
         data = request.json
@@ -211,6 +226,17 @@ def place_bid(current_user, token, auctionID):
 
         user_id = data['user_id']  # Utilizziamo l'ID utente dal token
         bid_amount = data['bid_amount']
+
+        # Validazione del parametro user_id come numero intero
+        if not re.match(r'^\d+$', user_id):
+            return make_response(jsonify({'message': 'Invalid user_id, must be a positive number'}), 400)
+
+        # Validazione del parametro user_id come numero intero
+        if not re.match(r'^\d+(\.\d+)?$', bid_amount):
+            return make_response(jsonify({'message': 'Invalid bid_amount, must be a positive number'}), 400)       
+
+
+        
 
         # Recuperare l'asta dal database
         auction = Auction.query.get(auctionID)

@@ -27,24 +27,7 @@ app.config['SECRET_KEY'] = 'your_secret_key'
 # Inizializza SQLAlchemy
 db = SQLAlchemy(app)
 
-'''
-# Decoratore per proteggere gli endpoint con autenticazione JWT
-def token_required(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        token = request.headers.get('x-access-token')  # Il token deve essere inviato nell'header della richiesta
-        if not token:
-            return jsonify({'message': 'Token is missing!'}), 401
-        try:
-            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
-            current_user_id = data['user_id']  # Ricaviamo l'ID utente dal token
-        except jwt.ExpiredSignatureError:
-            return jsonify({'message': 'Token has expired!'}), 401
-        except jwt.InvalidTokenError:
-            return jsonify({'message': 'Token is invalid!'}), 401
-        return f(current_user_id, token, *args, **kwargs)  # Passiamo l'ID utente e il token come parametro
-    return decorated
-'''
+
 
 # Decoratore per proteggere gli endpoint con autenticazione JWT
 def token_required(f):
@@ -378,9 +361,7 @@ def buy_in_game_currency(current_user_id, token, playerId):
     Compra la valuta di gioco per il wallet del giocatore specificato.
     """
     try:
-        #if str(current_user_id) != playerId:
-        #    return jsonify({'message': 'Unauthorized access'}), 403
- 
+         
         amount = request.args.get('amount', type=float)
  
         if amount is None or amount <= 0:
@@ -521,12 +502,10 @@ def buy_gacha_roll(current_user_id, token, playerId):
     Consente all'utente di acquistare una roll (gacha) per ottenere un pilota casuale.
     """
     try:
-        #if str(current_user_id) != playerId:
-        #    return jsonify({'message': 'Unauthorized access'}), 403
- 
+
         ROLL_COST = 100
  
-        headers = {'x-access-token': token}  # Aggiungi il token all'header
+        headers = {'x-access-token': token} 
         try:
             response = requests.get(f"{AUTH_SERVICE_URL}/authentication/players/{playerId}", headers=headers,verify=False, timeout=5)
     
@@ -547,8 +526,7 @@ def buy_gacha_roll(current_user_id, token, playerId):
         if not pilots:
             return make_response(jsonify({'message': 'No pilots available'}), 404)
     
-        # Gacha Roll with Rarity
-        # selected_pilot = random.choice(pilots)
+
         selected_pilot = get_random_pilot(pilots)
  
         try:

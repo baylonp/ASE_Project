@@ -333,6 +333,7 @@ def get_user_info(current_user, token, playerId):
 
     except Exception as e:
         return make_response(jsonify({'message': f'An error occurred: {str(e)}'}), 500)
+    
 @app.route('/authentication/players/<playerId>/currency/add', methods=['POST'])
 @token_required
 def add_currency_to_player(current_user, token, playerId):
