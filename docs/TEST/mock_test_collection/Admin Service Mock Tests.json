@@ -1,0 +1,2558 @@
+{
+	"info": {
+		"_postman_id": "af0065e0-652a-4f50-98b0-e682beb78a11",
+		"name": "Admin Service Mock Tests",
+		"description": "Postman collection for testing the /admin_service/auth endpoint with mock responses.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39855974"
+	},
+	"item": [
+		{
+			"name": "Admin Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Verifica che il codice di stato sia corretto",
+							"pm.test(\"Status code is 200 for successful login\", function () {",
+							"    if (pm.response.code === 200) {",
+							"        pm.response.to.have.status(200);",
+							"    }",
+							"});",
+							"",
+							"// Verifica che la risposta contenga un messaggio di successo e un token",
+							"pm.test(\"Response contains message and token on success\", function () {",
+							"    if (pm.response.code === 200) {",
+							"        const jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property('message', 'Login successful');",
+							"        pm.expect(jsonData).to.have.property('token');",
+							"    }",
+							"});",
+							"",
+							"// Verifica che il codice di stato sia 401 per credenziali non valide",
+							"pm.test(\"Status code is 401 for invalid credentials\", function () {",
+							"    if (pm.response.code === 401) {",
+							"        pm.response.to.have.status(401);",
+							"    }",
+							"});",
+							"",
+							"// Verifica che la risposta contenga un messaggio di errore per credenziali non valide",
+							"pm.test(\"Response contains error message for invalid credentials\", function () {",
+							"    if (pm.response.code === 401) {",
+							"        const jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property('message', 'Invalid credentials');",
+							"    }",
+							"});",
+							"",
+							"// Verifica che il codice di stato sia 400 per input non valido",
+							"pm.test(\"Status code is 400 for invalid input data\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        pm.response.to.have.status(400);",
+							"    }",
+							"});",
+							"",
+							"// Verifica che la risposta contenga un messaggio di errore per input non valido",
+							"pm.test(\"Response contains error message for invalid input\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        const jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property('message', 'Invalid input data');",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"admin\",\n    \"password\": \"admin\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:5005/admin_service/auth",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5005",
+					"path": [
+						"admin_service",
+						"auth"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success - Admin Logged In",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"admin\",\n    \"password\": \"admin\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5005/admin_service/auth",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5005",
+							"path": [
+								"admin_service",
+								"auth"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Login successful\",\n    \"token\": \"mocked_jwt_token_for_admin_1\"\n}"
+				},
+				{
+					"name": "Failure - Invalid Credentials",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"admin\",\n    \"password\": \"wrongpassword\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5005/admin_service/auth",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5005",
+							"path": [
+								"admin_service",
+								"auth"
+							]
+						}
+					},
+					"status": "Unauthorized",
+					"code": 401,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Invalid credentials\"\n}"
+				},
+				{
+					"name": "Failure - Invalid Input Data",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"admin\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5005/admin_service/auth",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5005",
+							"path": [
+								"admin_service",
+								"auth"
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Invalid input data\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Get Admin ID by Username",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Verifica che lo status code sia 200 per una richiesta valida",
+							"pm.test(\"Status code is 200 for valid username\", function () {",
+							"    if (pm.response.code === 200) {",
+							"        pm.response.to.have.status(200);",
+							"    }",
+							"});",
+							"",
+							"// Verifica che la risposta contenga l'ID dell'admin",
+							"pm.test(\"Response contains adminId for valid username\", function () {",
+							"    if (pm.response.code === 200) {",
+							"        const jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property('adminId');",
+							"        pm.expect(jsonData.adminId).to.be.a('number');",
+							"    }",
+							"});",
+							"",
+							"// Verifica che lo status code sia 400 per una richiesta con username mancante",
+							"pm.test(\"Status code is 400 for missing username\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        pm.response.to.have.status(400);",
+							"    }",
+							"});",
+							"",
+							"// Verifica che la risposta contenga un messaggio di errore per username mancante",
+							"pm.test(\"Response contains error message for missing username\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        const jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property('message', 'Username is required');",
+							"    }",
+							"});",
+							"",
+							"// Verifica che lo status code sia 404 per un username non trovato",
+							"pm.test(\"Status code is 404 for username not found\", function () {",
+							"    if (pm.response.code === 404) {",
+							"        pm.response.to.have.status(404);",
+							"    }",
+							"});",
+							"",
+							"// Verifica che la risposta contenga un messaggio di errore per username non trovato",
+							"pm.test(\"Response contains error message for username not found\", function () {",
+							"    if (pm.response.code === 404) {",
+							"        const jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property('message', 'Admin not found');",
+							"    }",
+							"});",
+							"",
+							"// Verifica che lo status code sia 403 per un token non autorizzato",
+							"pm.test(\"Status code is 403 for unauthorized token\", function () {",
+							"    if (pm.response.code === 403) {",
+							"        pm.response.to.have.status(403);",
+							"    }",
+							"});",
+							"",
+							"// Verifica che la risposta contenga un messaggio di errore per token non autorizzato",
+							"pm.test(\"Response contains error message for unauthorized token\", function () {",
+							"    if (pm.response.code === 403) {",
+							"        const jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property('message', 'Invalid or unauthorized token!');",
+							"    }",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "mocked_jwt_token_for_admin_1"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5005/admin_service/adminId?username=admin",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5005",
+					"path": [
+						"admin_service",
+						"adminId"
+					],
+					"query": [
+						{
+							"key": "username",
+							"value": "admin"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success - Admin ID Retrieved",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "mocked_jwt_token_for_admin_1"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5005/admin_service/adminId?username=admin",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5005",
+							"path": [
+								"admin_service",
+								"adminId"
+							],
+							"query": [
+								{
+									"key": "username",
+									"value": "admin"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"adminId\": 1\n}"
+				},
+				{
+					"name": "Failure - Username Missing",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "mocked_jwt_token_for_admin_1"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5005/admin_service/adminId",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5005",
+							"path": [
+								"admin_service",
+								"adminId"
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Username is required\"\n}"
+				},
+				{
+					"name": "Failure - Admin Not Found",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "mocked_jwt_token_for_admin_1"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5005/admin_service/adminId?username=nonexistent_admin",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5005",
+							"path": [
+								"admin_service",
+								"adminId"
+							],
+							"query": [
+								{
+									"key": "username",
+									"value": "nonexistent_admin"
+								}
+							]
+						}
+					},
+					"status": "Not Found",
+					"code": 404,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Admin not found\"\n}"
+				},
+				{
+					"name": "Failure - Unauthorized Access",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "invalid_token"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5005/admin_service/adminId?username=admin",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5005",
+							"path": [
+								"admin_service",
+								"adminId"
+							],
+							"query": [
+								{
+									"key": "username",
+									"value": "admin"
+								}
+							]
+						}
+					},
+					"status": "Forbidden",
+					"code": 403,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Invalid or unauthorized token!\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Verify Admin Token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Verifica che lo status code sia 200 per un token valido",
+							"pm.test(\"Status code is 200 for valid token\", function () {",
+							"    if (pm.response.code === 200) {",
+							"        pm.response.to.have.status(200);",
+							"    }",
+							"});",
+							"",
+							"// Verifica che la risposta contenga il messaggio \"Ok.\"",
+							"pm.test(\"Response contains success message 'Ok.'\", function () {",
+							"    if (pm.response.code === 200) {",
+							"        const jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property('message', 'Ok.');",
+							"    }",
+							"});",
+							"",
+							"// Verifica che lo status code sia 400 per una richiesta senza token",
+							"pm.test(\"Status code is 400 for missing token\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        pm.response.to.have.status(400);",
+							"    }",
+							"});",
+							"",
+							"// Verifica che la risposta contenga un messaggio di errore per token mancante",
+							"pm.test(\"Response contains error message for missing token\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        const jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property('message', 'Bad Request. Something happened on Admin Token Verification.');",
+							"    }",
+							"});",
+							"",
+							"// Verifica che lo status code sia 403 per un token non autorizzato o non valido",
+							"pm.test(\"Status code is 403 for unauthorized or invalid token\", function () {",
+							"    if (pm.response.code === 403) {",
+							"        pm.response.to.have.status(403);",
+							"    }",
+							"});",
+							"",
+							"// Verifica che la risposta contenga un messaggio di errore per token non valido",
+							"pm.test(\"Response contains error message for invalid token\", function () {",
+							"    if (pm.response.code === 403) {",
+							"        const jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property('message', 'Invalid or unauthorized token!');",
+							"    }",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "mocked_jwt_token_for_admin_1"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5005/admin_service/verify_admin",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5005",
+					"path": [
+						"admin_service",
+						"verify_admin"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success - Valid Admin Token",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "mocked_jwt_token_for_admin_1"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5005/admin_service/verify_admin",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5005",
+							"path": [
+								"admin_service",
+								"verify_admin"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Ok.\"\n}"
+				},
+				{
+					"name": "Failure - Missing Token",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5005/admin_service/verify_admin",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5005",
+							"path": [
+								"admin_service",
+								"verify_admin"
+							]
+						}
+					},
+					"status": "Unauthorized",
+					"code": 401,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Token is missing!\"\n}"
+				},
+				{
+					"name": "Failure - Invalid Token",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "invalid_token"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5005/admin_service/verify_admin",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5005",
+							"path": [
+								"admin_service",
+								"verify_admin"
+							]
+						}
+					},
+					"status": "Forbidden",
+					"code": 403,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Invalid or unauthorized token!\"\n}"
+				},
+				{
+					"name": "Failure - Internal Server Error",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "mocked_jwt_token_for_admin_1"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5005/admin_service/verify_admin",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5005",
+							"path": [
+								"admin_service",
+								"verify_admin"
+							]
+						}
+					},
+					"status": "Internal Server Error",
+					"code": 500,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Bad Request. Something happened on Admin Token Verification.\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Get User Info",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Verifica che lo status code sia 200 per una richiesta valida",
+							"pm.test(\"Status code is 200 for valid request\", function () {",
+							"    if (pm.response.code === 200) {",
+							"        pm.response.to.have.status(200);",
+							"    }",
+							"});",
+							"",
+							"// Verifica che la risposta contenga le informazioni necessarie sull'utente",
+							"pm.test(\"Response contains valid user info\", function () {",
+							"    if (pm.response.code === 200) {",
+							"        const jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property('id');",
+							"        pm.expect(jsonData).to.have.property('username');",
+							"        pm.expect(jsonData).to.have.property('wallet');",
+							"        pm.expect(jsonData).to.have.property('email');",
+							"        pm.expect(jsonData).to.have.property('level');",
+							"    }",
+							"});",
+							"",
+							"// Verifica che lo status code sia 404 se il giocatore non viene trovato",
+							"pm.test(\"Status code is 404 if player not found\", function () {",
+							"    if (pm.response.code === 404) {",
+							"        pm.response.to.have.status(404);",
+							"    }",
+							"});",
+							"",
+							"// Verifica che la risposta contenga il messaggio corretto se il giocatore non viene trovato",
+							"pm.test(\"Response contains error message for player not found\", function () {",
+							"    if (pm.response.code === 404) {",
+							"        const jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property('message', 'Player not found');",
+							"    }",
+							"});",
+							"",
+							"// Verifica che lo status code sia 403 per token non autorizzato o non valido",
+							"pm.test(\"Status code is 403 for unauthorized or invalid token\", function () {",
+							"    if (pm.response.code === 403) {",
+							"        pm.response.to.have.status(403);",
+							"    }",
+							"});",
+							"",
+							"// Verifica che la risposta contenga il messaggio di errore corretto per token non valido",
+							"pm.test(\"Response contains error message for invalid token\", function () {",
+							"    if (pm.response.code === 403) {",
+							"        const jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property('message', 'Invalid or unauthorized token!');",
+							"    }",
+							"});",
+							"",
+							"// Verifica che lo status code sia 500 in caso di errore interno",
+							"pm.test(\"Status code is 500 for internal server error\", function () {",
+							"    if (pm.response.code === 500) {",
+							"        pm.response.to.have.status(500);",
+							"    }",
+							"});",
+							"",
+							"// Verifica che la risposta contenga il messaggio di errore per errore interno",
+							"pm.test(\"Response contains error message for internal server error\", function () {",
+							"    if (pm.response.code === 500) {",
+							"        const jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property('message');",
+							"        pm.expect(jsonData.message).to.include('An internal error occurred');",
+							"    }",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "mocked_jwt_token_for_admin_1"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5005/admin_service/user_info/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5005",
+					"path": [
+						"admin_service",
+						"user_info",
+						"1"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success - User Found",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "mocked_jwt_token_for_admin_1"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5005/admin_service/user_info/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5005",
+							"path": [
+								"admin_service",
+								"user_info",
+								"1"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"id\": 1,\n    \"username\": \"player1\",\n    \"wallet\": 500,\n    \"email\": \"player1@example.com\",\n    \"level\": 10,\n    \"collection\": [\n        { \"gacha_id\": 101, \"name\": \"Gacha A\" }\n    ]\n}"
+				},
+				{
+					"name": "Failure - User Not Found",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "mocked_jwt_token_for_admin_1"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5005/admin_service/user_info/999",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5005",
+							"path": [
+								"admin_service",
+								"user_info",
+								"999"
+							]
+						}
+					},
+					"status": "Not Found",
+					"code": 404,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Player not found\"\n}"
+				},
+				{
+					"name": "Failure - Unauthorized Access",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "invalid_token"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5005/admin_service/user_info/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5005",
+							"path": [
+								"admin_service",
+								"user_info",
+								"1"
+							]
+						}
+					},
+					"status": "Forbidden",
+					"code": 403,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Invalid or unauthorized token!\"\n}"
+				},
+				{
+					"name": "Failure - Internal Server Error",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "mocked_jwt_token_for_admin_1"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5005/admin_service/user_info/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5005",
+							"path": [
+								"admin_service",
+								"user_info",
+								"1"
+							]
+						}
+					},
+					"status": "Internal Server Error",
+					"code": 500,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"An internal error occurred: Unexpected error\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Update Gacha in Catalog",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Verifica che lo status code sia 200 per un aggiornamento riuscito",
+							"pm.test(\"Status code is 200 for successful update\", function () {",
+							"    if (pm.response.code === 200) {",
+							"        pm.response.to.have.status(200);",
+							"    }",
+							"});",
+							"",
+							"// Verifica che la risposta contenga il messaggio di successo",
+							"pm.test(\"Response contains success message for update\", function () {",
+							"    if (pm.response.code === 200) {",
+							"        const jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property('message', 'Gacha updated successfully');",
+							"    }",
+							"});",
+							"",
+							"// Verifica che lo status code sia 400 per input non valido",
+							"pm.test(\"Status code is 400 for invalid input data\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        pm.response.to.have.status(400);",
+							"    }",
+							"});",
+							"",
+							"// Verifica che la risposta contenga il messaggio di errore per input non valido",
+							"pm.test(\"Response contains error message for invalid input\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        const jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property('message', 'Invalid input data');",
+							"    }",
+							"});",
+							"",
+							"// Verifica che lo status code sia 404 se il Gacha non viene trovato",
+							"pm.test(\"Status code is 404 if Gacha not found\", function () {",
+							"    if (pm.response.code === 404) {",
+							"        pm.response.to.have.status(404);",
+							"    }",
+							"});",
+							"",
+							"// Verifica che la risposta contenga il messaggio di errore corretto per Gacha non trovato",
+							"pm.test(\"Response contains error message for Gacha not found\", function () {",
+							"    if (pm.response.code === 404) {",
+							"        const jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property('message', 'Gacha not found in catalog');",
+							"    }",
+							"});",
+							"",
+							"// Verifica che lo status code sia 403 per token non autorizzato o non valido",
+							"pm.test(\"Status code is 403 for unauthorized or invalid token\", function () {",
+							"    if (pm.response.code === 403) {",
+							"        pm.response.to.have.status(403);",
+							"    }",
+							"});",
+							"",
+							"// Verifica che la risposta contenga il messaggio di errore corretto per token non valido",
+							"pm.test(\"Response contains error message for invalid token\", function () {",
+							"    if (pm.response.code === 403) {",
+							"        const jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property('message', 'Invalid or unauthorized token!');",
+							"    }",
+							"});",
+							"",
+							"// Verifica che lo status code sia 500 in caso di errore interno",
+							"pm.test(\"Status code is 500 for internal server error\", function () {",
+							"    if (pm.response.code === 500) {",
+							"        pm.response.to.have.status(500);",
+							"    }",
+							"});",
+							"",
+							"// Verifica che la risposta contenga il messaggio di errore per errore interno",
+							"pm.test(\"Response contains error message for internal server error\", function () {",
+							"    if (pm.response.code === 500) {",
+							"        const jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property('message');",
+							"        pm.expect(jsonData.message).to.include('An internal error occurred');",
+							"    }",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "mocked_jwt_token_for_admin_1"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Updated Gacha\",\n    \"rarity\": \"Legendary\",\n    \"price\": 400\n}"
+				},
+				"url": {
+					"raw": "http://localhost:5005/admin_service/gachas/101",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5005",
+					"path": [
+						"admin_service",
+						"gachas",
+						"101"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success - Gacha Updated",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "mocked_jwt_token_for_admin_1"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Updated Gacha\",\n    \"rarity\": \"Legendary\",\n    \"price\": 400\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5005/admin_service/gachas/101",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5005",
+							"path": [
+								"admin_service",
+								"gachas",
+								"101"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Gacha updated successfully\"\n}"
+				},
+				{
+					"name": "Failure - Gacha Not Found",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "mocked_jwt_token_for_admin_1"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Updated Gacha\",\n    \"rarity\": \"Legendary\",\n    \"price\": 400\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5005/admin_service/gachas/999",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5005",
+							"path": [
+								"admin_service",
+								"gachas",
+								"999"
+							]
+						}
+					},
+					"status": "Not Found",
+					"code": 404,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Gacha not found in catalog\"\n}"
+				},
+				{
+					"name": "Failure - Unauthorized Access",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "invalid_token"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Updated Gacha\",\n    \"rarity\": \"Legendary\",\n    \"price\": 400\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5005/admin_service/gachas/101",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5005",
+							"path": [
+								"admin_service",
+								"gachas",
+								"101"
+							]
+						}
+					},
+					"status": "Forbidden",
+					"code": 403,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Invalid or unauthorized token!\"\n}"
+				},
+				{
+					"name": "Failure - Invalid Input Data",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "mocked_jwt_token_for_admin_1"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "http://localhost:5005/admin_service/gachas/101",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5005",
+							"path": [
+								"admin_service",
+								"gachas",
+								"101"
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Invalid input data\"\n}"
+				},
+				{
+					"name": "Failure - Internal Server Error",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "mocked_jwt_token_for_admin_1"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Updated Gacha\",\n    \"rarity\": \"Legendary\",\n    \"price\": 400\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5005/admin_service/gachas/101",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5005",
+							"path": [
+								"admin_service",
+								"gachas",
+								"101"
+							]
+						}
+					},
+					"status": "Internal Server Error",
+					"code": 500,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"An internal error occurred: Unexpected error\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Get All Gacha Collections",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Verifica che lo status code sia 200 per una richiesta riuscita",
+							"pm.test(\"Status code is 200 for successful retrieval\", function () {",
+							"    if (pm.response.code === 200) {",
+							"        pm.response.to.have.status(200);",
+							"    }",
+							"});",
+							"",
+							"// Verifica che la risposta contenga un array di collezioni",
+							"pm.test(\"Response contains an array of collections\", function () {",
+							"    if (pm.response.code === 200) {",
+							"        const jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.be.an(\"array\");",
+							"        pm.expect(jsonData.length).to.be.greaterThan(0);",
+							"    }",
+							"});",
+							"",
+							"// Verifica che ogni collezione contenga i campi necessari",
+							"pm.test(\"Each collection contains required fields\", function () {",
+							"    if (pm.response.code === 200) {",
+							"        const jsonData = pm.response.json();",
+							"        jsonData.forEach(collection => {",
+							"            pm.expect(collection).to.have.property(\"user_id\");",
+							"            pm.expect(collection).to.have.property(\"gachas\");",
+							"            pm.expect(collection.gachas).to.be.an(\"array\");",
+							"        });",
+							"    }",
+							"});",
+							"",
+							"// Verifica che lo status code sia 204 se non ci sono collezioni",
+							"pm.test(\"Status code is 204 if no collections are found\", function () {",
+							"    if (pm.response.code === 204) {",
+							"        pm.response.to.have.status(204);",
+							"    }",
+							"});",
+							"",
+							"// Verifica che la risposta contenga il messaggio corretto se non ci sono collezioni",
+							"pm.test(\"Response contains message for no collections\", function () {",
+							"    if (pm.response.code === 204) {",
+							"        const jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\", \"No Gacha collections found\");",
+							"    }",
+							"});",
+							"",
+							"// Verifica che lo status code sia 403 per token non autorizzato o non valido",
+							"pm.test(\"Status code is 403 for unauthorized or invalid token\", function () {",
+							"    if (pm.response.code === 403) {",
+							"        pm.response.to.have.status(403);",
+							"    }",
+							"});",
+							"",
+							"// Verifica che la risposta contenga il messaggio di errore corretto per token non valido",
+							"pm.test(\"Response contains error message for invalid token\", function () {",
+							"    if (pm.response.code === 403) {",
+							"        const jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\", \"Invalid or unauthorized token!\");",
+							"    }",
+							"});",
+							"",
+							"// Verifica che lo status code sia 500 in caso di errore interno",
+							"pm.test(\"Status code is 500 for internal server error\", function () {",
+							"    if (pm.response.code === 500) {",
+							"        pm.response.to.have.status(500);",
+							"    }",
+							"});",
+							"",
+							"// Verifica che la risposta contenga il messaggio di errore per errore interno",
+							"pm.test(\"Response contains error message for internal server error\", function () {",
+							"    if (pm.response.code === 500) {",
+							"        const jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"An internal error occurred\");",
+							"    }",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "mocked_jwt_token_for_admin_1"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5005/admin_service/all_collections",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5005",
+					"path": [
+						"admin_service",
+						"all_collections"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success - All Collections Retrieved",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "mocked_jwt_token_for_admin_1"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5005/admin_service/all_collections",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5005",
+							"path": [
+								"admin_service",
+								"all_collections"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "[\n    {\n        \"user_id\": 1,\n        \"gachas\": [\n            {\"gacha_id\": 101, \"name\": \"Gacha A\", \"rarity\": \"Rare\"}\n        ]\n    },\n    {\n        \"user_id\": 2,\n        \"gachas\": [\n            {\"gacha_id\": 102, \"name\": \"Gacha B\", \"rarity\": \"Epic\"}\n        ]\n    }\n]"
+				},
+				{
+					"name": "Failure - No Collections Found",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "mocked_jwt_token_for_admin_1"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5005/admin_service/all_collections",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5005",
+							"path": [
+								"admin_service",
+								"all_collections"
+							]
+						}
+					},
+					"status": "No Content",
+					"code": 204,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"No Gacha collections found\"\n}"
+				},
+				{
+					"name": "Failure - Unauthorized Access",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "invalid_token"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5005/admin_service/all_collections",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5005",
+							"path": [
+								"admin_service",
+								"all_collections"
+							]
+						}
+					},
+					"status": "Forbidden",
+					"code": 403,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Invalid or unauthorized token!\"\n}"
+				},
+				{
+					"name": "Failure - Internal Server Error",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "mocked_jwt_token_for_admin_1"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5005/admin_service/all_collections",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5005",
+							"path": [
+								"admin_service",
+								"all_collections"
+							]
+						}
+					},
+					"status": "Internal Server Error",
+					"code": 500,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"An internal error occurred: Unexpected error\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Add New Gacha to Catalog",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Verifica che lo status code sia 201 per un'operazione riuscita",
+							"pm.test(\"Status code is 201 for successful addition\", function () {",
+							"    if (pm.response.code === 201) {",
+							"        pm.response.to.have.status(201);",
+							"    }",
+							"});",
+							"",
+							"// Verifica che la risposta contenga il messaggio di successo e un gacha_id",
+							"pm.test(\"Response contains success message and gacha_id\", function () {",
+							"    if (pm.response.code === 201) {",
+							"        const jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\", \"Gacha added successfully\");",
+							"        pm.expect(jsonData).to.have.property(\"gacha_id\");",
+							"        pm.expect(jsonData.gacha_id).to.be.a(\"number\");",
+							"    }",
+							"});",
+							"",
+							"// Verifica che lo status code sia 400 se i dati di input sono invalidi",
+							"pm.test(\"Status code is 400 for invalid input data\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        pm.response.to.have.status(400);",
+							"    }",
+							"});",
+							"",
+							"// Verifica che la risposta contenga il messaggio di errore per input non valido",
+							"pm.test(\"Response contains error message for invalid input data\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        const jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\", \"Invalid input data\");",
+							"    }",
+							"});",
+							"",
+							"// Verifica che lo status code sia 403 per token non autorizzato o non valido",
+							"pm.test(\"Status code is 403 for unauthorized or invalid token\", function () {",
+							"    if (pm.response.code === 403) {",
+							"        pm.response.to.have.status(403);",
+							"    }",
+							"});",
+							"",
+							"// Verifica che la risposta contenga il messaggio di errore per token non valido",
+							"pm.test(\"Response contains error message for invalid token\", function () {",
+							"    if (pm.response.code === 403) {",
+							"        const jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\", \"Invalid or unauthorized token!\");",
+							"    }",
+							"});",
+							"",
+							"// Verifica che lo status code sia 500 in caso di errore interno",
+							"pm.test(\"Status code is 500 for internal server error\", function () {",
+							"    if (pm.response.code === 500) {",
+							"        pm.response.to.have.status(500);",
+							"    }",
+							"});",
+							"",
+							"// Verifica che la risposta contenga il messaggio di errore per errore interno",
+							"pm.test(\"Response contains error message for internal server error\", function () {",
+							"    if (pm.response.code === 500) {",
+							"        const jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"An internal error occurred\");",
+							"    }",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "mocked_jwt_token_for_admin_1"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Galaxy Warrior\",\n    \"rarity\": \"Legendary\",\n    \"price\": 500\n}"
+				},
+				"url": {
+					"raw": "http://localhost:5005/admin_service/gachas",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5005",
+					"path": [
+						"admin_service",
+						"gachas"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success - Gacha Added",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "mocked_jwt_token_for_admin_1"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Galaxy Warrior\",\n    \"rarity\": \"Legendary\",\n    \"price\": 500\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5005/admin_service/gachas",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5005",
+							"path": [
+								"admin_service",
+								"gachas"
+							]
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Gacha added successfully\",\n    \"gacha_id\": 104\n}"
+				},
+				{
+					"name": "Failure - Invalid Input Data",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "mocked_jwt_token_for_admin_1"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Galaxy Warrior\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5005/admin_service/gachas",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5005",
+							"path": [
+								"admin_service",
+								"gachas"
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Invalid input data\"\n}"
+				},
+				{
+					"name": "Failure - Unauthorized Access",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "invalid_token"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Galaxy Warrior\",\n    \"rarity\": \"Legendary\",\n    \"price\": 500\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5005/admin_service/gachas",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5005",
+							"path": [
+								"admin_service",
+								"gachas"
+							]
+						}
+					},
+					"status": "Forbidden",
+					"code": 403,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Invalid or unauthorized token!\"\n}"
+				},
+				{
+					"name": "Failure - Internal Server Error",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "mocked_jwt_token_for_admin_1"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Galaxy Warrior\",\n    \"rarity\": \"Legendary\",\n    \"price\": 500\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5005/admin_service/gachas",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5005",
+							"path": [
+								"admin_service",
+								"gachas"
+							]
+						}
+					},
+					"status": "Internal Server Error",
+					"code": 500,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"An internal error occurred: Unexpected error\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Remove Gacha from Catalog",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Verifica che lo status code sia 200 per un'operazione riuscita",
+							"pm.test(\"Status code is 200 for successful removal\", function () {",
+							"    if (pm.response.code === 200) {",
+							"        pm.response.to.have.status(200);",
+							"    }",
+							"});",
+							"",
+							"// Verifica che la risposta contenga il messaggio di successo e il gacha_id",
+							"pm.test(\"Response contains success message and gacha_id\", function () {",
+							"    if (pm.response.code === 200) {",
+							"        const jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\", \"Gacha removed successfully\");",
+							"        pm.expect(jsonData).to.have.property(\"gacha_id\");",
+							"        pm.expect(jsonData.gacha_id).to.be.a(\"number\");",
+							"    }",
+							"});",
+							"",
+							"// Verifica che lo status code sia 404 se il gacha non esiste",
+							"pm.test(\"Status code is 404 for non-existent gacha\", function () {",
+							"    if (pm.response.code === 404) {",
+							"        pm.response.to.have.status(404);",
+							"    }",
+							"});",
+							"",
+							"// Verifica che la risposta contenga il messaggio di errore per gacha non trovato",
+							"pm.test(\"Response contains error message for non-existent gacha\", function () {",
+							"    if (pm.response.code === 404) {",
+							"        const jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\", \"Gacha not found\");",
+							"    }",
+							"});",
+							"",
+							"// Verifica che lo status code sia 403 per token non autorizzato o non valido",
+							"pm.test(\"Status code is 403 for unauthorized or invalid token\", function () {",
+							"    if (pm.response.code === 403) {",
+							"        pm.response.to.have.status(403);",
+							"    }",
+							"});",
+							"",
+							"// Verifica che la risposta contenga il messaggio di errore per token non valido",
+							"pm.test(\"Response contains error message for invalid token\", function () {",
+							"    if (pm.response.code === 403) {",
+							"        const jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\", \"Invalid or unauthorized token!\");",
+							"    }",
+							"});",
+							"",
+							"// Verifica che lo status code sia 500 in caso di errore interno",
+							"pm.test(\"Status code is 500 for internal server error\", function () {",
+							"    if (pm.response.code === 500) {",
+							"        pm.response.to.have.status(500);",
+							"    }",
+							"});",
+							"",
+							"// Verifica che la risposta contenga il messaggio di errore per errore interno",
+							"pm.test(\"Response contains error message for internal server error\", function () {",
+							"    if (pm.response.code === 500) {",
+							"        const jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"An internal error occurred\");",
+							"    }",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "mocked_jwt_token_for_admin_1"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5005/admin_service/gachas/101",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5005",
+					"path": [
+						"admin_service",
+						"gachas",
+						"101"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success - Gacha Removed",
+					"originalRequest": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "mocked_jwt_token_for_admin_1"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5005/admin_service/gachas/101",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5005",
+							"path": [
+								"admin_service",
+								"gachas",
+								"101"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Gacha removed successfully\",\n    \"gacha_id\": 101\n}"
+				},
+				{
+					"name": "Failure - Gacha Not Found",
+					"originalRequest": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "mocked_jwt_token_for_admin_1"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5005/admin_service/gachas/999",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5005",
+							"path": [
+								"admin_service",
+								"gachas",
+								"999"
+							]
+						}
+					},
+					"status": "Not Found",
+					"code": 404,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Gacha not found\"\n}"
+				},
+				{
+					"name": "Failure - Unauthorized Access",
+					"originalRequest": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "invalid_token"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5005/admin_service/gachas/101",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5005",
+							"path": [
+								"admin_service",
+								"gachas",
+								"101"
+							]
+						}
+					},
+					"status": "Forbidden",
+					"code": 403,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Invalid or unauthorized token!\"\n}"
+				},
+				{
+					"name": "Failure - Internal Server Error",
+					"originalRequest": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "mocked_jwt_token_for_admin_1"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5005/admin_service/gachas/101",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5005",
+							"path": [
+								"admin_service",
+								"gachas",
+								"101"
+							]
+						}
+					},
+					"status": "Internal Server Error",
+					"code": 500,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"An internal error occurred: Unexpected error\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Get User Transactions",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Verifica che lo status code sia 200 per un'operazione riuscita",
+							"pm.test(\"Status code is 200 for successful retrieval\", function () {",
+							"    if (pm.response.code === 200) {",
+							"        pm.response.to.have.status(200);",
+							"    }",
+							"});",
+							"",
+							"// Verifica che la risposta contenga l'ID utente e una lista di transazioni",
+							"pm.test(\"Response contains userId and transactions array\", function () {",
+							"    if (pm.response.code === 200) {",
+							"        const jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"userId\");",
+							"        pm.expect(jsonData.userId).to.be.a(\"string\");",
+							"        pm.expect(jsonData).to.have.property(\"transactions\");",
+							"        pm.expect(jsonData.transactions).to.be.an(\"array\");",
+							"    }",
+							"});",
+							"",
+							"// Verifica che ogni transazione abbia i campi necessari",
+							"pm.test(\"Each transaction contains required fields\", function () {",
+							"    if (pm.response.code === 200) {",
+							"        const jsonData = pm.response.json();",
+							"        jsonData.transactions.forEach(transaction => {",
+							"            pm.expect(transaction).to.have.property(\"transaction_id\").that.is.a(\"string\");",
+							"            pm.expect(transaction).to.have.property(\"gacha_id\").that.is.a(\"number\");",
+							"            pm.expect(transaction).to.have.property(\"amount\").that.is.a(\"number\");",
+							"            pm.expect(transaction).to.have.property(\"date\").that.is.a(\"string\");",
+							"        });",
+							"    }",
+							"});",
+							"",
+							"// Verifica che lo status code sia 404 se non ci sono transazioni per l'utente",
+							"pm.test(\"Status code is 404 for no transactions found\", function () {",
+							"    if (pm.response.code === 404) {",
+							"        pm.response.to.have.status(404);",
+							"    }",
+							"});",
+							"",
+							"// Verifica che la risposta contenga il messaggio di errore per transazioni non trovate",
+							"pm.test(\"Response contains error message for no transactions\", function () {",
+							"    if (pm.response.code === 404) {",
+							"        const jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\", \"No transactions found for this user\");",
+							"    }",
+							"});",
+							"",
+							"// Verifica che lo status code sia 403 per token non autorizzato o non valido",
+							"pm.test(\"Status code is 403 for unauthorized or invalid token\", function () {",
+							"    if (pm.response.code === 403) {",
+							"        pm.response.to.have.status(403);",
+							"    }",
+							"});",
+							"",
+							"// Verifica che la risposta contenga il messaggio di errore per token non valido",
+							"pm.test(\"Response contains error message for invalid token\", function () {",
+							"    if (pm.response.code === 403) {",
+							"        const jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\", \"Invalid or unauthorized token!\");",
+							"    }",
+							"});",
+							"",
+							"// Verifica che lo status code sia 500 in caso di errore interno",
+							"pm.test(\"Status code is 500 for internal server error\", function () {",
+							"    if (pm.response.code === 500) {",
+							"        pm.response.to.have.status(500);",
+							"    }",
+							"});",
+							"",
+							"// Verifica che la risposta contenga il messaggio di errore per errore interno",
+							"pm.test(\"Response contains error message for internal server error\", function () {",
+							"    if (pm.response.code === 500) {",
+							"        const jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"An internal error occurred\");",
+							"    }",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "mocked_jwt_token_for_admin_1"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5005/admin_service/transactions/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5005",
+					"path": [
+						"admin_service",
+						"transactions",
+						"1"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success - Transactions Retrieved",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "mocked_jwt_token_for_admin_1"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5005/admin_service/transactions/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5005",
+							"path": [
+								"admin_service",
+								"transactions",
+								"1"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"userId\": \"1\",\n    \"transactions\": [\n        {\n            \"transaction_id\": \"tx101\",\n            \"gacha_id\": 101,\n            \"amount\": 100,\n            \"date\": \"2024-11-01T10:00:00Z\"\n        },\n        {\n            \"transaction_id\": \"tx102\",\n            \"gacha_id\": 102,\n            \"amount\": 200,\n            \"date\": \"2024-11-02T12:00:00Z\"\n        }\n    ]\n}"
+				},
+				{
+					"name": "Failure - No Transactions Found",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "mocked_jwt_token_for_admin_1"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5005/admin_service/transactions/999",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5005",
+							"path": [
+								"admin_service",
+								"transactions",
+								"999"
+							]
+						}
+					},
+					"status": "Not Found",
+					"code": 404,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"No transactions found for this user\"\n}"
+				},
+				{
+					"name": "Failure - Unauthorized Access",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "invalid_token"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5005/admin_service/transactions/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5005",
+							"path": [
+								"admin_service",
+								"transactions",
+								"1"
+							]
+						}
+					},
+					"status": "Forbidden",
+					"code": 403,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Invalid or unauthorized token!\"\n}"
+				},
+				{
+					"name": "Failure - Internal Server Error",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "mocked_jwt_token_for_admin_1"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5005/admin_service/transactions/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5005",
+							"path": [
+								"admin_service",
+								"transactions",
+								"1"
+							]
+						}
+					},
+					"status": "Internal Server Error",
+					"code": 500,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"An internal error occurred: Unexpected error\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Admin Logout",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Verifica che il codice di stato sia corretto per un logout riuscito",
+							"pm.test(\"Status code is 200 for successful logout\", function () {",
+							"    if (pm.response.code === 200) {",
+							"        pm.response.to.have.status(200);",
+							"    }",
+							"});",
+							"",
+							"// Verifica che la risposta contenga un messaggio di successo",
+							"pm.test(\"Response contains success message on logout\", function () {",
+							"    if (pm.response.code === 200) {",
+							"        const jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property('message', 'Logout successful');",
+							"        pm.expect(jsonData).to.have.property('adminId');",
+							"    }",
+							"});",
+							"",
+							"// Verifica che il codice di stato sia 400 per un ID admin mancante o non valido",
+							"pm.test(\"Status code is 400 for missing or invalid adminId\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        pm.response.to.have.status(400);",
+							"    }",
+							"});",
+							"",
+							"// Verifica che la risposta contenga un messaggio di errore per ID admin mancante o non valido",
+							"pm.test(\"Response contains error message for missing or invalid adminId\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        const jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property('message');",
+							"        pm.expect(['Admin ID is required', 'Invalid Admin ID format']).to.include(jsonData.message);",
+							"    }",
+							"});",
+							"",
+							"// Verifica che il codice di stato sia 404 per un admin non trovato",
+							"pm.test(\"Status code is 404 for admin not found\", function () {",
+							"    if (pm.response.code === 404) {",
+							"        pm.response.to.have.status(404);",
+							"    }",
+							"});",
+							"",
+							"// Verifica che la risposta contenga un messaggio di errore per admin non trovato",
+							"pm.test(\"Response contains error message for admin not found\", function () {",
+							"    if (pm.response.code === 404) {",
+							"        const jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property('message', 'Admin not found');",
+							"    }",
+							"});",
+							"",
+							"// Verifica che il codice di stato sia 403 per un token non autorizzato",
+							"pm.test(\"Status code is 403 for unauthorized token\", function () {",
+							"    if (pm.response.code === 403) {",
+							"        pm.response.to.have.status(403);",
+							"    }",
+							"});",
+							"",
+							"// Verifica che la risposta contenga un messaggio di errore per token non autorizzato",
+							"pm.test(\"Response contains error message for unauthorized token\", function () {",
+							"    if (pm.response.code === 403) {",
+							"        const jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property('message', 'Invalid or unauthorized token!');",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "mocked_jwt_token_for_admin_1"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5005/admin_service/logout?adminId=1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5005",
+					"path": [
+						"admin_service",
+						"logout"
+					],
+					"query": [
+						{
+							"key": "adminId",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success - Admin Logged Out",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "mocked_jwt_token_for_admin_1"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5005/admin_service/logout?adminId=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5005",
+							"path": [
+								"admin_service",
+								"logout"
+							],
+							"query": [
+								{
+									"key": "adminId",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Logout successful\",\n    \"adminId\": 1\n}"
+				},
+				{
+					"name": "Failure - Admin ID Missing",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "mocked_jwt_token_for_admin_1"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5005/admin_service/logout",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5005",
+							"path": [
+								"admin_service",
+								"logout"
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Admin ID is required\"\n}"
+				},
+				{
+					"name": "Failure - Invalid Admin ID Format",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "mocked_jwt_token_for_admin_1"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5005/admin_service/logout?adminId=abc",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5005",
+							"path": [
+								"admin_service",
+								"logout"
+							],
+							"query": [
+								{
+									"key": "adminId",
+									"value": "abc"
+								}
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Invalid Admin ID format\"\n}"
+				},
+				{
+					"name": "Failure - Admin Not Found",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "mocked_jwt_token_for_admin_1"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5005/admin_service/logout?adminId=999",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5005",
+							"path": [
+								"admin_service",
+								"logout"
+							],
+							"query": [
+								{
+									"key": "adminId",
+									"value": "999"
+								}
+							]
+						}
+					},
+					"status": "Not Found",
+					"code": 404,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Admin not found\"\n}"
+				},
+				{
+					"name": "Failure - Unauthorized Access",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "invalid_token"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5005/admin_service/logout?adminId=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5005",
+							"path": [
+								"admin_service",
+								"logout"
+							],
+							"query": [
+								{
+									"key": "adminId",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"status": "Forbidden",
+					"code": 403,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Invalid or unauthorized token!\"\n}"
+				}
+			]
+		}
+	]
+}
