@@ -3,6 +3,14 @@
 - [Partecipants]()
 - [Gachas Overview]()
 - [Architecture](https://github.com/baylonp/ASE_Project/blob/test/docs/REPORT.md#architecture)
+- [User Stories](https://github.com/baylonp/ASE_Project/blob/test/docs/REPORT.md#user-stories)
+- [Market Rules](https://github.com/baylonp/ASE_Project/blob/test/docs/REPORT.md#market-rules)
+- [Testing](https://github.com/baylonp/ASE_Project/blob/test/docs/REPORT.md#testing)
+- [Security]
+  
+    -[Data](https://github.com/baylonp/ASE_Project/blob/test/docs/REPORT.md#security-data)
+  
+    -[Authentication and Authorization](https://github.com/baylonp/ASE_Project/blob/test/docs/REPORT.md#security-authentication-and-authorization)
 
 
 
@@ -75,9 +83,72 @@
 - 22 --> [PATCH] localhost/authentication/players/{user_id}/currency/update (auction_service, authentication_service)
 - 23 -->
 
+## Market Rules
+
+Whenever the user wants to auction off a gacha the he owns, he sets the base price and the auction appears to all the users. Whenever a users places a bid higher than the previus one, the previous bidder receives the money back and is able to bid again if he wants. Bids are placeable for the whole duration of the auction. The moment a user bids, funds are withdrawn from his balance. He will receive the funds back only in the moment a higher bid is placed. The highest bidder at the end of the time wins the auction and receives the gacha auctioned off by the original issuer.
+
+In the eventuality the winning bidder places an even higher bid, there is no control put in place, on purpose, and only the last bid is considered valid.
+
+## Security-Data
+One important input that has been sanitized is the **userId** and **gachaId** that is used inside the **/auction_service/players/<userId>/setAuction**. Inside this endpoint, that is inthe auction_service, we call the gacha_service with thsi parameters in order to verify that the user speicifed by that **userId** owns the gacha specifid by **gachaId**. Since this parameters are used inside **gacha_service/players/{userId}/gachas/{gacha_id}** to build a query to the DB, we sanitized them using this regex.
+
+```
+# Validazione del parametro userId come numero intero
+    if not re.match(r'^\d+$', str(userId)):
+        return make_response(jsonify({'message': 'Invalid user ID, must be a positive number'}), 400)
+```   
+
+```
+# Validazione del parametro gacha_id come numero intero
+if not re.match(r'^\d+$', str(gacha_id)):
+            return make_response(jsonify({'message': 'Invalid gacha_id, must be a positive number'}), 400)
+```
+
+More  over, we sanitized the input from the **/authentication/account** function that lets a user create an account. Username and email are also sanitized in the **/authentication/auth **during login time.
+
+```
+    # Regex per validare la email
+    email_pattern = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+    if not re.match(email_pattern, data['email']):
+        return make_response(jsonify({'message': 'Invalid email format'}), 400)
+
+```
+```
+# Regex per validare lo username
+    username_pattern = r'^[a-zA-Z0-9_.-]{3,20}$'
+    if not re.match(username_pattern, data['username']):
+        return make_response(jsonify({'message': 'Invalid username format. Only alphanumeric characters, underscores, dots, and hyphens are allowed. Length must be between 3 and 20.'}), 400)
+    
+```
+### Data At Rest
+The only data at rest that is not left in clear-text is users and admin passwords. Here we use the hashpw() python function that implements OpenBSD-style Blowfish password hashing.
+
+```
+  hashed_password = hashpw(data['password'].encode('utf-8'), gensalt())
+```
+
+## Security-Authentication and Authorization
+
+We eployed a centralize way of JWT verification and validation. If requests are made to a service thas is not Admin_Service or Authentication_Service, the incoming JWT is analyzed to check if it belongs to an Admin or an User and then, in case of a **User Request**, a request is made to **/authentication/validate** in order to see if the JWT corresponds to that user by checking the users.db table. If the check goes right, it means that the user is currently logged in and a 200 response is sent back to the service orginally asked to give access to a resource.
+In case of an **Admin-Request**, the **/admin_service/verify_admin** endpoint is asked for validation, granting access to an admin if the actual admin is currently logged into the system.
+
+Here is the payload use to generate admin JWT:
+
+```
+def generate_jwt(admin):
+    payload = {
+        'admin_id': admin.id,
+        'username': admin.username,
+        'exp': datetime.now(timezone.utc) + timedelta(hours=2)  # Scadenza del token in 2 ore
+    }
+    token = jwt.encode(payload, app.config['SECRET_KEY'], algorithm='HS256')
+    return token
+```
+
+In the user case, admin_id is changed with user_id.
+
+
 
 
 ## Testing
-# In Isolation
-# performance(locust)
-# integration(jacopo)
+

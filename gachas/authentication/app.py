@@ -103,7 +103,7 @@ def token_required(f):
                 admin_service_url = "https://admin_service:5000/admin_service/verify_admin"
                 payload = {'admin_username': username}
                 try:
-                    response = requests.get(admin_service_url, headers={'x-access-token': token}, verify=False)
+                    response = requests.get(admin_service_url, headers={'x-access-token': token}, verify=False,timeout=5)
                     # Ensure status code is 200
                     if response.status_code != 200:
                         return jsonify(response.json()), 403
@@ -117,6 +117,9 @@ def token_required(f):
                     }
                     
                     return f(admin_data, token, *args, **kwargs)
+                except Timeout:
+                    # If the request times out, return an appropriate message
+                    return make_response(jsonify({'message': 'Admin service is temporarily unavailable'}), 503)  # Service Unavailable
                 except requests.exceptions.RequestException as e:
                     # Gestisci errori durante la richiesta HTTP
                     return jsonify({'message': 'Error validating admin token!', 'error': str(e)}), 500
@@ -137,18 +140,7 @@ def validate_service_token(curr_user, token):
     
     # @token_required has verified that we have received a valid token.
     return make_response(jsonify({'message': 'Ok.'}), 200) # OK
-    '''
-    token = request.headers.get("x-access-token")
-    if token is None:
-        return jsonify({"error": "Authentication Service ha received an Invalid token"}), 401
-    try:
-        payload = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
-        return jsonify({"user": payload})  # Include the user data in the response
-    except jwt.ExpiredSignatureError:
-        return jsonify({"error": "Token has expired"}), 401
-    except jwt.InvalidTokenError:
-        return jsonify({"error": "Invalid token"}), 401
-    '''
+
  
 # Definizione del modello User
 class User(db.Model):

@@ -51,7 +51,7 @@ def token_required(f):
                 user_service_url = "https://authentication_service:5000/authentication/validate"
                 payload = {'user_username': username}
                 try:
-                    response = requests.get(user_service_url, headers={'x-access-token': token}, verify=False)
+                    response = requests.get(user_service_url, headers={'x-access-token': token}, verify=False,timeout=5)
                     # Ensure status code is 200
                     if response.status_code != 200:
                         return jsonify(response.json()), 403
@@ -66,6 +66,9 @@ def token_required(f):
                     }
                     
                     return f(user_data, token, *args, **kwargs)
+                except Timeout:
+                # If the request times out, return an appropriate message
+                    return make_response(jsonify({'message': 'Authentication service is temporarily unavailable'}), 503)  # Service Unavailable
                 except requests.exceptions.RequestException as e:
                     # Gestisci errori durante la richiesta HTTP
                     return jsonify({'message': 'Error validating admin token!', 'error': str(e)}), 500
@@ -79,7 +82,7 @@ def token_required(f):
                 admin_service_url = "https://admin_service:5000/admin_service/verify_admin"
                 payload = {'admin_username': username}
                 try:
-                    response = requests.get(admin_service_url, headers={'x-access-token': token}, verify=False)
+                    response = requests.get(admin_service_url, headers={'x-access-token': token}, verify=False,timeout=5)
                     # Ensure status code is 200
                     if response.status_code != 200:
                         return jsonify(response.json()), 403
@@ -93,6 +96,9 @@ def token_required(f):
                     }
                     
                     return f(admin_data, token, *args, **kwargs)
+                except Timeout:
+                    # If the request times out, return an appropriate message
+                    return make_response(jsonify({'message': 'Admin service is temporarily unavailable'}), 503)  # Service Unavailable
                 except requests.exceptions.RequestException as e:
                     # Gestisci errori durante la richiesta HTTP
                     return jsonify({'message': 'Error validating admin token!', 'error': str(e)}), 500
