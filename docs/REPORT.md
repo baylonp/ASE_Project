@@ -3,6 +3,8 @@
 - [Partecipants]()
 - [Gachas Overview]()
 - [Architecture](https://github.com/baylonp/ASE_Project/blob/test/docs/REPORT.md#architecture)
+- [User Stories](https://github.com/baylonp/ASE_Project/blob/test/docs/REPORT.md#user-stories)
+- [Market Rules]()
 
 
 
