@@ -177,22 +177,7 @@ def verify_admin(curr_admin, admin_token):
     
     # @token_required has verified that we have received a valid token.
     return make_response(jsonify({'message': 'Ok.'}), 200) # OK
-    '''
-    --- (If the @token_required passes, then we have a good Admin token.) ---
-    token = request.headers.get('x-access-token')
-    if not token:
-        return jsonify({'message': 'Token is missing!'}), 401
-    try:
-        data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
-        current_admin = Admin.query.filter_by(id=data['admin_id']).first()
-        if current_admin is None:
-            return jsonify({'message': 'Unauthorized access'}), 403
-        return jsonify({'message': 'Admin verified successfully'}), 200
-    except jwt.ExpiredSignatureError:
-        return jsonify({'message': 'Token has expired!'}), 401
-    except jwt.InvalidTokenError:
-        return jsonify({'message': 'Token is invalid!'}), 401
-    '''
+ 
 
 # Endpoint per ottenere informazioni su un utente (richiede token)
 @app.route('/admin_service/user_info/<playerId>', methods=['GET'])

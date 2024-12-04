@@ -140,18 +140,7 @@ def validate_service_token(curr_user, token):
     
     # @token_required has verified that we have received a valid token.
     return make_response(jsonify({'message': 'Ok.'}), 200) # OK
-    '''
-    token = request.headers.get("x-access-token")
-    if token is None:
-        return jsonify({"error": "Authentication Service ha received an Invalid token"}), 401
-    try:
-        payload = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
-        return jsonify({"user": payload})  # Include the user data in the response
-    except jwt.ExpiredSignatureError:
-        return jsonify({"error": "Token has expired"}), 401
-    except jwt.InvalidTokenError:
-        return jsonify({"error": "Invalid token"}), 401
-    '''
+
  
 # Definizione del modello User
 class User(db.Model):
