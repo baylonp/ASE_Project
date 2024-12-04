@@ -4,7 +4,8 @@
 - [Gachas Overview]()
 - [Architecture](https://github.com/baylonp/ASE_Project/blob/test/docs/REPORT.md#architecture)
 - [User Stories](https://github.com/baylonp/ASE_Project/blob/test/docs/REPORT.md#user-stories)
-- [Market Rules]()
+- [Market Rules](https://github.com/baylonp/ASE_Project/blob/test/docs/REPORT.md#market-rules)
+- [Testing](https://github.com/baylonp/ASE_Project/blob/test/docs/REPORT.md#testing)
 
 
 
@@ -87,6 +88,4 @@ In the eventuality the winning bidder places an even higher bid, there is no con
 
 
 ## Testing
-# In Isolation
-# performance(locust)
-# integration(jacopo)
+
