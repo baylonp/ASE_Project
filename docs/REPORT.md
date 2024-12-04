@@ -1,3 +1,12 @@
+## Table of Content
+
+- [Partecipantsl]()
+- [Gachas Overview]()
+- [Architecture]()
+
+
+
+
 # Architecture
 
 - authentication service: let user create account, login, logout. Has endoints to update the balance of users and to get user ifnormation suche as ID
