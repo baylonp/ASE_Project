@@ -10,7 +10,7 @@
   
     -[Data](https://github.com/baylonp/ASE_Project/blob/test/docs/REPORT.md#security-data)
   
-    -[Authentication and Authorization]()
+    -[Authentication and Authorization](https://github.com/baylonp/ASE_Project/blob/test/docs/REPORT.md#security-authentication-and-authorization)
 
 
 
@@ -120,6 +120,13 @@ More  over, we sanitized the input from the **/authentication/account** function
         return make_response(jsonify({'message': 'Invalid username format. Only alphanumeric characters, underscores, dots, and hyphens are allowed. Length must be between 3 and 20.'}), 400)
     
 ```
+### Data At Rest
+The only data at rest that is not left in clear-text is users and admin passwords. Here we use the hashpw() python function that implements OpenBSD-style Blowfish password hashing.
+
+```
+  hashed_password = hashpw(data['password'].encode('utf-8'), gensalt())
+```
+
 ## Security-Authentication and Authorization
 
 We eployed a centralize way of JWT verification and validation. If requests are made to a service thas is not Admin_Service or Authentication_Service, the incoming JWT is analyzed to check if it belongs to an Admin or an User and then, in case of a **User Request**, a request is made to **/authentication/validate** in order to see if the JWT corresponds to that user by checking the users.db table. If the check goes right, it means that the user is currently logged in and a 200 response is sent back to the service orginally asked to give access to a resource.
