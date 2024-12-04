@@ -11,8 +11,8 @@ services:
     environment:
       FLASK_ENV: development
     secrets:
-      - secrets_cert
-      - secrets_key
+      - auth_secrets_cert
+      - auth_secrets_key
     networks:
       - app-network
 
@@ -30,8 +30,8 @@ services:
     depends_on:
       - authentication
     secrets:
-      - secrets_cert
-      - secrets_key  
+      - gacha_service_secrets_cert
+      - gacha_service_secrets_key  
     networks:
       - app-network
       #- admin-network
@@ -52,8 +52,8 @@ services:
       - authentication
       - gacha_service
     secrets:
-      - secrets_cert
-      - secrets_key
+      - gacha_market_service_secrets_cert
+      - gacha_market_service_secrets_key
     networks:
       - app-network
 
@@ -73,8 +73,8 @@ services:
       - gacha_service
       - gacha_market_service
     secrets:
-      - secrets_cert
-      - secrets_key
+      - auction_service_secrets_cert
+      - auction_service_secrets_key
     networks:
       - app-network
 
@@ -101,8 +101,8 @@ services:
       - gacha_market_service
       - auction_service
     secrets:
-      - secrets_cert
-      - secrets_key
+      - admin_service_secrets_cert
+      - admin_service_secrets_key
     networks:
       - app-network
       - admin-network
@@ -117,7 +117,7 @@ services:
       - "80:80"  
     volumes:
       - ./nginx/user:/etc/nginx/conf.d  
-      - ./keys:/etc/nginx/ssl        
+      - ./keys/user-nginx:/etc/nginx/ssl        
     depends_on:
       - authentication
       - gacha_service
@@ -135,7 +135,7 @@ services:
       - "81:80"  
     volumes:
       - ./nginx/admin:/etc/nginx/conf.d  
-      - ./keys:/etc/nginx/ssl        
+      - ./keys/admin-nginx:/etc/nginx/ssl        
     depends_on:
       - authentication
       - gacha_service
@@ -171,7 +171,27 @@ networks:
 
 
 secrets:
-    secrets_cert:
-      file: ./keys/cert.pem
-    secrets_key:
-      file: ./keys/key.pem
+    auth_secrets_cert:
+      file: ./keys/auth_service/cert.pem
+    auth_secrets_key:
+      file: ./keys/auth_service/key.pem
+      
+    gacha_service_secrets_cert:
+      file: ./keys/gacha_service/cert.pem
+    gacha_service_secrets_key:
+      file: ./keys/gacha_service/key.pem
+
+    gacha_market_service_secrets_cert:
+      file: ./keys/gacha_market_service/cert.pem
+    gacha_market_service_secrets_key:
+      file: ./keys/gacha_market_service/key.pem
+
+    auction_service_secrets_cert:
+      file: ./keys/auction_service/cert.pem
+    auction_service_secrets_key:
+      file: ./keys/auction_service/key.pem
+
+    admin_service_secrets_cert:
+      file: ./keys/admin_service/cert.pem
+    admin_service_secrets_key:
+      file: ./keys/admin_service/key.pem

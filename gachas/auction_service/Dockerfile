@@ -9,4 +9,4 @@ RUN pip3 install -r requirements.txt
 
 EXPOSE 5000
 
-CMD flask run --host=0.0.0.0 --port=5000 --cert=/run/secrets/secrets_cert --key=/run/secrets/secrets_key
+CMD flask run --host=0.0.0.0 --port=5000 --cert=/run/secrets/auction_service_secrets_cert --key=/run/secrets/auction_service_secrets_key
