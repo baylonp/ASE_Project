@@ -120,10 +120,10 @@ More  over, we sanitized the input from the **/authentication/account** function
         return make_response(jsonify({'message': 'Invalid username format. Only alphanumeric characters, underscores, dots, and hyphens are allowed. Length must be between 3 and 20.'}), 400)
     
 ```
-##Security-Authentication and Authorization
+## Security-Authentication and Authorization
 
 We eployed a centralize way of JWT verification and validation. If requests are made to a service thas is not Admin_Service or Authentication_Service, the incoming JWT is analyzed to check if it belongs to an Admin or an User and then, in case of a **User Request**, a request is made to **/authentication/validate** in order to see if the JWT corresponds to that user by checking the users.db table. If the check goes right, it means that the user is currently logged in and a 200 response is sent back to the service orginally asked to give access to a resource.
-In case of an **Admin-Request**, the **/admin_service/verify_admin** endpoint is asked for validation, granting access to a an admin if the actual admin is currently logged into the system.
+In case of an **Admin-Request**, the **/admin_service/verify_admin** endpoint is asked for validation, granting access to an admin if the actual admin is currently logged into the system.
 
 Here is the payload use to generate admin JWT:
 
