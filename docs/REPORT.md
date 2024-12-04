@@ -87,6 +87,4 @@ In the eventuality the winning bidder places an even higher bid, there is no con
 
 
 ## Testing
-# In Isolation
-# performance(locust)
-# integration(jacopo)
+
