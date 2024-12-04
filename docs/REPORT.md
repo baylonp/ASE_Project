@@ -77,6 +77,13 @@
 - 22 --> [PATCH] localhost/authentication/players/{user_id}/currency/update (auction_service, authentication_service)
 - 23 -->
 
+## Market Rules
+
+Whenever the user wants to auction off a gacha the he owns, he sets the base price and the auction appears to all the users. Whenever a users places a bid higher than the previus one, the previous bidder receives the money back and is able to bid again if he wants. Bids are placeable for the whole duration of the auction. The moment a user bids, funds are withdrawn from his balance. He will receive the funds back only in the moment a higher bid is placed. The highest bidder at the end of the time wins the auction and receives the gacha auctioned off by the original issuer.
+
+In the eventuality the winning bidder places a even higher bid, there is no control put in place, on purpose, and only the last bid is taken into consideration.
+
+
 
 
 ## Testing
