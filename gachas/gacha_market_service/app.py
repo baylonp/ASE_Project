@@ -22,7 +22,11 @@ ADMIN_SERVICE_URL = 'https://admin_service:5000/admin_service/verify_admin'
 # Configurazione del database SQLite
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////data/gacha_market.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = 'your_secret_key'
+
+secret_key = os.getenv('SECRET_KEY')
+if not secret_key:
+    raise RuntimeError("SECRET_KEY environment variable not set!")
+app.config['SECRET_KEY'] = secret_key
  
 # Inizializza SQLAlchemy
 db = SQLAlchemy(app)

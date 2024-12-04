@@ -4,13 +4,18 @@ import requests
 import jwt
 from functools import wraps
 from requests.exceptions import Timeout, RequestException
+import os
  
 app = Flask(__name__)
  
 # Configurazione del database
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////data/issuedANDownedDB.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = 'your_secret_key'
+
+secret_key = os.getenv('SECRET_KEY')
+if not secret_key:
+    raise RuntimeError("SECRET_KEY environment variable not set!")
+app.config['SECRET_KEY'] = secret_key
  
 db = SQLAlchemy(app)
 

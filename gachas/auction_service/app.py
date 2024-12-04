@@ -7,13 +7,14 @@ import jwt
 from functools import wraps
 from requests.exceptions import Timeout, RequestException
 import re
- 
+import os
+
 app = Flask(__name__)
  
 # Configurazione del database per le aste
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////data/auctions.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = 'your_secret_key'  
+app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
  
 db = SQLAlchemy(app)
  
