@@ -1,8 +1,8 @@
 ## Table of Content
 
-- [Partecipantsl]()
+- [Partecipants]()
 - [Gachas Overview]()
-- [Architecture]()
+- [Architecture](https://github.com/baylonp/ASE_Project/blob/test/docs/REPORT.md#architecture)
 
 
 
