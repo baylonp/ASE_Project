@@ -6,6 +6,11 @@
 - [User Stories](https://github.com/baylonp/ASE_Project/blob/test/docs/REPORT.md#user-stories)
 - [Market Rules](https://github.com/baylonp/ASE_Project/blob/test/docs/REPORT.md#market-rules)
 - [Testing](https://github.com/baylonp/ASE_Project/blob/test/docs/REPORT.md#testing)
+- [Security]
+  
+    -[Data]()
+  
+    -[Authentication and Authorization]()
 
 
 
@@ -84,6 +89,37 @@ Whenever the user wants to auction off a gacha the he owns, he sets the base pri
 
 In the eventuality the winning bidder places an even higher bid, there is no control put in place, on purpose, and only the last bid is considered valid.
 
+## Security-Data
+One important input that has been sanitized is the **userId** and **gachaId** that is used inside the **/auction_service/players/<userId>/setAuction**. Inside this endpoint, that is inthe auction_service, we call the gacha_service with thsi parameters in order to verify that the user speicifed by that **userId** owns the gacha specifid by **gachaId**. Since this parameters are used inside **gacha_service/players/{userId}/gachas/{gacha_id}** to build a query to the DB, we sanitized them using this regex.
+
+```
+# Validazione del parametro userId come numero intero
+    if not re.match(r'^\d+$', str(userId)):
+        return make_response(jsonify({'message': 'Invalid user ID, must be a positive number'}), 400)
+```   
+
+```
+# Validazione del parametro gacha_id come numero intero
+if not re.match(r'^\d+$', str(gacha_id)):
+            return make_response(jsonify({'message': 'Invalid gacha_id, must be a positive number'}), 400)
+```
+
+More  over, we sanitized the input from the **/authentication/account** function that lets a user create an account. Username and email are also sanitized in the **/authentication/auth **during login time.
+
+```
+    # Regex per validare la email
+    email_pattern = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+    if not re.match(email_pattern, data['email']):
+        return make_response(jsonify({'message': 'Invalid email format'}), 400)
+
+```
+```
+# Regex per validare lo username
+    username_pattern = r'^[a-zA-Z0-9_.-]{3,20}$'
+    if not re.match(username_pattern, data['username']):
+        return make_response(jsonify({'message': 'Invalid username format. Only alphanumeric characters, underscores, dots, and hyphens are allowed. Length must be between 3 and 20.'}), 400)
+    
+```
 
 
 
