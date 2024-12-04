@@ -65,7 +65,7 @@ This project uses specific dependencies listed in the `requirements.txt` files i
    git clone https://github.com/baylonp/ASE_Project.git
    cd ASE_Project
    ```
-2. Create a **.env ** file in the same directory of docker-compose.yml file and copy paste this:
+2. Create a  **.env**  file in the same directory of docker-compose.yml file and copy paste this:
    ```
      SECRET_KEY=<CHOOSE A SECRET KEY>
    ```
