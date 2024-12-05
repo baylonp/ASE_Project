@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acquista Valuta di Gioco e Gacha</title>
+    <style>
+        .gacha-card {
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 10px;
+            margin: 10px;
+            display: inline-block;
+            width: 200px;
+            text-align: center;
+        }
+
+        .gacha-card h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .gacha-card p {
+            font-size: 14px;
+        }
+
+        #gachaCollection {
+            margin-top: 20px;
+        }
+    </style>
+    <script>
+        // Funzione per inviare la richiesta di acquisto valuta
+        async function buyCurrency() {
+            const token = localStorage.getItem("token");
+            const userId = localStorage.getItem("userId");
+
+            // Otteniamo l'importo dalla casella di input
+            const amount = parseFloat(document.getElementById("amount").value);
+
+            // Verifica che l'importo sia valido
+            if (isNaN(amount) || amount <= 0) {
+                alert("Inserisci un importo valido.");
+                return;
+            }
+
+            // Prepara i dati per la richiesta
+            const requestData = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-access-token': token  // Usa x-access-token per passare il JWT
+                },
+                body: JSON.stringify({ amount: amount })
+            };
+
+            try {
+                // Invia la richiesta di acquisto
+                const response = await fetch(`https://localhost/market_service/players/${userId}/currency/buy?amount=${amount}`, requestData);
+
+                if (response.ok) {
+                    const data = await response.json();
+                    alert("Acquisto effettuato con successo! Saldo aggiornato.");
+                    // Dopo l'acquisto, visualizza il saldo
+                    getUserBalance(userId, token); // Ottieni il saldo dell'utente
+                } else {
+                    const errorData = await response.json();
+                    alert(`Errore: ${errorData.message}`);
+                }
+            } catch (error) {
+                alert("Errore durante la richiesta: " + error.message);
+            }
+        }
+
+        // Funzione per ottenere e visualizzare il saldo dell'utente
+        async function getUserBalance(userId, token) {
+            try {
+                const response = await fetch(`https://localhost/authentication/players/${userId}`, {
+                    method: 'GET',
+                    headers: {
+                        'x-access-token': token
+                    }
+                });
+
+                if (response.ok) {
+                    const userInfo = await response.json();
+                    document.getElementById("userWallet").textContent = `Saldo Attuale: €${userInfo.wallet}`;
+                } else {
+                    const errorData = await response.json();
+                    alert(`Errore nel recupero saldo: ${errorData.message}`);
+                }
+            } catch (error) {
+                alert("Errore durante la richiesta di saldo: " + error.message);
+            }
+        }
+
+        // Funzione per fare il roll di Gacha
+        async function rollGacha() {
+            const token = localStorage.getItem("token");
+            const userId = localStorage.getItem("userId");
+
+            // Prepara i dati per la richiesta di gacha
+            const requestData = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-access-token': token
+                }
+            };
+
+            try {
+                // Invia la richiesta per fare il roll di gacha
+                const response = await fetch(`https://localhost/market_service/players/${userId}/gacha/roll`, requestData);
+
+                if (response.ok) {
+                    const gachaData = await response.json();
+                    // Visualizza i dettagli della roll
+                    document.getElementById("gachaResult").innerHTML = `
+                        <h3>Gacha Roll - Risultato</h3>
+                        <p><strong>Gacha-ID:</strong> ${gachaData.pilot.id}</p>
+                        <p><strong>Nome Pilota:</strong> ${gachaData.pilot.pilot_name}</p>
+                        <p><strong>Rarità:</strong> ${gachaData.pilot.rarity}</p>
+                        <p><strong>Esperienza:</strong> ${gachaData.pilot.experience}</p>
+                        <p><strong>Abilità:</strong> ${gachaData.pilot.ability}</p>
+                    `;
+
+                    // Dopo la roll, aggiorna il saldo e la collezione di gachas
+                    getUserBalance(userId, token);  // Aggiorna il saldo dell'utente
+                    loadGachaCollection(); // Ricarica la collezione di gachas aggiornata
+                } else {
+                    const errorData = await response.json();
+                    alert(`Errore: ${errorData.message}`);
+                }
+            } catch (error) {
+                alert("Errore durante la richiesta di gacha: " + error.message);
+            }
+        }
+
+        // Funzione per caricare la collezione di Gacha dell'utente
+        async function loadGachaCollection() {
+            const token = localStorage.getItem("token");
+            const userId = localStorage.getItem("userId");
+
+            try {
+                const response = await fetch(`https://localhost/gacha_service/players/${userId}/gachas`, {
+                    method: 'GET',
+                    headers: {
+                        'x-access-token': token
+                    }
+                });
+
+                if (response.ok) {
+                    const gachaCollection = await response.json();
+                    if (gachaCollection.length === 0) {
+                        document.getElementById("gachaCollection").innerHTML = '<p>Nessuna gacha trovata nella tua collezione.</p>';
+                    } else {
+                        let collectionHtml = '';
+                        gachaCollection.forEach(gacha => {
+                            collectionHtml += `
+                                <div class="gacha-card">
+                                    <h3>${gacha.name}</h3>
+                                    <p><strong>Rarità:</strong> ${gacha.rarity}</p>
+                                    <p><strong>Esperienza:</strong> ${gacha.experience}</p>
+                                    <p><strong>Abilità:</strong> ${gacha.ability}</p>
+                                    <p><strong>Gacha-Id:</strong> ${gacha.gachaId}</p>
+                                    
+                                </div>
+                            `;
+                        });
+                        document.getElementById("gachaCollection").innerHTML = collectionHtml;
+                    }
+                } else {
+                    const errorData = await response.json();
+                    alert(`Errore nel recupero collezione Gacha: ${errorData.message}`);
+                }
+            } catch (error) {
+                alert("Errore durante il caricamento della collezione di Gacha: " + error.message);
+            }
+        }
+
+        // Quando la pagina è pronta, carica il saldo e la collezione di gacha dell'utente
+        window.onload = function() {
+            const token = localStorage.getItem("token");
+            const userId = localStorage.getItem("userId");
+
+            if (token && userId) {
+                getUserBalance(userId, token); // Carica il saldo al caricamento della pagina
+                loadGachaCollection(); // Carica la collezione di gachas al caricamento
+            } else {
+                alert("Token o ID utente non trovati. Effettua il login.");
+            }
+        };
+    </script>
+</head>
+<body>
+    <h1>Acquista Valuta di Gioco e Gacha</h1>
+    <div>
+        <p id="userWallet">Caricamento saldo...</p> <!-- Mostra il saldo iniziale dell'utente -->
+    </div>
+    
+    <!-- Form di acquisto valuta -->
+    <form onsubmit="event.preventDefault(); buyCurrency();">
+        <label for="amount">Importo da acquistare:</label>
+        <input type="number" id="amount" name="amount" required min="0.01" step="0.01">
+        <button type="submit">Acquista Valuta</button>
+    </form>
+
+    <hr>
+
+    <!-- Sezione per fare il roll di Gacha -->
+    <h2>Fai una Roll di Gacha!</h2>
+    <button onclick="rollGacha()">Fai una Gacha Roll</button>
+
+    <!-- Sezione per mostrare il risultato della roll -->
+    <div id="gachaResult">
+        <!-- Il risultato della gacha sarà visualizzato qui -->
+    </div>
+
+    <hr>
+
+    <!-- Sezione per mostrare la collezione di Gacha -->
+    <h2>La Tua Collezione di Gacha</h2>
+    <div id="gachaCollection">
+        <!-- La collezione di gachas sarà visualizzata qui -->
+    </div>
+</body>
+</html>
+

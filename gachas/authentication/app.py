@@ -21,7 +21,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 secret_key = os.getenv('SECRET_KEY')
 if not secret_key:
     raise RuntimeError("SECRET_KEY environment variable not set!")
-app.config['SECRET_KEY'] = secret_key 
+app.config['SECRET_KEY'] = secret_key
+ 
 # Inizializza il database
 db = SQLAlchemy(app)
  

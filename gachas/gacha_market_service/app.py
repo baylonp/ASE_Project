@@ -594,6 +594,40 @@ def buy_gacha_roll(current_user_id, token, playerId):
         return make_response(jsonify({'message': f'An error occurred while communicating with the auth or gacha service: {str(e)}'}), 500)
     except Exception as e:
         return make_response(jsonify({'message': f'An internal error occurred: {str(e)}'}), 500)
+
+ 
+    
+@app.route('/market_service/showGacha/<int:gachaId>', methods=['GET'])
+def show_gacha(gachaId):
+    """
+    Recupera le informazioni di un gacha specifico dato il suo ID.
+    """
+    try:
+        # Recupera il gacha dal database
+        gacha = Pilot.query.filter_by(id=gachaId).first()
+
+        # Controlla se il gacha esiste
+        if not gacha:
+            return make_response(jsonify({'message': 'Gacha not found'}), 404)
+
+        # Prepara il risultato
+        result = {
+            'gacha_id': gacha.id,
+            'pilot_name': gacha.pilot_name,
+            'rarity': gacha.rarity,
+            'experience': gacha.experience,
+            'ability': gacha.ability
+        }
+
+        return make_response(jsonify(result), 200)
+
+    except Exception as e:
+        return make_response(jsonify({'message': f'An internal error occurred: {str(e)}'}), 500)
+
+
+
+
+
  
 if __name__ == '__main__':
     app.run()

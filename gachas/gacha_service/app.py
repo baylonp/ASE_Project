@@ -131,7 +131,9 @@ def handle_user_gachas(current_user_id, token, userID):
             result.append({
                 'gachaId': gacha.gacha_id,
                 'name': gacha.pilot_name,
-                'rarity': gacha.rarity
+                'rarity': gacha.rarity,
+                'experience':gacha.experience,
+                'ability':gacha.ability
             })
  
         return jsonify(result), 200
