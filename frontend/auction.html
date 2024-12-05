@@ -174,7 +174,7 @@
         }
  
         async function loadActiveAuctions() {
-    const token = localStorage.getItem("token");
+const token = localStorage.getItem("token");
 
     try {
         const response = await fetch('https://localhost/auction_service/auctions/active', {
@@ -190,11 +190,7 @@
             auctionsContainer.innerHTML = ""; // Pulisci la lista esistente
 
             for (const auction of auctions) {
-                // Filtra le aste terminate localmente
-                if (auction.status === "TERMINATED" || Date.now() >= new Date(auction.end_time).getTime()) {
-                    continue; // Salta le aste terminate
-                }
-
+                // Recupera i dettagli del Gacha
                 const gachaDetails = await fetch(`https://localhost/market_service/showGacha/${auction.gacha_id}`, {
                     method: 'GET',
                     headers: {
@@ -215,9 +211,13 @@
                     auctionsContainer.appendChild(auctionDiv);
                 }
             }
+        } else if (response.status === 404) {
+            // Nessuna asta attiva, svuota la lista
+            const auctionsContainer = document.getElementById("activeAuctions");
+            auctionsContainer.innerHTML = "<p>Non ci sono aste attive al momento.</p>";
         } else {
             const errorData = await response.json();
-             console.log(`Errore durante il caricamento delle aste: ${errorData.message}`);
+            console.log(`Errore durante il caricamento delle aste: ${errorData.message}`);
         }
     } catch (error) {
         console.log("Errore durante il caricamento delle aste: " + error.message);
@@ -264,10 +264,10 @@
                     loadActiveAuctions(); // Aggiorna la lista delle aste
                 } else {
                     const errorData = await response.json();
-                    alert(`Errore durante la puntata: ${errorData.message}`);
+                    console.log(`Errore durante la puntata: ${errorData.message}`);
                 }
             } catch (error) {
-                alert("Errore durante la puntata: " + error.message);
+                console.log("Errore durante la puntata: " + error.message);
             }
         }
  
