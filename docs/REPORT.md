@@ -169,7 +169,7 @@ In case of an **Admin-Request**, the **/admin_service/verify_admin** endpoint is
 
 Here is the payload use to generate admin JWT:
 
-```
+```python
 def generate_jwt(admin):
     payload = {
         'admin_id': admin.id,
