@@ -262,6 +262,10 @@ def place_bid(current_user, token, auctionID):
         # Controllare se l'asta è attiva
         if not auction.is_active:
             return make_response(jsonify({'message': 'Auction is no longer active'}), 400)
+        
+        # Controllare se l'utente è l'emittente dell'asta
+        if user_id == auction.issuer_id:
+            return make_response(jsonify({'message': 'You cannot bid on your own auction'}), 400)
 
 
         try:
