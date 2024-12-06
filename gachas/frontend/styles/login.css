@@ -1,0 +1,151 @@
+/* General Styles */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f4f4f9;
+  background-image: linear-gradient(135deg, white 50%, #ff0000 50%);
+  background-size: 200% 200%;
+  animation: gradientMove 6s ease infinite;
+}
+
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Form Container */
+.form-container {
+  background: white;
+  padding: 30px 40px;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  width: 400px;
+  text-align: center;
+  animation: slideIn 0.8s ease-out;
+}
+
+@keyframes slideIn {
+  0% {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Title Styling */
+.form-container .logo {
+  width: 100%;
+  max-width: 200px;
+  margin: 0 auto 20px;
+  display: block;
+  animation: fadeIn 1s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Input Styling */
+.form-container input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 2px solid #ff0000;
+  border-radius: 5px;
+  font-size: 16px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 0 0 transparent;
+  box-sizing: border-box; /* Ensure alignment */
+}
+
+.form-container input:focus {
+  border-color: #990000;
+  box-shadow: 0 0 8px rgba(255, 0, 0, 0.6);
+  outline: none;
+}
+
+/* Button Styling */
+.form-container button {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  color: white;
+  background-color: #ff0000;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: background-color 0.3s, transform 0.2s ease;
+  margin-bottom: 10px; /* Added spacing between buttons */
+  box-sizing: border-box; /* Ensure alignment */
+}
+
+.form-container button:hover {
+  background-color: #990000;
+  transform: translateY(-2px);
+}
+
+.form-container button:active {
+  transform: translateY(0);
+}
+
+/* Sign Up Button */
+.form-container .signup-button {
+  background-color: white;
+  color: #ff0000;
+  border: 2px solid #ff0000;
+  font-weight: normal;
+}
+
+.form-container .signup-button:hover {
+  background-color: #ff0000;
+  color: white;
+}
+
+/* Error Message Styling */
+.error-message {
+  color: #ff0000;
+  font-size: 14px;
+  margin-top: 10px;
+  text-align: center;
+}
+
+/* Responsive Design */
+@media (max-width: 500px) {
+  .form-container {
+    width: 90%;
+    padding: 20px;
+  }
+}
+
+/* Title Styling */
+.form-container h1 {
+  font-size: 24px;
+  color: #ff0000;
+  margin-bottom: 20px;
+  animation: fadeIn 1s ease;
+}

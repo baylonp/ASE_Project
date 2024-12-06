@@ -7,13 +7,18 @@ import jwt
 from functools import wraps
 from requests.exceptions import Timeout, RequestException
 import re
- 
+import os
+
 app = Flask(__name__)
  
 # Configurazione del database per le aste
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////data/auctions.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = 'your_secret_key'  
+
+secret_key = os.getenv('SECRET_KEY')
+if not secret_key:
+    raise RuntimeError("SECRET_KEY environment variable not set!")
+app.config['SECRET_KEY'] = secret_key
  
 db = SQLAlchemy(app)
  
@@ -257,6 +262,10 @@ def place_bid(current_user, token, auctionID):
         # Controllare se l'asta è attiva
         if not auction.is_active:
             return make_response(jsonify({'message': 'Auction is no longer active'}), 400)
+        
+       # Controllare se l'utente è l'emittente dell'asta
+        if user_id == auction.issuer_id:
+            return make_response(jsonify({'message': 'You cannot bid on your own auction'}), 400)
 
 
         try:

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="images/favicon-16x16.png"
+    />
+    <link rel="stylesheet" href="styles/register.css" />
+    <title>F1 Drivers Gacha - Register</title>
+  </head>
+  <body>
+    <div class="form-container">
+      <img src="images/f1-gachas-red.png" alt="F1 Gacha Logo" class="logo" />
+      <h1>Register</h1>
+      <form id="registerForm">
+        <input type="text" id="username" placeholder="Username" required />
+        <input type="email" id="email" placeholder="Email" required />
+        <input type="password" id="password" placeholder="Password" required />
+        <button type="submit">Create Account</button>
+        <button
+          type="button"
+          class="signup-button"
+          onclick="window.location.href='login.html'"
+        >
+          Back to Login
+        </button>
+      </form>
+      <div class="error-message" id="errorMessage"></div>
+    </div>
+    <script>
+      const form = document.getElementById('registerForm');
+      const errorMessage = document.getElementById('errorMessage');
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        errorMessage.textContent = ''; // Clear previous errors
+
+        const username = document.getElementById('username').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        try {
+          const response = await fetch(
+            'https://localhost/authentication/account',
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ username, email, password }),
+            }
+          );
+
+          if (response.status === 201) {
+            // Success: Redirect to login page
+            alert('Account created successfully! Redirecting to login...');
+            window.location.href = 'login.html';
+          } else {
+            const data = await response.json();
+            errorMessage.textContent = data.message || 'An error occurred.';
+          }
+        } catch (error) {
+          errorMessage.textContent = 'Failed to connect to the server.';
+        }
+      });
+    </script>
+  </body>
+</html>

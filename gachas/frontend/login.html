@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" sizes="16x16"  href="images/favicon-16x16.png">
+    <link rel="stylesheet" href="styles/login.css">
+    <title>F1 Drivers Gacha - Login</title>
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+    <div class="form-container">
+        <img src="images/f1-gachas-red.png" alt="F1 Gacha Logo" class="logo">
+        <h1>Login</h1>
+        <form id="loginForm">
+            <div class="form-group">
+                <input type="text" id="username" name="username" placeholder="Username" required>
+            </div>
+            <div class="form-group">
+                <input type="password" id="password" name="password" placeholder="Password" required>
+            </div>
+            <button type="submit">Accedi</button>
+            <button
+                type="button"
+                class="signup-button"
+                onclick="window.location.href='register.html'"
+                >
+                Sign Up
+            </button>
+        </form>
+        <p id="error-message" class="error-message"></p>
+    </div>
+
+    <script>
+        document.getElementById("loginForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            document.getElementById("error-message").textContent = "";
+
+            fetch("https://localhost/authentication/auth", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ username, password })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.token && data.userId) {
+                    localStorage.setItem("token", data.token);
+                    localStorage.setItem("userId", data.userId);
+                    window.location.href = "homepage.html";
+                } else {
+                    document.getElementById("error-message").textContent = "Credenziali non valide";
+                }
+            })
+            .catch(error => {
+                document.getElementById("error-message").textContent = "Errore durante il login: " + error;
+            });
+        });
+    </script>
+</body>
+</html>
+
+</html>
+

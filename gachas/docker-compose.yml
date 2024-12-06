@@ -10,6 +10,7 @@ services:
       - sqldata1:/data  # Volume sqldata1 montato all'interno della cartella /data nel container
     environment:
       FLASK_ENV: development
+      SECRET_KEY: $(SECRET_KEY)
     secrets:
       - auth_secrets_cert
       - auth_secrets_key
@@ -27,6 +28,7 @@ services:
       - sqldata2_GachaManager:/data  # Volume sqldata2_GM montato all'interno della cartella /data nel container
     environment:
       FLASK_ENV: development
+      SECRET_KEY: $(SECRET_KEY)
     depends_on:
       - authentication
     secrets:
@@ -48,6 +50,7 @@ services:
       - ./images:/app/images
     environment:
       FLASK_ENV: development
+      SECRET_KEY: $(SECRET_KEY)
     depends_on:
       - authentication
       - gacha_service
@@ -68,6 +71,7 @@ services:
       - sqldata4_Auctions:/data  
     environment:
       FLASK_ENV: development
+      SECRET_KEY: $(SECRET_KEY)
     depends_on:
       - authentication
       - gacha_service
@@ -95,6 +99,7 @@ services:
       - sqldata4_admin_service:/data  # Volume sqldata2_GM montato all'interno della cartella /data nel container
     environment:
       FLASK_ENV: development
+      SECRET_KEY: $(SECRET_KEY)
     depends_on:
       - authentication
       - gacha_service
@@ -117,7 +122,8 @@ services:
       - "80:80"  
     volumes:
       - ./nginx/user:/etc/nginx/conf.d  
-      - ./keys/user-nginx:/etc/nginx/ssl        
+      - ./keys/user-nginx:/etc/nginx/ssl
+      - ./frontend:/usr/share/nginx/html:ro        
     depends_on:
       - authentication
       - gacha_service
@@ -135,14 +141,15 @@ services:
       - "81:80"  
     volumes:
       - ./nginx/admin:/etc/nginx/conf.d  
-      - ./keys/admin-nginx:/etc/nginx/ssl        
+      - ./keys/admin-nginx:/etc/nginx/ssl  
+     
+
     depends_on:
       - authentication
       - gacha_service
       - gacha_market_service
       - auction_service
     networks:
-      #- app-network
       - admin-network
 
 
@@ -175,22 +182,18 @@ secrets:
       file: ./keys/auth_service/cert.pem
     auth_secrets_key:
       file: ./keys/auth_service/key.pem
-      
     gacha_service_secrets_cert:
       file: ./keys/gacha_service/cert.pem
     gacha_service_secrets_key:
       file: ./keys/gacha_service/key.pem
-
     gacha_market_service_secrets_cert:
       file: ./keys/gacha_market_service/cert.pem
     gacha_market_service_secrets_key:
       file: ./keys/gacha_market_service/key.pem
-
     auction_service_secrets_cert:
       file: ./keys/auction_service/cert.pem
     auction_service_secrets_key:
       file: ./keys/auction_service/key.pem
-
     admin_service_secrets_cert:
       file: ./keys/admin_service/cert.pem
     admin_service_secrets_key:

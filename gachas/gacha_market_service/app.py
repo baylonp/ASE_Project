@@ -22,7 +22,11 @@ ADMIN_SERVICE_URL = 'https://admin_service:5000/admin_service/verify_admin'
 # Configurazione del database SQLite
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////data/gacha_market.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = 'your_secret_key'
+
+secret_key = os.getenv('SECRET_KEY')
+if not secret_key:
+    raise RuntimeError("SECRET_KEY environment variable not set!")
+app.config['SECRET_KEY'] = secret_key
  
 # Inizializza SQLAlchemy
 db = SQLAlchemy(app)
@@ -590,6 +594,40 @@ def buy_gacha_roll(current_user_id, token, playerId):
         return make_response(jsonify({'message': f'An error occurred while communicating with the auth or gacha service: {str(e)}'}), 500)
     except Exception as e:
         return make_response(jsonify({'message': f'An internal error occurred: {str(e)}'}), 500)
+
+ 
+    
+@app.route('/market_service/showGacha/<int:gachaId>', methods=['GET'])
+def show_gacha(gachaId):
+    """
+    Recupera le informazioni di un gacha specifico dato il suo ID.
+    """
+    try:
+        # Recupera il gacha dal database
+        gacha = Pilot.query.filter_by(id=gachaId).first()
+
+        # Controlla se il gacha esiste
+        if not gacha:
+            return make_response(jsonify({'message': 'Gacha not found'}), 404)
+
+        # Prepara il risultato
+        result = {
+            'gacha_id': gacha.id,
+            'pilot_name': gacha.pilot_name,
+            'rarity': gacha.rarity,
+            'experience': gacha.experience,
+            'ability': gacha.ability
+        }
+
+        return make_response(jsonify(result), 200)
+
+    except Exception as e:
+        return make_response(jsonify({'message': f'An internal error occurred: {str(e)}'}), 500)
+
+
+
+
+
  
 if __name__ == '__main__':
     app.run()
