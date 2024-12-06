@@ -1,0 +1,225 @@
+/* General Styles */
+/* General Styles */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f4f4f9;
+  background-image: linear-gradient(135deg, white 50%, #ff0000 50%);
+  background-size: 200% 200%;
+  animation: gradientMove 15s ease infinite;
+  color: #333;
+}
+
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Header Styling */
+header {
+  background-color: #ff0000;
+  color: white;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+header img {
+  width: 100px;
+  height: auto;
+  margin-right: 10px;
+}
+
+.nav-buttons {
+  display: flex;
+  gap: 15px;
+}
+
+.nav-buttons button {
+  padding: 12px 18px;
+  font-size: 16px;
+  background-color: white;
+  color: #ff0000;
+  border: 2px solid #ff0000;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  text-transform: uppercase;
+  transition: background-color 0.3s, transform 0.2s ease;
+}
+
+.nav-buttons button:hover {
+  background-color: #ffcccc;
+  transform: translateY(-2px);
+}
+
+/* Main Grid Layout */
+.main-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 20px;
+  padding: 20px;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.collection-box {
+  grid-column: 1 / span 1;
+  grid-row: 1 / span 2;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.collection-box h2 {
+  color: #ff0000;
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.gacha-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+/* Gacha Card Styling */
+.gacha-card {
+  background-color: #fff;
+  border: 1px solid #ff0000;
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 300px; /* Limit card width for better layout */
+}
+
+.gacha-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.gacha-name {
+  font-size: 18px;
+  color: #ff0000;
+  margin: 0;
+}
+
+.gacha-rarity {
+  font-size: 16px;
+  font-weight: bold;
+  color: #ff9900; /* Gold for rarity text */
+}
+
+.gacha-image {
+  text-align: center;
+  margin: 10px 0;
+}
+
+.gacha-image img {
+  width: 100%;
+  max-width: 150px; /* Resize to fit the card */
+  height: auto; /* Maintain aspect ratio */
+  border-radius: 5px; /* Slight rounding for the image */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+.gacha-details {
+  font-size: 14px;
+  color: #333;
+}
+
+.gacha-details p {
+  margin: 5px 0;
+}
+
+.gacha-details strong {
+  color: #ff0000;
+}
+
+/* Right Panel Layout */
+.right-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.buy-box,
+.roll-box {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+}
+
+.buy-box h2,
+.roll-box h2 {
+  color: #ff0000;
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.buy-box form,
+.roll-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.buy-box form input {
+  padding: 10px;
+  border: 1px solid #ff0000;
+  border-radius: 5px;
+}
+
+.buy-box form button,
+.roll-box button {
+  padding: 10px;
+  background-color: #ff0000;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.buy-box form button:hover,
+.roll-box button:hover {
+  background-color: #cc0000;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .main-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+  }
+
+  .collection-box {
+    grid-column: 1 / span 1;
+    grid-row: 1 / span 1;
+  }
+
+  .right-panel {
+    grid-column: 1 / span 1;
+    grid-row: 2 / span 1;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
