@@ -10,7 +10,7 @@
 ---
 
 ## **Description**
-This project implements the backend for a Gacha Game system, following a microservices architecture. Each microservice is containerized using Docker and communicates via REST APIs. The backend supports features such as:
+This project implements the backend and frontend for a Gacha Game system, following a microservices architecture. Each microservice is containerized using Docker and communicates via REST APIs. The backend supports features such as:
 - Authentication to the system.
 - Managing in-game currency.
 - Gacha rolling.
@@ -18,26 +18,8 @@ This project implements the backend for a Gacha Game system, following a microse
 
 ---
 
-## **Project Structure**
 
-```
-ASE_Project/
-├── gachas/                     # Microservices source code
-│   ├── authentication/         # Authentication Service
-│   ├── gacha_service/          # Gacha Service
-│   ├── gacha_market_service/   # Market Service
-│   ├── auction_service/        # Auction Service
-│   ├── nginx/                  # Gateway
-│   └── docker-compose.yml      # Docker Compose file 
-├── docs/                       # Documentation (OpenAPI, Postman, Locust)
-│   ├── postman/                # Postman collections
-│   ├── locust/                 # Performance testing files
-│   ├── github-actions/         # YAML workflows for GitHub Actions
-│   └── openapi.json            # API docs
-└── README.md                   # Project documentation
-```
-
----
+-
 
 ## **Requirements**
 ### **Required Tools**
@@ -72,7 +54,7 @@ This project uses specific dependencies listed in the `requirements.txt` files i
 
 ---
 
-## **Building**
+## **Building and Running**
 
 1. **Create, Build & Start the Docker containers (first time)**
    This command creates and builds the containers for each microservice:
@@ -82,17 +64,11 @@ This project uses specific dependencies listed in the `requirements.txt` files i
 
 ---
 
-## **Running**
-
-1. **Start the Docker environment**
-   Start the entire microservices architecture:
-   ```bash
-   sudo docker compose start
-   ```
+## **Have fun**
 
 2. **Access the system**
    The main gateway will be accessible at:  
-   `http://localhost  
+   https://localhost  
 
 ---
 
@@ -114,7 +90,7 @@ Functional tests simulate complete usage flows. Postman collection files are ava
 1. **Run the tests with Newman:**
    Execute the collection to verify the APIs of the microservices. Use Newman (Postman CLI) to run the tests:
    ```bash
-   newman run docs/TEST/COMPLETE_LOGIC.postman_collection.json
+   newman run docs/TEST/F1_Drivers_Gacha_3.postman_collection.json
    ```
 
 ### **Performance Testing with Locust**
@@ -122,7 +98,7 @@ Performance tests evaluate how the gateway handles high loads.
 
 1. **Run Locust:**
    ```bash
-   locust -f docs/locust/locustfile.py
+   locust -f docs/locust/locust-user-flow.py
    ```
 
 2. **Configure the test:**
