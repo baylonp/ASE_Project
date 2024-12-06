@@ -3,7 +3,7 @@ name: NEW CI Workflow
 on:
   push:
     branches:
-      - main
+      - test
   pull_request:
 
 jobs:
