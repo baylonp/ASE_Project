@@ -129,11 +129,9 @@ def token_required(f):
 @token_required
 def set_auction(current_user, token, userId):
     """
-    Permette a un utente di mettere all'asta uno dei suoi gacha
-    ---
+    Permette a un utente di mettere all'asta uno dei suoi gacha, assicurandosi che non superi il numero posseduto
     """
         
-    # Validazione del parametro userId come numero intero
     if not re.match(r'^\d+$', str(userId)):
         return make_response(jsonify({'message': 'Invalid user ID, must be a positive number'}), 400)
     
@@ -146,26 +144,35 @@ def set_auction(current_user, token, userId):
         gacha_id = data['gacha_id']
         base_price = data['base_price']
 
-        
-        # Validazione del parametro gacha_id come numero intero
         if not re.match(r'^\d+$', str(gacha_id)):
             return make_response(jsonify({'message': 'Invalid gacha_id, must be a positive number'}), 400)
-        
 
+        # Effettuare una richiesta al gacha_service per ottenere tutti i gacha posseduti dall'utente
+        headers = {'x-access-token': token}
         try:
-            # Effettuare una richiesta GET al gacha_service per verificare se l'utente possiede il gacha
-            headers = {'x-access-token': token}  # Aggiungi il token all'header
-            response = requests.get(f"{GACHA_SERVICE_URL}/gacha_service/players/{userId}/gachas/{gacha_id}", headers=headers, verify= False, timeout=5 )
+            response = requests.get(f"{GACHA_SERVICE_URL}/gacha_service/players/{userId}/gachas", headers=headers, verify=False, timeout=5)
+            if response.status_code == 204:  # Nessun gacha trovato
+                return make_response(jsonify({'message': 'User does not own any Gachas'}), 400)
+            elif response.status_code != 200:
+                return make_response(jsonify({'message': 'Error communicating with gacha_service'}), 500)
 
+            owned_gachas = response.json()  # Lista di gachas dell'utente
         except Timeout:
-            return make_response(jsonify({'message': 'Gacha service is temporarily unavailable'}), 503)  # Service unavailable
-    
- 
-        if response.status_code == 404:
-            return make_response(jsonify({'message': 'Gacha not found or not owned by user'}), 404)
-        elif response.status_code != 200:
-            return make_response(jsonify({'message': 'Error communicating with gacha_service'}), 500)
- 
+            return make_response(jsonify({'message': 'Gacha service is temporarily unavailable'}), 503)
+
+        # Filtrare i gacha posseduti con l'ID corrispondente
+        user_gacha_count = sum(1 for g in owned_gachas if g['gachaId'] == gacha_id)
+        if user_gacha_count == 0:
+            return make_response(jsonify({'message': 'User does not own this Gacha'}), 400)
+
+        # Controllare le aste attive per vedere quanti gacha sono già in asta
+        active_auctions = Auction.query.filter_by(issuer_id=userId, gacha_id=gacha_id, is_active=True).count()
+
+        # Calcolare il numero disponibile di questo tipo di gacha
+        available_gachas = user_gacha_count - active_auctions
+        if available_gachas <= 0:
+            return make_response(jsonify({'message': 'All of your Gachas of this type are already in auction'}), 400)
+
         # Creare una nuova asta nel database
         new_auction = Auction(
             gacha_id=gacha_id,
@@ -178,18 +185,19 @@ def set_auction(current_user, token, userId):
  
         db.session.add(new_auction)
         db.session.commit()
- 
+
         # Attivare un timer per disattivare l'asta dopo 1 minuto, passando il token come argomento
         auction_id = new_auction.auction_id
         timer = threading.Timer(60.0, end_auction, [auction_id, token])
         timer.start()
- 
+
         return make_response(jsonify({'message': 'Auction created successfully', 'auction_id': auction_id}), 201)
- 
+
     except requests.exceptions.RequestException as e:
         return make_response(jsonify({'message': f'An error occurred while communicating with the gacha service: {str(e)}'}), 500)
     except Exception as e:
         return make_response(jsonify({'message': f'An internal error occurred: {str(e)}'}), 500)
+
  
 @app.route('/auction_service/auctions/active', methods=['GET'])
 def get_active_auctions():
