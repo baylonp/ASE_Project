@@ -21,9 +21,6 @@ This project implements the backend and frontend for a Gacha Game system, follow
 
 ---
 
-
--
-
 ## **Requirements**
 ### **Required Tools**
 Ensure you have the following tools installed:
