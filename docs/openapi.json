@@ -12,6 +12,9 @@
   "servers": [
     {
       "url": "https://localhost"
+    },
+    {
+      "url": "https://localhost:444"
     }
   ],
   "tags": [
@@ -224,6 +227,22 @@
               }
             }
           },
+          "403": {
+            "description": "Forbidden Token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Forbidden Token"
+                    }
+                  }
+                }
+              }
+            }
+          },
           "404": {
             "description": "Admin not found in the database.",
             "content": {
@@ -319,6 +338,22 @@
               }
             }
           },
+          "403": {
+            "description": "Forbidden Token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Forbidden Token"
+                    }
+                  }
+                }
+              }
+            }
+          },
           "404": {
             "description": "Admin not found in the database.",
             "content": {
@@ -364,9 +399,6 @@
                   "type": "object",
                   "properties": {
                     "message": {
-                      "type": "string"
-                    },
-                    "token": {
                       "type": "string"
                     }
                   }
@@ -458,11 +490,25 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "message": {
-                      "type": "string"
+                    "id": {
+                      "type": "integer",
+                      "description": "The unique ID of the player.",
+                      "example": 1
                     },
-                    "token": {
-                      "type": "string"
+                    "username": {
+                      "type": "string",
+                      "description": "The username of the player.",
+                      "example": "player123"
+                    },
+                    "email": {
+                      "type": "string",
+                      "description": "The email address of the player.",
+                      "example": "player123@example.com"
+                    },
+                    "wallet": {
+                      "type": "integer",
+                      "description": "The current wallet balance of the player.",
+                      "example": 500
                     }
                   }
                 }
@@ -479,6 +525,22 @@
                     "message": {
                       "type": "string",
                       "example": "Token is invlaid/expired"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden Token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Forbidden Token"
                     }
                   }
                 }
@@ -561,16 +623,6 @@
             }
           }
         ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object"
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "description": "Gacha uploaded succesfully.",
@@ -580,9 +632,6 @@
                   "type": "object",
                   "properties": {
                     "message": {
-                      "type": "string"
-                    },
-                    "token": {
                       "type": "string"
                     }
                   }
@@ -626,6 +675,22 @@
               }
             }
           },
+          "403": {
+            "description": "Forbidden Token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Forbidden Token"
+                    }
+                  }
+                }
+              }
+            }
+          },
           "500": {
             "description": "An error occurred while communicating with the gacha market or gacha service",
             "content": {
@@ -643,7 +708,7 @@
             }
           },
           "503": {
-            "description": "Authentication service is temporarily unavailable",
+            "description": "Gacha market service is temporarily unavailable",
             "content": {
               "application/json": {
                 "schema": {
@@ -651,7 +716,133 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "Authentication service is temporarily unavailable"
+                      "example": "Gacha market service is temporarily unavailable"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Admin Service"
+        ],
+        "summary": "Delete gacha",
+        "description": "Delete a gacha in the catalog & in the collection of all the users.",
+        "parameters": [
+          {
+            "name": "gacha_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-access-token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Gacha removed succesfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": {
+                        "invalidInput": {
+                          "value": "Invalid input data"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token is invalid/expired",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Token is invlaid/expired"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden Token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Forbidden Token"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An error occurred while communicating with the gacha market or gacha service",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "An error occurred while communicating with the gacha market or gacha service"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Gacha market service is temporarily unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Gacha market service is temporarily unavailable"
                     }
                   }
                 }
@@ -968,30 +1159,22 @@
                   "items": {
                     "type": "object",
                     "properties": {
-                      "transactionId": {
+                      "Id": {
                         "type": "string",
                         "description": "The unique ID of the transaction."
                       },
-                      "userId": {
+                      "user_id": {
                         "type": "string",
                         "description": "The ID of the user associated with the transaction."
                       },
-                      "amount": {
+                      "amount_spent": {
                         "type": "number",
                         "description": "The amount involved in the transaction."
                       },
-                      "currency": {
-                        "type": "string",
-                        "description": "The currency used in the transaction."
-                      },
-                      "date": {
+                      "timestamp": {
                         "type": "string",
                         "format": "date-time",
                         "description": "The date and time of the transaction."
-                      },
-                      "status": {
-                        "type": "string",
-                        "description": "The status of the transaction (e.g., completed, pending)."
                       }
                     }
                   }
@@ -1056,7 +1239,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "An error occurred while communicating with the gacha_market_service [error details]"
+                      "example": "An error occurred while communicating with the gacha_market_service"
                     }
                   }
                 }
@@ -1221,6 +1404,12 @@
                         "invalidInput": {
                           "value": "Invalid input data"
                         },
+                        "invalidUsername": {
+                          "value": "Invalid username format"
+                        },
+                        "invalidEmail": {
+                          "value": "Invalid email format"
+                        },
                         "usernameExists": {
                           "value": "Username already exists"
                         },
@@ -1273,7 +1462,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "Account deleted"
+                      "example": "Account and associated Gacha collection deleted successfully"
                     }
                   }
                 }
@@ -1503,7 +1692,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "An internal error occurred [error details]"
+                      "example": "An internal error occurred"
                     }
                   }
                 }
@@ -1558,10 +1747,12 @@
                       "type": "string",
                       "example": "Login successful"
                     },
-                    "sessionId": {
+                    "token": {
                       "type": "string",
-                      "description": "A unique session ID for the user.",
-                      "example": "896534823985732659"
+                      "description": "A unique token for the user."
+                    },
+                    "userId": {
+                      "type": "number"
                     }
                   }
                 }
@@ -1577,7 +1768,14 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "Invalid input data"
+                      "example": {
+                        "invalidInput": {
+                          "value": "Invalid input data"
+                        },
+                        "invalidUsername": {
+                          "value": "Invalid username format"
+                        }
+                      }
                     }
                   }
                 }
@@ -1708,7 +1906,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "An internal error occurred [error details]"
+                      "example": "An internal error occurred"
                     }
                   }
                 }
@@ -1773,7 +1971,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "Username is"
+                      "example": "Username is required"
                     }
                   }
                 }
@@ -1821,7 +2019,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "An internal error occurred [error details]"
+                      "example": "An internal error occurred"
                     }
                   }
                 }
@@ -2020,6 +2218,22 @@
               }
             }
           },
+          "401": {
+            "description": "Unauthorized access. Token is missing or invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Token is missing or invalid"
+                    }
+                  }
+                }
+              }
+            }
+          },
           "403": {
             "description": "Unauthorized action. The current user is not authorized to modify this player's wallet.",
             "content": {
@@ -2030,14 +2244,6 @@
                     "message": {
                       "type": "string",
                       "example": "PlayerID Invalid. You are not authorized."
-                    },
-                    "playerID": {
-                      "type": "string",
-                      "description": "The player ID from the request."
-                    },
-                    "currUserID": {
-                      "type": "string",
-                      "description": "The current user ID from the token."
                     }
                   }
                 }
@@ -2298,7 +2504,17 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "Insufficient funds"
+                      "example": {
+                        "invalidInput": {
+                          "value": "Invalid input data amount field is required"
+                        },
+                        "invalidAmount": {
+                          "value": "Amount must be greater than zero"
+                        },
+                        "insufficientFunds": {
+                          "value": "Insufficient funds"
+                        }
+                      }
                     }
                   }
                 }
@@ -2407,7 +2623,7 @@
                       "rarity": {
                         "type": "string",
                         "description": "The rarity of the gacha.",
-                        "example": "SSR"
+                        "example": "Legendary"
                       }
                     }
                   }
@@ -2448,7 +2664,7 @@
             }
           },
           "404": {
-            "description": "Player not found or no gachas available",
+            "description": "Player not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -2456,7 +2672,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "Player not"
+                      "example": "Player not found"
                     }
                   }
                 }
@@ -2472,7 +2688,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "An internal error occurred [error details]"
+                      "example": "An internal error occurred"
                     }
                   }
                 }
@@ -2565,7 +2781,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "An internal error occurred [error details]"
+                      "example": "An internal error occurred"
                     }
                   }
                 }
@@ -2608,6 +2824,11 @@
               "schema": {
                 "type": "object",
                 "properties": {
+                  "user_id": {
+                    "type": "integer",
+                    "description": "The unique ID of the user",
+                    "example": 1
+                  },
                   "gacha_id": {
                     "type": "integer",
                     "description": "The unique ID of the gacha.",
@@ -2616,12 +2837,12 @@
                   "pilot_name": {
                     "type": "string",
                     "description": "The name of the gacha's pilot.",
-                    "example": "Legendary Pilot"
+                    "example": "Pilot A"
                   },
                   "rarity": {
                     "type": "string",
                     "description": "The rarity of the gacha.",
-                    "example": "SSR"
+                    "example": "Legendary"
                   },
                   "experience": {
                     "type": "integer",
@@ -2671,7 +2892,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "Invalid input"
+                      "example": "Invalid input data"
                     }
                   }
                 }
@@ -2703,7 +2924,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "An error occurred [error details]"
+                      "example": "Internal server error occurred"
                     }
                   }
                 }
@@ -2767,12 +2988,12 @@
                     "pilotName": {
                       "type": "string",
                       "description": "The name of the gacha's pilot.",
-                      "example": "Legendary Pilot"
+                      "example": "Pilot A"
                     },
                     "rarity": {
                       "type": "string",
                       "description": "The rarity of the gacha.",
-                      "example": "SSR"
+                      "example": "Legendary"
                     },
                     "experience": {
                       "type": "integer",
@@ -2782,7 +3003,7 @@
                     "ability": {
                       "type": "string",
                       "description": "The ability of the gacha.",
-                      "example": "Stealth"
+                      "example": "Stealth Mode"
                     }
                   }
                 }
@@ -2814,7 +3035,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "Gacha or player not"
+                      "example": "Gacha or player not found"
                     }
                   }
                 }
@@ -2830,7 +3051,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "An internal error occurred [error details]"
+                      "example": "An internal error occurred"
                     }
                   }
                 }
@@ -2881,15 +3102,28 @@
                         "properties": {
                           "gacha_id": {
                             "type": "integer",
-                            "description": "Unique identifier for the missing gacha."
+                            "description": "Unique identifier for the missing gacha.",
+                            "example": 101
                           },
                           "pilot_name": {
                             "type": "string",
-                            "description": "Name of the missing pilot."
+                            "description": "Name of the missing pilot.",
+                            "example": "Pilot A"
                           },
                           "rarity": {
                             "type": "string",
-                            "description": "Rarity level of the missing pilot."
+                            "description": "Rarity level of the missing pilot.",
+                            "example": "Legendary"
+                          },
+                          "experience": {
+                            "type": "integer",
+                            "description": "Experience of the pilot",
+                            "example": 50
+                          },
+                          "ability": {
+                            "type": "string",
+                            "description": "Ability of the pilot",
+                            "example": "Stealth Mode"
                           }
                         }
                       }
@@ -2925,8 +3159,8 @@
               }
             }
           },
-          "500": {
-            "description": "An error occurred while communicating with the Gacha market service or an internal server error.",
+          "403": {
+            "description": "No pilots available in the catalog",
             "content": {
               "application/json": {
                 "schema": {
@@ -2934,7 +3168,23 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "An error occurred while communicating with the Gacha market service or an internal server error."
+                      "example": "No pilots available in the catalog"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to retrieve the gacha catalog from gacha_market_service",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Failed to retrieve the gacha catalog from gacha_market_service"
                     }
                   }
                 }
@@ -3119,7 +3369,7 @@
                   }
                 },
                 "example": {
-                  "pilot_name": "Updated Pilot",
+                  "pilot_name": "Pilot B",
                   "rarity": "Epic",
                   "experience": 7000,
                   "ability": "Enhanced Defense"
@@ -3202,7 +3452,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "An internal error occurred [error details]"
+                      "example": "An internal error occurred"
                     }
                   }
                 }
@@ -3257,32 +3507,39 @@
                     "type": "object",
                     "properties": {
                       "id": {
-                        "type": "string",
-                        "description": "The unique ID of the Gacha entry."
+                        "type": "integer",
+                        "description": "The unique ID of the Gacha entry.",
+                        "example": 1
                       },
                       "user_id": {
-                        "type": "string",
-                        "description": "The ID of the user who owns the Gacha."
+                        "type": "integer",
+                        "description": "The ID of the user who owns the Gacha.",
+                        "example": 1
                       },
                       "gacha_id": {
-                        "type": "string",
-                        "description": "The unique ID of the Gacha."
+                        "type": "integer",
+                        "description": "The unique ID of the Gacha.",
+                        "example": 101
                       },
                       "pilot_name": {
                         "type": "string",
-                        "description": "The name of the pilot associated with the Gacha."
+                        "description": "The name of the pilot associated with the Gacha.",
+                        "example": "Pilot A"
                       },
                       "rarity": {
                         "type": "string",
-                        "description": "The rarity level of the Gacha."
+                        "description": "The rarity level of the Gacha.",
+                        "example": "Legendary"
                       },
                       "experience": {
-                        "type": "number",
-                        "description": "The experience points of the Gacha."
+                        "type": "string",
+                        "description": "The experience points of the Gacha.",
+                        "example": 100
                       },
                       "ability": {
                         "type": "string",
-                        "description": "The special ability of the Gacha."
+                        "description": "The special ability of the Gacha.",
+                        "example": "Stealth Mode"
                       }
                     }
                   }
@@ -3331,7 +3588,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "An internal error occurred [error details]"
+                      "example": "An internal error occurred"
                     }
                   }
                 }
@@ -3409,7 +3666,7 @@
                   }
                 },
                 "example": {
-                  "pilot_name": "Updated Pilot",
+                  "pilot_name": "Pilot A",
                   "rarity": "Legendary",
                   "experience": 9000,
                   "ability": "Enhanced Speed"
@@ -3492,7 +3749,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "An internal error occurred [error details]"
+                      "example": "An internal error occurred"
                     }
                   }
                 }
@@ -3601,7 +3858,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "An internal error occurred [error details]"
+                      "example": "An internal error occurred"
                     }
                   }
                 }
@@ -3665,17 +3922,20 @@
                     "type": "object",
                     "properties": {
                       "id": {
-                        "type": "string",
-                        "description": "The unique ID of the transaction."
+                        "type": "integer",
+                        "description": "The unique ID of the transaction.",
+                        "example": 1
                       },
                       "user_id": {
-                        "type": "string",
-                        "description": "The ID of the user associated with the transaction."
+                        "type": "integer",
+                        "description": "The ID of the user associated with the transaction.",
+                        "example": 1
                       },
                       "amount_spent": {
                         "type": "number",
                         "format": "float",
-                        "description": "The amount spent in the transaction."
+                        "description": "The amount spent in the transaction.",
+                        "example": 500
                       },
                       "timestamp": {
                         "type": "string",
@@ -3729,7 +3989,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "An internal error occurred [error details]"
+                      "example": "An internal error occurred"
                     }
                   }
                 }
@@ -3826,8 +4086,9 @@
                       "example": "Gacha added successfully"
                     },
                     "gacha_id": {
-                      "type": "string",
-                      "description": "The unique ID of the newly created Gacha."
+                      "type": "integer",
+                      "description": "The unique ID of the newly created Gacha.",
+                      "example": 103
                     }
                   }
                 }
@@ -3875,7 +4136,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "An internal error occurred [error details]"
+                      "example": "An internal error occurred"
                     }
                   }
                 }
@@ -4008,7 +4269,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "An internal error occurred Database connection failed"
+                      "example": "An internal error occurred"
                     }
                   }
                 }
@@ -4133,10 +4394,10 @@
                       "type": "string",
                       "example": {
                         "authServiceError": {
-                          "value": "An error occurred while communicating with the auth service Timeout error"
+                          "value": "An error occurred while communicating with the auth service"
                         },
                         "internalError": {
-                          "value": "An internal error occurred Database connection failed"
+                          "value": "An internal error occurred"
                         }
                       }
                     }
@@ -4220,7 +4481,7 @@
                         "rarity": {
                           "type": "string",
                           "description": "The rarity of the obtained pilot.",
-                          "example": "SSR"
+                          "example": "Legendary"
                         },
                         "experience": {
                           "type": "integer",
@@ -4289,10 +4550,10 @@
                       "type": "string",
                       "example": {
                         "serviceError": {
-                          "value": "An error occurred while communicating with the auth or gacha service Timeout error"
+                          "value": "An error occurred while communicating with the auth or gacha service"
                         },
                         "internalError": {
-                          "value": "An internal error occurred Database connection failed"
+                          "value": "An internal error occurred"
                         }
                       }
                     }
@@ -4350,23 +4611,28 @@
                     "properties": {
                       "gacha_id": {
                         "type": "integer",
-                        "description": "Unique identifier for the gacha."
+                        "description": "Unique identifier for the gacha.",
+                        "example": 102
                       },
                       "pilot_name": {
                         "type": "string",
-                        "description": "Name of the pilot."
+                        "description": "Name of the pilot.",
+                        "example": "Pilot A"
                       },
                       "rarity": {
                         "type": "string",
-                        "description": "Rarity level of the pilot."
+                        "description": "Rarity level of the pilot.",
+                        "example": "Legendary"
                       },
                       "experience": {
                         "type": "integer",
-                        "description": "Experience level of the pilot."
+                        "description": "Experience level of the pilot.",
+                        "example": 800
                       },
                       "ability": {
                         "type": "string",
-                        "description": "Special ability of the pilot."
+                        "description": "Special ability of the pilot.",
+                        "example": "Stealth Mode"
                       }
                     },
                     "required": [
@@ -4463,8 +4729,9 @@
                         "example": 55
                       },
                       "current_user_winner_id": {
-                        "type": "string",
-                        "description": "The ID of the user currently winning the auction."
+                        "type": "integer",
+                        "description": "The ID of the user currently winning the auction.",
+                        "example": 3
                       },
                       "current_bid": {
                         "type": "number",
@@ -4509,7 +4776,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "An internal error occurred Database connection failed"
+                      "example": "An internal error occurred"
                     }
                   }
                 }
@@ -4554,9 +4821,9 @@
                 "type": "object",
                 "properties": {
                   "gacha_id": {
-                    "type": "string",
+                    "type": "integer",
                     "description": "The unique ID of the gacha being auctioned.",
-                    "example": "101"
+                    "example": 101
                   },
                   "base_price": {
                     "type": "number",
@@ -4611,6 +4878,22 @@
               }
             }
           },
+          "401": {
+            "description": "Unauthorized access. Token is missing or invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Token is missing or invalid"
+                    }
+                  }
+                }
+              }
+            }
+          },
           "404": {
             "description": "Gacha not found or not owned by user",
             "content": {
@@ -4638,10 +4921,10 @@
                       "type": "string",
                       "example": {
                         "serviceError": {
-                          "value": "An error occurred while communicating with the gacha service Timeout error"
+                          "value": "An error occurred while communicating with the gacha service"
                         },
                         "internalError": {
-                          "value": "An internal error occurred Database connection failed"
+                          "value": "An internal error occurred"
                         }
                       }
                     }
@@ -4704,7 +4987,7 @@
                 "type": "object",
                 "properties": {
                   "user_id": {
-                    "type": "string",
+                    "type": "integer",
                     "description": "The ID of the user placing the bid"
                   },
                   "bid_amount": {
@@ -4719,7 +5002,7 @@
                 ],
                 "example": {
                   "bid_amount": 500,
-                  "user_id": "12345"
+                  "user_id": 1
                 }
               }
             }
@@ -4751,7 +5034,45 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "Bid amount must be higher than the current bid"
+                      "example": {
+                        "invalidAuctionId": {
+                          "value": "AuctionId must be a positive number"
+                        },
+                        "invaludInput": {
+                          "value": "Invalid input data"
+                        },
+                        "amountError": {
+                          "value": "Amount must be a positive number"
+                        },
+                        "invalidUser": {
+                          "value": "User_id must be a positive number"
+                        },
+                        "bidError": {
+                          "value": "Bid amount must be higher than the current bid"
+                        },
+                        "insufficientFounds": {
+                          "value": "insufficientFounds"
+                        },
+                        "auctionActive": {
+                          "value": "Auction is no longer active"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized access. Token is missing or invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Token is missing or invalid"
                     }
                   }
                 }

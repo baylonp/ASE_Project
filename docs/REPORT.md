@@ -5,7 +5,7 @@
 - [Architecture](https://github.com/baylonp/ASE_Project/blob/test/docs/REPORT.md#architecture)
 - [User Stories](https://github.com/baylonp/ASE_Project/blob/test/docs/REPORT.md#user-stories)
 - [Market Rules](https://github.com/baylonp/ASE_Project/blob/test/docs/REPORT.md#market-rules)
-- [Testing](https://github.com/baylonp/ASE_Project/blob/test/docs/REPORT.md#testing)
+- [Testing](https://github.com/baylonp/ASE_Project/blob/test/docs/REPORT.md#isolation-testing)
 - [Security]
   
     -[Data](https://github.com/baylonp/ASE_Project/blob/test/docs/REPORT.md#security-data)
@@ -89,6 +89,41 @@ Whenever the user wants to auction off a gacha the he owns, he sets the base pri
 
 In the eventuality the winning bidder places an even higher bid, there is no control put in place, on purpose, and only the last bid is considered valid.
 
+## Isolation Testing
+
+The mock tests use simplified, in-memory data structures to emulate real-world data, referred to as "mokkate structures." These include:
+
+- **User Data**: Simulated user credentials and session tokens.
+- **Gacha Items**: Simplified representations of collectible items.
+- **Market Transactions**: Mocked transactions for item trading.
+- **Auction Bids**: Sample data for auction simulations.
+
+
+The results of the mock tests are summarized in the log files located in `docs/TEST/mock_tests_results`.
+
+- **Running the Services**
+   The services in the `gacha_mock` folder can be executed using Docker Compose:
+
+   ```bash
+   cd gacha_mock
+   docker-compose up --build
+   ```
+
+   This command builds and starts all services defined in the `docker-compose.yml` file.
+
+- **Running the Tests**
+   The tests in the `docs/TEST/mock_test_collection` folder can be executed using `newman`:
+
+   ```bash
+   cd docs/TEST/mock_test_collection
+   newman run Admin_Service_Mock_Tests.json
+   newman run Authentication_Service_Mock_Tests.json
+   newman run Gacha_Service_Mock_Tests.json
+   newman run Gacha_Market_Service_Mock_Tests.json
+   newman run Auction_Service_Mock_Tests.json
+   ```
+
+
 ## Security-Data
 One important input that has been sanitized is the **userId** and **gachaId** that is used inside the **/auction_service/players/<userId>/setAuction**. Inside this endpoint, that is inthe auction_service, we call the gacha_service with thsi parameters in order to verify that the user speicifed by that **userId** owns the gacha specifid by **gachaId**. Since this parameters are used inside **gacha_service/players/{userId}/gachas/{gacha_id}** to build a query to the DB, we sanitized them using this regex.
 
@@ -134,7 +169,7 @@ In case of an **Admin-Request**, the **/admin_service/verify_admin** endpoint is
 
 Here is the payload use to generate admin JWT:
 
-```
+```python
 def generate_jwt(admin):
     payload = {
         'admin_id': admin.id,
@@ -149,6 +184,9 @@ In the user case, admin_id is changed with user_id.
 
 
 
+## Security-Analyses
 
-## Testing
+
+
+
 
