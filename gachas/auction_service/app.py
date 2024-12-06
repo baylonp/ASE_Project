@@ -149,6 +149,7 @@ def set_auction(current_user, token, userId):
 
         # Effettuare una richiesta al gacha_service per ottenere tutti i gacha posseduti dall'utente
         headers = {'x-access-token': token}
+        owned_gachas = None
         try:
             response = requests.get(f"{GACHA_SERVICE_URL}/gacha_service/players/{userId}/gachas", headers=headers, verify=False, timeout=5)
             if response.status_code == 204:  # Nessun gacha trovato

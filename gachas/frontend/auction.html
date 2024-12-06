@@ -71,7 +71,7 @@
                 'x-access-token': token,
               },
               body: JSON.stringify({
-                gacha_id: gachaId,
+                gacha_id: parseInt(gachaId),
                 base_price: parseFloat(basePrice),
               }),
             }
