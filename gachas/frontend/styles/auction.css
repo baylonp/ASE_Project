@@ -1,0 +1,227 @@
+/* General Styles */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f4f4f9;
+  background-image: linear-gradient(135deg, white 50%, #ff0000 50%);
+  background-size: 200% 200%;
+  animation: gradientMove 15s ease infinite;
+  color: #333;
+}
+
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Header Styling */
+header {
+  background-color: #ff0000;
+  color: white;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  position: sticky;
+  top: 0;
+}
+
+header img {
+  width: 100px;
+  height: auto;
+  margin-right: 10px;
+}
+
+.nav-buttons {
+  display: flex;
+  gap: 15px;
+}
+
+.nav-buttons button {
+  padding: 12px 18px;
+  font-size: 16px;
+  background-color: white;
+  color: #ff0000;
+  border: 2px solid #ff0000;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  text-transform: uppercase;
+  transition: background-color 0.3s, transform 0.2s ease;
+}
+
+.nav-buttons button:hover {
+  background-color: #ffcccc;
+  transform: translateY(-2px);
+}
+
+.nav-buttons button:active {
+  transform: translateY(0);
+}
+
+/* Sidebar Styling */
+.sidebar {
+  position: fixed;
+  top: 80px; /* Adjust to avoid overlapping the navbar */
+  right: 0;
+  width: 300px;
+  height: calc(100vh - 80px); /* Avoid overlapping header */
+  background: #fff;
+  border-radius: 20px 0 0 20px; /* Rounded left corners */
+  box-shadow: -4px 0 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.sidebar h2 {
+  font-size: 20px;
+  color: #ff0000;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+/* Content Adjustments for Sidebar */
+.page-container {
+  margin-right: 320px; /* Adjust main content to accommodate the sidebar */
+}
+
+/* Auction Card Styling */
+.auction-card {
+  background-color: #fff;
+  border: 2px solid #ff0000;
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 15px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s;
+}
+
+.auction-card:hover {
+  transform: translateY(-3px);
+}
+
+.auction-card p {
+  margin: 5px 0;
+  font-size: 14px;
+  color: #333;
+}
+
+.auction-card strong {
+  color: #ff0000;
+  font-weight: bold;
+}
+
+/* Responsive Sidebar - Moves to Top */
+@media (max-width: 768px) {
+  .sidebar {
+    position: relative;
+    width: 100%;
+    height: auto;
+    top: 0;
+    border-radius: 0;
+    margin-bottom: 20px;
+    box-shadow: none;
+  }
+
+  .page-container {
+    margin-right: 0; /* Reset margin for mobile view */
+  }
+}
+
+/* Container Styling */
+.container {
+  background: white;
+  margin: 20px auto;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.6);
+  width: 80%;
+  max-width: 1000px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+form input,
+form button {
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 5px;
+}
+
+form button {
+  background-color: #ff0000;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+form button:hover {
+  background-color: #990000;
+  transform: translateY(-2px);
+}
+
+@media (max-width: 600px) {
+  .container {
+    width: 90%;
+  }
+}
+
+.auction-card {
+  background: white;
+  border: 1px solid #ff0000;
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  color: #ff0000; /* Red text color */
+  font-family: 'Arial', sans-serif;
+  transition: transform 0.3s, box-shadow 0.3s;
+  text-align: center;
+  height: auto;
+}
+
+.auction-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.auction-card h3 {
+  font-size: 20px;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.auction-card p {
+  margin: 5px 0;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.auction-card .price {
+  font-size: 18px;
+  font-weight: bold;
+  color: #cc0000; /* Slightly darker red for emphasis */
+}
+
+.gacha-image img {
+  width: 100%;
+  max-width: 150px; /* Resize to fit the card */
+  height: auto; /* Maintain aspect ratio */
+  border-radius: 5px; /* Slight rounding for the image */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+}
