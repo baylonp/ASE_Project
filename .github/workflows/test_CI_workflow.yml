@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - test
+      - main
   pull_request:
 
 jobs:
@@ -68,10 +69,15 @@ jobs:
           ls
           docker compose -f docker-compose.yml up --build -d
 
-      # 3. Run integration tests with Newman
-      - name: Run integration tests
+      # 3. Run Postman collections based on branch
+      - name: Run Postman Collection for Test Branch
+        if: github.ref_name == 'test'
         run: |
-          pwd
-          cd docs/TEST/
-          pwd
-          newman run F1_Drivers_Gacha_3.postman_collection.json --insecure --verbose
+          cd docs
+          newman run F1_Drivers_Gacha_TEST.postman_collection.json --insecure --verbose
+
+      - name: Run Postman Collection for Main Branch
+        if: github.ref_name == 'main'
+        run: |
+          cd docs
+          newman run F1_Drivers_Gacha_TEST.postman_collection.json --insecure --verbose
