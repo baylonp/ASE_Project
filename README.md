@@ -1,5 +1,8 @@
-
 # **Advanced Software Engineering Project - A.A. 2024/2025**
+
+
+![image](https://github.com/baylonp/ASE_Project/blob/main/screen.png)
+
 
 ## **Collaborators**
 - Davide Di Rocco  
